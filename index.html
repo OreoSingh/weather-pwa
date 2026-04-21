@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5" />
+  <meta name="theme-color" content="#0b0220" />
+  <meta name="description" content="Aurora — a beautiful glassmorphism weather app powered by Open-Meteo." />
+
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Aurora" />
+
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+
+  <title>Aurora Weather</title>
+
+  <style>
+    /* ----- Reset & base ----- */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      -webkit-tap-highlight-color: transparent;
+      text-rendering: optimizeLegibility;
+    }
+    html { height: -webkit-fill-available; }
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      min-height: -webkit-fill-available;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: #f4f2ff;
+      overflow-x: hidden;
+      position: relative;
+      background: #0b0220;
+    }
+    button, input { font: inherit; color: inherit; }
+    button { border: 0; background: none; cursor: pointer; }
+
+    /* ----- Animated gradient background ----- */
+    .bg {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background: linear-gradient(160deg, #1a0a3a 0%, #2a1160 35%, #1b2870 70%, #0b1a4a 100%);
+      background-size: 200% 200%;
+      animation: bg-shift 24s ease-in-out infinite;
+      transition: background 1.2s ease;
+    }
+    .bg::before, .bg::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.55;
+      pointer-events: none;
+      will-change: transform;
+    }
+    .bg::before {
+      width: 60vmax; height: 60vmax;
+      top: -20vmax; left: -15vmax;
+      background: radial-gradient(circle, #6a2bff 0%, transparent 65%);
+      animation: blob-a 22s ease-in-out infinite;
+    }
+    .bg::after {
+      width: 55vmax; height: 55vmax;
+      bottom: -20vmax; right: -20vmax;
+      background: radial-gradient(circle, #1e6bff 0%, transparent 65%);
+      animation: blob-b 28s ease-in-out infinite;
+    }
+    @keyframes bg-shift {
+      0%, 100% { background-position: 0% 0%; }
+      50% { background-position: 100% 100%; }
+    }
+    @keyframes blob-a {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(8vmax, 6vmax) scale(1.15); }
+    }
+    @keyframes blob-b {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(-6vmax, -4vmax) scale(1.1); }
+    }
+
+    /* Star specks */
+    .stars {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background-image:
+        radial-gradient(1px 1px at 18% 22%, rgba(255,255,255,0.55), transparent 60%),
+        radial-gradient(1px 1px at 72% 8%, rgba(255,255,255,0.4), transparent 60%),
+        radial-gradient(1px 1px at 33% 78%, rgba(255,255,255,0.35), transparent 60%),
+        radial-gradient(1.5px 1.5px at 88% 56%, rgba(255,255,255,0.55), transparent 60%),
+        radial-gradient(1px 1px at 56% 41%, rgba(255,255,255,0.25), transparent 60%),
+        radial-gradient(1px 1px at 10% 64%, rgba(255,255,255,0.35), transparent 60%);
+      opacity: 0.7;
+    }
+
+    /* ----- Layout ----- */
+    .app {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding:
+        calc(env(safe-area-inset-top, 0px) + 20px)
+        calc(env(safe-area-inset-right, 0px) + 16px)
+        calc(env(safe-area-inset-bottom, 0px) + 28px)
+        calc(env(safe-area-inset-left, 0px) + 16px);
+      gap: 16px;
+    }
+
+    .header {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.75);
+    }
+    .brand-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #b388ff, #82b1ff);
+      box-shadow: 0 0 12px rgba(130, 177, 255, 0.8);
+    }
+
+    /* ----- Search ----- */
+    .search {
+      width: 100%;
+      max-width: 480px;
+      position: relative;
+    }
+    .search-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.16);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      transition: border-color 0.25s ease, background 0.25s ease;
+    }
+    .search-input-wrap:focus-within {
+      border-color: rgba(179, 136, 255, 0.6);
+      background: rgba(255,255,255,0.12);
+    }
+    .search-icon {
+      width: 18px; height: 18px;
+      flex-shrink: 0;
+      opacity: 0.8;
+    }
+    .search input {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: #fff;
+      font-size: 16px;
+      padding: 4px 0;
+    }
+    .search input::placeholder { color: rgba(255,255,255,0.5); }
+    .search-clear {
+      display: none;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      color: rgba(255,255,255,0.8);
+      flex-shrink: 0;
+    }
+    .search-clear.visible { display: inline-flex; }
+
+    .suggestions {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      padding: 6px;
+      border-radius: 18px;
+      background: rgba(20, 10, 45, 0.75);
+      border: 1px solid rgba(255,255,255,0.14);
+      backdrop-filter: blur(24px) saturate(160%);
+      -webkit-backdrop-filter: blur(24px) saturate(160%);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.45);
+      max-height: 50vh;
+      overflow-y: auto;
+      z-index: 10;
+      display: none;
+    }
+    .suggestions.open { display: block; }
+    .suggestion {
+      width: 100%;
+      text-align: left;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 15px;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      transition: background 0.15s ease;
+    }
+    .suggestion:hover, .suggestion:focus-visible {
+      background: rgba(255,255,255,0.1);
+      outline: 0;
+    }
+    .suggestion .s-sub {
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+    }
+    .suggestions-empty {
+      padding: 14px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.6);
+      text-align: center;
+    }
+
+    /* ----- Weather card ----- */
+    .card {
+      width: 100%;
+      max-width: 480px;
+      padding: 22px 22px 18px;
+      border-radius: 28px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.14);
+      backdrop-filter: blur(24px) saturate(170%);
+      -webkit-backdrop-filter: blur(24px) saturate(170%);
+      box-shadow:
+        0 20px 50px rgba(0,0,0,0.45),
+        inset 0 1px 0 rgba(255,255,255,0.12);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.4s ease, opacity 0.4s ease;
+    }
+    .card.loading { opacity: 0.6; }
+    .card.swap { opacity: 0; transform: translateY(8px); }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .location {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+    .city {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .region {
+      font-size: 13px;
+      color: rgba(255,255,255,0.65);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .updated {
+      font-size: 11px;
+      color: rgba(255,255,255,0.45);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .animation {
+      margin: 6px auto 0;
+      width: 220px;
+      height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .animation lottie-player { width: 100%; height: 100%; }
+    .animation .fallback-emoji {
+      font-size: 120px;
+      line-height: 1;
+      filter: drop-shadow(0 6px 18px rgba(0,0,0,0.35));
+      transition: opacity 0.4s ease;
+    }
+
+    .temp {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 4px;
+      margin-top: 4px;
+    }
+    .temp-value {
+      font-size: 96px;
+      font-weight: 200;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      background: linear-gradient(180deg, #ffffff 0%, #d7cbff 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .temp-unit {
+      font-size: 28px;
+      font-weight: 300;
+      margin-top: 10px;
+      color: rgba(255,255,255,0.85);
+    }
+    .description {
+      text-align: center;
+      margin-top: 2px;
+      font-size: 18px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.92);
+      text-transform: capitalize;
+      letter-spacing: 0.01em;
+    }
+    .feels-like {
+      text-align: center;
+      margin-top: 4px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* ----- Stats grid ----- */
+    .stats {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .stat {
+      padding: 12px 10px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      text-align: center;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+    .stat:hover { background: rgba(255,255,255,0.09); }
+    .stat-icon {
+      width: 22px; height: 22px;
+      opacity: 0.85;
+    }
+    .stat-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+    }
+    .stat-value {
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .stat-sub {
+      font-size: 10px;
+      color: rgba(255,255,255,0.55);
+    }
+
+    /* ----- Status / error ----- */
+    .status {
+      width: 100%;
+      max-width: 480px;
+      min-height: 20px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.65);
+      text-align: center;
+    }
+    .status.error { color: #ffb4b4; }
+
+    .footer {
+      margin-top: auto;
+      padding-top: 10px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.45);
+      text-align: center;
+      letter-spacing: 0.05em;
+    }
+    .footer a { color: rgba(255,255,255,0.65); text-decoration: none; }
+
+    /* ----- Skeleton shimmer ----- */
+    .skeleton {
+      background: linear-gradient(90deg,
+        rgba(255,255,255,0.06) 0%,
+        rgba(255,255,255,0.14) 50%,
+        rgba(255,255,255,0.06) 100%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s linear infinite;
+      color: transparent !important;
+      border-radius: 10px;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ----- Mobile polish ----- */
+    @media (max-width: 380px) {
+      .temp-value { font-size: 84px; }
+      .animation { width: 190px; height: 190px; }
+      .city { font-size: 20px; }
+      .card { padding: 20px 18px 16px; border-radius: 24px; }
+    }
+    @media (min-height: 820px) {
+      .animation { width: 240px; height: 240px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .bg, .bg::before, .bg::after { animation: none !important; }
+      .card { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg" aria-hidden="true"></div>
+  <div class="stars" aria-hidden="true"></div>
+
+  <main class="app">
+    <header class="header">
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <span>Aurora</span>
+      </div>
+      <div class="updated" id="updated" aria-live="polite"></div>
+    </header>
+
+    <section class="search" role="search">
+      <div class="search-input-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input
+          id="search"
+          type="search"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="words"
+          spellcheck="false"
+          enterkeyhint="search"
+          placeholder="Search any city…"
+          aria-label="Search city"
+        />
+        <button class="search-clear" id="searchClear" aria-label="Clear search">&times;</button>
+      </div>
+      <div class="suggestions" id="suggestions" role="listbox" aria-label="City suggestions"></div>
+    </section>
+
+    <article class="card" id="card" aria-live="polite">
+      <div class="card-top">
+        <div class="location">
+          <div class="city" id="city">Brisbane</div>
+          <div class="region" id="region">Queensland, Australia</div>
+        </div>
+      </div>
+
+      <div class="animation" id="animation" aria-hidden="true">
+        <span class="fallback-emoji" id="fallbackEmoji">☀️</span>
+      </div>
+
+      <div class="temp">
+        <span class="temp-value" id="temp">--</span>
+        <span class="temp-unit">°C</span>
+      </div>
+      <div class="description" id="description">Loading…</div>
+      <div class="feels-like" id="feelsLike">Feels like --°</div>
+
+      <div class="stats">
+        <div class="stat">
+          <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3c-4 6-6 9-6 12a6 6 0 0 0 12 0c0-3-2-6-6-12z"></path>
+          </svg>
+          <span class="stat-label">Humidity</span>
+          <span class="stat-value" id="humidity">--%</span>
+        </div>
+        <div class="stat">
+          <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+          </svg>
+          <span class="stat-label">UV Index</span>
+          <span class="stat-value" id="uv">--</span>
+          <span class="stat-sub" id="uvLevel">&nbsp;</span>
+        </div>
+        <div class="stat">
+          <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 12h11a3 3 0 1 0-3-3"></path>
+            <path d="M3 18h14a3 3 0 1 1-3 3"></path>
+          </svg>
+          <span class="stat-label">Wind</span>
+          <span class="stat-value" id="wind">-- km/h</span>
+        </div>
+      </div>
+    </article>
+
+    <div class="status" id="status"></div>
+
+    <footer class="footer">
+      Data by <a href="https://open-meteo.com" target="_blank" rel="noopener noreferrer">Open-Meteo</a>
+      · Animations by <a href="https://lottiefiles.com" target="_blank" rel="noopener noreferrer">LottieFiles</a>
+    </footer>
+  </main>
+
+  <script>
+    // ===== Aurora Weather — chunk 1: API + search =====
+    (() => {
+      'use strict';
+
+      const GEOCODE_URL = 'https://geocoding-api.open-meteo.com/v1/search';
+      const WEATHER_URL = 'https://api.open-meteo.com/v1/forecast';
+      const STORAGE_KEY = 'aurora.lastCity';
+      const BRISBANE = {
+        name: 'Brisbane',
+        admin1: 'Queensland',
+        country: 'Australia',
+        latitude: -27.4705,
+        longitude: 153.0260,
+      };
+
+      const $ = (id) => document.getElementById(id);
+      const el = {
+        search:        $('search'),
+        clear:         $('searchClear'),
+        suggestions:   $('suggestions'),
+        card:          $('card'),
+        city:          $('city'),
+        region:        $('region'),
+        temp:          $('temp'),
+        description:   $('description'),
+        feelsLike:     $('feelsLike'),
+        humidity:      $('humidity'),
+        uv:            $('uv'),
+        uvLevel:       $('uvLevel'),
+        wind:          $('wind'),
+        updated:       $('updated'),
+        status:        $('status'),
+      };
+
+      let searchAbort = null;
+      let weatherAbort = null;
+
+      function setStatus(msg, isError = false) {
+        el.status.textContent = msg || '';
+        el.status.classList.toggle('error', Boolean(isError));
+      }
+
+      function debounce(fn, ms) {
+        let t;
+        return (...args) => {
+          clearTimeout(t);
+          t = setTimeout(() => fn(...args), ms);
+        };
+      }
+
+      function escapeHtml(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[c]));
+      }
+
+      function formatLocation(place) {
+        const parts = [];
+        if (place.admin1 && place.admin1 !== place.name) parts.push(place.admin1);
+        if (place.country) parts.push(place.country);
+        return parts.join(', ');
+      }
+
+      function formatTime(iso) {
+        if (!iso) return '';
+        const d = new Date(iso);
+        return 'Updated ' + d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      }
+
+      function uvLevel(uv) {
+        if (uv == null) return '';
+        if (uv < 3) return 'Low';
+        if (uv < 6) return 'Moderate';
+        if (uv < 8) return 'High';
+        if (uv < 11) return 'Very high';
+        return 'Extreme';
+      }
+
+      // Deferred to chunk 2; safe stubs until then.
+      const describeCode = (code, isDay) =>
+        (window.__auroraDescribe || (() => '—'))(code, isDay);
+      const renderVisuals = (code, isDay) => {
+        if (window.__auroraVisuals) window.__auroraVisuals(code, isDay);
+      };
+
+      // ----- API -----
+      async function geocode(query, { count = 5, signal } = {}) {
+        const url = new URL(GEOCODE_URL);
+        url.searchParams.set('name', query);
+        url.searchParams.set('count', String(count));
+        url.searchParams.set('language', 'en');
+        url.searchParams.set('format', 'json');
+        const res = await fetch(url, { signal });
+        if (!res.ok) throw new Error('Geocoding failed');
+        const data = await res.json();
+        return data.results || [];
+      }
+
+      async function fetchWeather(lat, lon, { signal } = {}) {
+        const url = new URL(WEATHER_URL);
+        url.searchParams.set('latitude', lat);
+        url.searchParams.set('longitude', lon);
+        url.searchParams.set(
+          'current',
+          'temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,uv_index,is_day'
+        );
+        url.searchParams.set('timezone', 'auto');
+        url.searchParams.set('wind_speed_unit', 'kmh');
+        url.searchParams.set('temperature_unit', 'celsius');
+        const res = await fetch(url, { signal });
+        if (!res.ok) throw new Error('Weather failed');
+        return res.json();
+      }
+
+      // ----- Render -----
+      function swapCard(update) {
+        el.card.classList.add('swap');
+        setTimeout(() => {
+          update();
+          requestAnimationFrame(() => el.card.classList.remove('swap'));
+        }, 180);
+      }
+
+      async function loadCity(place) {
+        if (!place) return;
+        el.card.classList.add('loading');
+        setStatus('Loading weather…');
+        if (weatherAbort) weatherAbort.abort();
+        weatherAbort = new AbortController();
+
+        try {
+          const data = await fetchWeather(place.latitude, place.longitude, {
+            signal: weatherAbort.signal,
+          });
+          const c = data.current || {};
+          const isDay = c.is_day !== 0;
+
+          swapCard(() => {
+            el.city.textContent = place.name;
+            el.region.textContent = formatLocation(place);
+            el.temp.textContent = Math.round(c.temperature_2m);
+            el.description.textContent = describeCode(c.weather_code, isDay);
+            el.feelsLike.textContent =
+              'Feels like ' + Math.round(c.apparent_temperature) + '°';
+            el.humidity.textContent = Math.round(c.relative_humidity_2m) + '%';
+            const uv = c.uv_index;
+            el.uv.textContent = uv != null ? Number(uv).toFixed(1) : '--';
+            el.uvLevel.textContent = uvLevel(uv) || ' ';
+            el.wind.textContent = Math.round(c.wind_speed_10m) + ' km/h';
+            el.updated.textContent = formatTime(c.time);
+            renderVisuals(c.weather_code, isDay);
+          });
+
+          setStatus('');
+          persistCity(place);
+        } catch (err) {
+          if (err.name === 'AbortError') return;
+          console.error(err);
+          setStatus('Could not load weather. Check your connection.', true);
+        } finally {
+          el.card.classList.remove('loading');
+        }
+      }
+
+      function persistCity(place) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            name: place.name,
+            admin1: place.admin1,
+            country: place.country,
+            latitude: place.latitude,
+            longitude: place.longitude,
+          }));
+        } catch (_) { /* ignore */ }
+      }
+
+      function restoreCity() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return null;
+          const p = JSON.parse(raw);
+          if (p && p.latitude != null && p.longitude != null) return p;
+          return null;
+        } catch (_) { return null; }
+      }
+
+      // ----- Suggestions -----
+      function openSuggestions()  { el.suggestions.classList.add('open'); }
+      function closeSuggestions() { el.suggestions.classList.remove('open'); }
+
+      function renderSuggestions(results, query) {
+        if (!results || !results.length) {
+          el.suggestions.innerHTML =
+            '<div class="suggestions-empty">No cities found for "' +
+            escapeHtml(query) + '"</div>';
+          openSuggestions();
+          return;
+        }
+        el.suggestions.innerHTML = results.slice(0, 6).map((r, i) =>
+          '<button class="suggestion" type="button" data-index="' + i +
+          '" role="option">' +
+            '<span>' + escapeHtml(r.name) + '</span>' +
+            '<span class="s-sub">' + escapeHtml(formatLocation(r)) + '</span>' +
+          '</button>'
+        ).join('');
+        openSuggestions();
+        el.suggestions.querySelectorAll('.suggestion').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const idx = Number(btn.dataset.index);
+            const place = results[idx];
+            closeSuggestions();
+            el.search.value = '';
+            el.clear.classList.remove('visible');
+            el.search.blur();
+            loadCity(place);
+          });
+        });
+      }
+
+      const onSearchInput = debounce(async () => {
+        const q = el.search.value.trim();
+        el.clear.classList.toggle('visible', q.length > 0);
+        if (q.length < 2) { closeSuggestions(); return; }
+        if (searchAbort) searchAbort.abort();
+        searchAbort = new AbortController();
+        try {
+          const results = await geocode(q, { count: 6, signal: searchAbort.signal });
+          renderSuggestions(results, q);
+        } catch (err) {
+          if (err.name !== 'AbortError') console.error(err);
+        }
+      }, 250);
+
+      el.search.addEventListener('input', onSearchInput);
+      el.search.addEventListener('focus', () => {
+        if (el.suggestions.innerHTML) openSuggestions();
+      });
+      el.search.addEventListener('keydown', async (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const q = el.search.value.trim();
+          if (q.length < 2) return;
+          try {
+            const results = await geocode(q, { count: 1 });
+            if (results && results[0]) {
+              closeSuggestions();
+              el.search.value = '';
+              el.clear.classList.remove('visible');
+              el.search.blur();
+              loadCity(results[0]);
+            } else {
+              setStatus('No city found for "' + q + '".', true);
+            }
+          } catch (_) {
+            setStatus('Search failed. Check your connection.', true);
+          }
+        } else if (e.key === 'Escape') {
+          closeSuggestions();
+          el.search.blur();
+        }
+      });
+
+      el.clear.addEventListener('click', () => {
+        el.search.value = '';
+        el.clear.classList.remove('visible');
+        closeSuggestions();
+        el.search.focus();
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.search')) closeSuggestions();
+      });
+
+      // ----- Boot -----
+      async function boot() {
+        const saved = restoreCity();
+        if (saved) { loadCity(saved); return; }
+        try {
+          const results = await geocode('Brisbane', { count: 1 });
+          loadCity((results && results[0]) || BRISBANE);
+        } catch (_) {
+          loadCity(BRISBANE);
+        }
+      }
+
+      // Expose boot for chunk 2 to call after visuals are wired up.
+      window.__auroraBoot = boot;
+    })();
+  </script>
+
+  <script>
+    // ===== Aurora Weather — chunk 2: visuals, Lottie, service worker =====
+    (() => {
+      'use strict';
+
+      // WMO weather code → condition key (day/night aware).
+      // https://open-meteo.com/en/docs
+      function codeToCondition(code, isDay) {
+        if (code === 0) return isDay ? 'clear-day' : 'clear-night';
+        if (code === 1 || code === 2) return isDay ? 'partly-day' : 'partly-night';
+        if (code === 3) return 'overcast';
+        if (code === 45 || code === 48) return 'fog';
+        if ([51, 53, 55, 56, 57].indexOf(code) >= 0) return 'drizzle';
+        if ([61, 63, 65, 66, 67, 80, 81, 82].indexOf(code) >= 0) return 'rain';
+        if ([71, 73, 75, 77, 85, 86].indexOf(code) >= 0) return 'snow';
+        if ([95, 96, 99].indexOf(code) >= 0) return 'thunder';
+        return isDay ? 'partly-day' : 'partly-night';
+      }
+
+      const DESCRIPTIONS = {
+        0:  { d: 'Clear sky',           n: 'Clear night' },
+        1:  { d: 'Mainly clear',        n: 'Mainly clear' },
+        2:  { d: 'Partly cloudy',       n: 'Partly cloudy' },
+        3:  { d: 'Overcast',            n: 'Overcast' },
+        45: { d: 'Fog',                 n: 'Fog' },
+        48: { d: 'Rime fog',            n: 'Rime fog' },
+        51: { d: 'Light drizzle',       n: 'Light drizzle' },
+        53: { d: 'Drizzle',             n: 'Drizzle' },
+        55: { d: 'Dense drizzle',       n: 'Dense drizzle' },
+        56: { d: 'Freezing drizzle',    n: 'Freezing drizzle' },
+        57: { d: 'Freezing drizzle',    n: 'Freezing drizzle' },
+        61: { d: 'Light rain',          n: 'Light rain' },
+        63: { d: 'Rain',                n: 'Rain' },
+        65: { d: 'Heavy rain',          n: 'Heavy rain' },
+        66: { d: 'Freezing rain',       n: 'Freezing rain' },
+        67: { d: 'Freezing rain',       n: 'Freezing rain' },
+        71: { d: 'Light snow',          n: 'Light snow' },
+        73: { d: 'Snow',                n: 'Snow' },
+        75: { d: 'Heavy snow',          n: 'Heavy snow' },
+        77: { d: 'Snow grains',         n: 'Snow grains' },
+        80: { d: 'Rain showers',        n: 'Rain showers' },
+        81: { d: 'Rain showers',        n: 'Rain showers' },
+        82: { d: 'Violent showers',     n: 'Violent showers' },
+        85: { d: 'Snow showers',        n: 'Snow showers' },
+        86: { d: 'Heavy snow showers',  n: 'Heavy snow showers' },
+        95: { d: 'Thunderstorm',        n: 'Thunderstorm' },
+        96: { d: 'Thunder with hail',   n: 'Thunder with hail' },
+        99: { d: 'Thunder with hail',   n: 'Thunder with hail' },
+      };
+
+      // Condition → visuals. Lottie URLs are LottieFiles public assets;
+      // if one fails to load the emoji fallback stays visible.
+      const VISUALS = {
+        'clear-day': {
+          emoji: '☀️',
+          lottie: 'https://assets9.lottiefiles.com/packages/lf20_xlky4kvh.json',
+          gradient: 'linear-gradient(160deg, #1f0e55 0%, #3a1c8a 35%, #1d4ea8 70%, #0c255b 100%)',
+        },
+        'clear-night': {
+          emoji: '🌙',
+          lottie: 'https://assets10.lottiefiles.com/packages/lf20_oygeclid.json',
+          gradient: 'linear-gradient(160deg, #0d0530 0%, #1a0a55 40%, #0f1a55 75%, #050820 100%)',
+        },
+        'partly-day': {
+          emoji: '⛅',
+          lottie: 'https://assets10.lottiefiles.com/packages/lf20_KUFdS6.json',
+          gradient: 'linear-gradient(160deg, #2a1160 0%, #2e2890 40%, #1b3b80 75%, #0e1f50 100%)',
+        },
+        'partly-night': {
+          emoji: '☁️',
+          lottie: 'https://assets10.lottiefiles.com/packages/lf20_jbvs2cc1.json',
+          gradient: 'linear-gradient(160deg, #13063a 0%, #1f1560 40%, #132a66 75%, #08143a 100%)',
+        },
+        'overcast': {
+          emoji: '☁️',
+          lottie: 'https://assets2.lottiefiles.com/packages/lf20_trr3kzok.json',
+          gradient: 'linear-gradient(160deg, #20204a 0%, #2c2a66 40%, #2b3b70 75%, #141a42 100%)',
+        },
+        'fog': {
+          emoji: '🌫️',
+          lottie: 'https://assets4.lottiefiles.com/packages/lf20_tutvdkg0.json',
+          gradient: 'linear-gradient(160deg, #1c1a3c 0%, #2e2d58 40%, #2b3360 75%, #141433 100%)',
+        },
+        'drizzle': {
+          emoji: '🌦️',
+          lottie: 'https://assets9.lottiefiles.com/packages/lf20_jzqoluvw.json',
+          gradient: 'linear-gradient(160deg, #151044 0%, #1f2670 40%, #18407a 75%, #0a173d 100%)',
+        },
+        'rain': {
+          emoji: '🌧️',
+          lottie: 'https://assets1.lottiefiles.com/packages/lf20_bzktpzts.json',
+          gradient: 'linear-gradient(160deg, #0d0a38 0%, #161e66 40%, #133c70 75%, #06113a 100%)',
+        },
+        'thunder': {
+          emoji: '⛈️',
+          lottie: 'https://assets3.lottiefiles.com/packages/lf20_jmBauI.json',
+          gradient: 'linear-gradient(160deg, #0a0425 0%, #1a0a55 40%, #2a1260 75%, #060418 100%)',
+        },
+        'snow': {
+          emoji: '🌨️',
+          lottie: 'https://assets5.lottiefiles.com/packages/lf20_MY9CAt.json',
+          gradient: 'linear-gradient(160deg, #1a1e4a 0%, #2a3578 40%, #3a5aa0 75%, #15214f 100%)',
+        },
+      };
+
+      // ----- Lottie player loader (lazy, one-shot) -----
+      let lottieReady = null;
+      function ensureLottie() {
+        if (lottieReady) return lottieReady;
+        lottieReady = new Promise((resolve) => {
+          if (customElements.get('lottie-player')) return resolve(true);
+          const s = document.createElement('script');
+          s.src = 'https://unpkg.com/@lottiefiles/lottie-player@2.0.8/dist/lottie-player.js';
+          s.async = true;
+          s.onload = () => resolve(true);
+          s.onerror = () => resolve(false);
+          document.head.appendChild(s);
+        });
+        return lottieReady;
+      }
+
+      // ----- Describe: what text goes under the temperature -----
+      window.__auroraDescribe = function (code, isDay) {
+        const entry = DESCRIPTIONS[code];
+        if (!entry) return '—';
+        return isDay ? entry.d : entry.n;
+      };
+
+      const bg      = document.querySelector('.bg');
+      const animEl  = document.getElementById('animation');
+      const emojiEl = document.getElementById('fallbackEmoji');
+
+      let currentCondition = null;
+      let currentPlayer = null;
+
+      function mountPlayer(url) {
+        const player = document.createElement('lottie-player');
+        player.setAttribute('src', url);
+        player.setAttribute('background', 'transparent');
+        player.setAttribute('speed', '1');
+        player.setAttribute('loop', '');
+        player.setAttribute('autoplay', '');
+        player.style.position = 'absolute';
+        player.style.inset = '0';
+        player.style.width = '100%';
+        player.style.height = '100%';
+        player.style.opacity = '0';
+        player.style.transition = 'opacity 0.35s ease';
+
+        const clearOthers = () => {
+          animEl.querySelectorAll('lottie-player').forEach((p) => {
+            if (p !== player) p.remove();
+          });
+        };
+
+        player.addEventListener('ready', () => {
+          player.style.opacity = '1';
+          emojiEl.style.opacity = '0';
+          clearOthers();
+          currentPlayer = player;
+        });
+        player.addEventListener('error', () => {
+          player.remove();
+          if (currentPlayer === player) currentPlayer = null;
+          emojiEl.style.opacity = '1';
+        });
+
+        animEl.appendChild(player);
+      }
+
+      function renderLottie(url) {
+        if (currentPlayer && currentPlayer.getAttribute('src') === url) return;
+        ensureLottie().then((ok) => {
+          if (!ok) {
+            emojiEl.style.opacity = '1';
+            return;
+          }
+          mountPlayer(url);
+        });
+      }
+
+      // ----- Visuals hook called from chunk 1 -----
+      window.__auroraVisuals = function (code, isDay) {
+        const key = codeToCondition(code, isDay);
+        const v = VISUALS[key];
+        if (!v) return;
+
+        // Always refresh emoji (even if same condition) so it matches.
+        emojiEl.textContent = v.emoji;
+
+        if (key === currentCondition) return;
+        currentCondition = key;
+
+        // Change the background-image only; preserve animated size/position.
+        if (bg) bg.style.backgroundImage = v.gradient;
+
+        // Reset emoji opacity until Lottie is ready.
+        emojiEl.style.opacity = '1';
+        renderLottie(v.lottie);
+      };
+
+      // ----- Service worker -----
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js').catch((err) => {
+            console.warn('SW registration failed:', err);
+          });
+        });
+      }
+
+      // Warm up Lottie so the first swap feels instant.
+      ensureLottie();
+
+      // Kick off the app now that visuals + describe are wired up.
+      if (window.__auroraBoot) window.__auroraBoot();
+    })();
+  </script>
+</body>
+</html>
