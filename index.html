@@ -824,5 +824,223 @@
       window.__auroraBoot = boot;
     })();
   </script>
+
+  <script>
+    // ===== Aurora Weather — chunk 2: visuals, Lottie, service worker =====
+    (() => {
+      'use strict';
+
+      // WMO weather code → condition key (day/night aware).
+      // https://open-meteo.com/en/docs
+      function codeToCondition(code, isDay) {
+        if (code === 0) return isDay ? 'clear-day' : 'clear-night';
+        if (code === 1 || code === 2) return isDay ? 'partly-day' : 'partly-night';
+        if (code === 3) return 'overcast';
+        if (code === 45 || code === 48) return 'fog';
+        if ([51, 53, 55, 56, 57].indexOf(code) >= 0) return 'drizzle';
+        if ([61, 63, 65, 66, 67, 80, 81, 82].indexOf(code) >= 0) return 'rain';
+        if ([71, 73, 75, 77, 85, 86].indexOf(code) >= 0) return 'snow';
+        if ([95, 96, 99].indexOf(code) >= 0) return 'thunder';
+        return isDay ? 'partly-day' : 'partly-night';
+      }
+
+      const DESCRIPTIONS = {
+        0:  { d: 'Clear sky',           n: 'Clear night' },
+        1:  { d: 'Mainly clear',        n: 'Mainly clear' },
+        2:  { d: 'Partly cloudy',       n: 'Partly cloudy' },
+        3:  { d: 'Overcast',            n: 'Overcast' },
+        45: { d: 'Fog',                 n: 'Fog' },
+        48: { d: 'Rime fog',            n: 'Rime fog' },
+        51: { d: 'Light drizzle',       n: 'Light drizzle' },
+        53: { d: 'Drizzle',             n: 'Drizzle' },
+        55: { d: 'Dense drizzle',       n: 'Dense drizzle' },
+        56: { d: 'Freezing drizzle',    n: 'Freezing drizzle' },
+        57: { d: 'Freezing drizzle',    n: 'Freezing drizzle' },
+        61: { d: 'Light rain',          n: 'Light rain' },
+        63: { d: 'Rain',                n: 'Rain' },
+        65: { d: 'Heavy rain',          n: 'Heavy rain' },
+        66: { d: 'Freezing rain',       n: 'Freezing rain' },
+        67: { d: 'Freezing rain',       n: 'Freezing rain' },
+        71: { d: 'Light snow',          n: 'Light snow' },
+        73: { d: 'Snow',                n: 'Snow' },
+        75: { d: 'Heavy snow',          n: 'Heavy snow' },
+        77: { d: 'Snow grains',         n: 'Snow grains' },
+        80: { d: 'Rain showers',        n: 'Rain showers' },
+        81: { d: 'Rain showers',        n: 'Rain showers' },
+        82: { d: 'Violent showers',     n: 'Violent showers' },
+        85: { d: 'Snow showers',        n: 'Snow showers' },
+        86: { d: 'Heavy snow showers',  n: 'Heavy snow showers' },
+        95: { d: 'Thunderstorm',        n: 'Thunderstorm' },
+        96: { d: 'Thunder with hail',   n: 'Thunder with hail' },
+        99: { d: 'Thunder with hail',   n: 'Thunder with hail' },
+      };
+
+      // Condition → visuals. Lottie URLs are LottieFiles public assets;
+      // if one fails to load the emoji fallback stays visible.
+      const VISUALS = {
+        'clear-day': {
+          emoji: '☀️',
+          lottie: 'https://assets9.lottiefiles.com/packages/lf20_xlky4kvh.json',
+          gradient: 'linear-gradient(160deg, #1f0e55 0%, #3a1c8a 35%, #1d4ea8 70%, #0c255b 100%)',
+        },
+        'clear-night': {
+          emoji: '🌙',
+          lottie: 'https://assets10.lottiefiles.com/packages/lf20_oygeclid.json',
+          gradient: 'linear-gradient(160deg, #0d0530 0%, #1a0a55 40%, #0f1a55 75%, #050820 100%)',
+        },
+        'partly-day': {
+          emoji: '⛅',
+          lottie: 'https://assets10.lottiefiles.com/packages/lf20_KUFdS6.json',
+          gradient: 'linear-gradient(160deg, #2a1160 0%, #2e2890 40%, #1b3b80 75%, #0e1f50 100%)',
+        },
+        'partly-night': {
+          emoji: '☁️',
+          lottie: 'https://assets10.lottiefiles.com/packages/lf20_jbvs2cc1.json',
+          gradient: 'linear-gradient(160deg, #13063a 0%, #1f1560 40%, #132a66 75%, #08143a 100%)',
+        },
+        'overcast': {
+          emoji: '☁️',
+          lottie: 'https://assets2.lottiefiles.com/packages/lf20_trr3kzok.json',
+          gradient: 'linear-gradient(160deg, #20204a 0%, #2c2a66 40%, #2b3b70 75%, #141a42 100%)',
+        },
+        'fog': {
+          emoji: '🌫️',
+          lottie: 'https://assets4.lottiefiles.com/packages/lf20_tutvdkg0.json',
+          gradient: 'linear-gradient(160deg, #1c1a3c 0%, #2e2d58 40%, #2b3360 75%, #141433 100%)',
+        },
+        'drizzle': {
+          emoji: '🌦️',
+          lottie: 'https://assets9.lottiefiles.com/packages/lf20_jzqoluvw.json',
+          gradient: 'linear-gradient(160deg, #151044 0%, #1f2670 40%, #18407a 75%, #0a173d 100%)',
+        },
+        'rain': {
+          emoji: '🌧️',
+          lottie: 'https://assets1.lottiefiles.com/packages/lf20_bzktpzts.json',
+          gradient: 'linear-gradient(160deg, #0d0a38 0%, #161e66 40%, #133c70 75%, #06113a 100%)',
+        },
+        'thunder': {
+          emoji: '⛈️',
+          lottie: 'https://assets3.lottiefiles.com/packages/lf20_jmBauI.json',
+          gradient: 'linear-gradient(160deg, #0a0425 0%, #1a0a55 40%, #2a1260 75%, #060418 100%)',
+        },
+        'snow': {
+          emoji: '🌨️',
+          lottie: 'https://assets5.lottiefiles.com/packages/lf20_MY9CAt.json',
+          gradient: 'linear-gradient(160deg, #1a1e4a 0%, #2a3578 40%, #3a5aa0 75%, #15214f 100%)',
+        },
+      };
+
+      // ----- Lottie player loader (lazy, one-shot) -----
+      let lottieReady = null;
+      function ensureLottie() {
+        if (lottieReady) return lottieReady;
+        lottieReady = new Promise((resolve) => {
+          if (customElements.get('lottie-player')) return resolve(true);
+          const s = document.createElement('script');
+          s.src = 'https://unpkg.com/@lottiefiles/lottie-player@2.0.8/dist/lottie-player.js';
+          s.async = true;
+          s.onload = () => resolve(true);
+          s.onerror = () => resolve(false);
+          document.head.appendChild(s);
+        });
+        return lottieReady;
+      }
+
+      // ----- Describe: what text goes under the temperature -----
+      window.__auroraDescribe = function (code, isDay) {
+        const entry = DESCRIPTIONS[code];
+        if (!entry) return '—';
+        return isDay ? entry.d : entry.n;
+      };
+
+      const bg      = document.querySelector('.bg');
+      const animEl  = document.getElementById('animation');
+      const emojiEl = document.getElementById('fallbackEmoji');
+
+      let currentCondition = null;
+      let currentPlayer = null;
+
+      function mountPlayer(url) {
+        const player = document.createElement('lottie-player');
+        player.setAttribute('src', url);
+        player.setAttribute('background', 'transparent');
+        player.setAttribute('speed', '1');
+        player.setAttribute('loop', '');
+        player.setAttribute('autoplay', '');
+        player.style.position = 'absolute';
+        player.style.inset = '0';
+        player.style.width = '100%';
+        player.style.height = '100%';
+        player.style.opacity = '0';
+        player.style.transition = 'opacity 0.35s ease';
+
+        const clearOthers = () => {
+          animEl.querySelectorAll('lottie-player').forEach((p) => {
+            if (p !== player) p.remove();
+          });
+        };
+
+        player.addEventListener('ready', () => {
+          player.style.opacity = '1';
+          emojiEl.style.opacity = '0';
+          clearOthers();
+          currentPlayer = player;
+        });
+        player.addEventListener('error', () => {
+          player.remove();
+          if (currentPlayer === player) currentPlayer = null;
+          emojiEl.style.opacity = '1';
+        });
+
+        animEl.appendChild(player);
+      }
+
+      function renderLottie(url) {
+        if (currentPlayer && currentPlayer.getAttribute('src') === url) return;
+        ensureLottie().then((ok) => {
+          if (!ok) {
+            emojiEl.style.opacity = '1';
+            return;
+          }
+          mountPlayer(url);
+        });
+      }
+
+      // ----- Visuals hook called from chunk 1 -----
+      window.__auroraVisuals = function (code, isDay) {
+        const key = codeToCondition(code, isDay);
+        const v = VISUALS[key];
+        if (!v) return;
+
+        // Always refresh emoji (even if same condition) so it matches.
+        emojiEl.textContent = v.emoji;
+
+        if (key === currentCondition) return;
+        currentCondition = key;
+
+        // Change the background-image only; preserve animated size/position.
+        if (bg) bg.style.backgroundImage = v.gradient;
+
+        // Reset emoji opacity until Lottie is ready.
+        emojiEl.style.opacity = '1';
+        renderLottie(v.lottie);
+      };
+
+      // ----- Service worker -----
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js').catch((err) => {
+            console.warn('SW registration failed:', err);
+          });
+        });
+      }
+
+      // Warm up Lottie so the first swap feels instant.
+      ensureLottie();
+
+      // Kick off the app now that visuals + describe are wired up.
+      if (window.__auroraBoot) window.__auroraBoot();
+    })();
+  </script>
 </body>
 </html>
