@@ -533,5 +533,296 @@
       · Animations by <a href="https://lottiefiles.com" target="_blank" rel="noopener noreferrer">LottieFiles</a>
     </footer>
   </main>
+
+  <script>
+    // ===== Aurora Weather — chunk 1: API + search =====
+    (() => {
+      'use strict';
+
+      const GEOCODE_URL = 'https://geocoding-api.open-meteo.com/v1/search';
+      const WEATHER_URL = 'https://api.open-meteo.com/v1/forecast';
+      const STORAGE_KEY = 'aurora.lastCity';
+      const BRISBANE = {
+        name: 'Brisbane',
+        admin1: 'Queensland',
+        country: 'Australia',
+        latitude: -27.4705,
+        longitude: 153.0260,
+      };
+
+      const $ = (id) => document.getElementById(id);
+      const el = {
+        search:        $('search'),
+        clear:         $('searchClear'),
+        suggestions:   $('suggestions'),
+        card:          $('card'),
+        city:          $('city'),
+        region:        $('region'),
+        temp:          $('temp'),
+        description:   $('description'),
+        feelsLike:     $('feelsLike'),
+        humidity:      $('humidity'),
+        uv:            $('uv'),
+        uvLevel:       $('uvLevel'),
+        wind:          $('wind'),
+        updated:       $('updated'),
+        status:        $('status'),
+      };
+
+      let searchAbort = null;
+      let weatherAbort = null;
+
+      function setStatus(msg, isError = false) {
+        el.status.textContent = msg || '';
+        el.status.classList.toggle('error', Boolean(isError));
+      }
+
+      function debounce(fn, ms) {
+        let t;
+        return (...args) => {
+          clearTimeout(t);
+          t = setTimeout(() => fn(...args), ms);
+        };
+      }
+
+      function escapeHtml(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[c]));
+      }
+
+      function formatLocation(place) {
+        const parts = [];
+        if (place.admin1 && place.admin1 !== place.name) parts.push(place.admin1);
+        if (place.country) parts.push(place.country);
+        return parts.join(', ');
+      }
+
+      function formatTime(iso) {
+        if (!iso) return '';
+        const d = new Date(iso);
+        return 'Updated ' + d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      }
+
+      function uvLevel(uv) {
+        if (uv == null) return '';
+        if (uv < 3) return 'Low';
+        if (uv < 6) return 'Moderate';
+        if (uv < 8) return 'High';
+        if (uv < 11) return 'Very high';
+        return 'Extreme';
+      }
+
+      // Deferred to chunk 2; safe stubs until then.
+      const describeCode = (code, isDay) =>
+        (window.__auroraDescribe || (() => '—'))(code, isDay);
+      const renderVisuals = (code, isDay) => {
+        if (window.__auroraVisuals) window.__auroraVisuals(code, isDay);
+      };
+
+      // ----- API -----
+      async function geocode(query, { count = 5, signal } = {}) {
+        const url = new URL(GEOCODE_URL);
+        url.searchParams.set('name', query);
+        url.searchParams.set('count', String(count));
+        url.searchParams.set('language', 'en');
+        url.searchParams.set('format', 'json');
+        const res = await fetch(url, { signal });
+        if (!res.ok) throw new Error('Geocoding failed');
+        const data = await res.json();
+        return data.results || [];
+      }
+
+      async function fetchWeather(lat, lon, { signal } = {}) {
+        const url = new URL(WEATHER_URL);
+        url.searchParams.set('latitude', lat);
+        url.searchParams.set('longitude', lon);
+        url.searchParams.set(
+          'current',
+          'temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,uv_index,is_day'
+        );
+        url.searchParams.set('timezone', 'auto');
+        url.searchParams.set('wind_speed_unit', 'kmh');
+        url.searchParams.set('temperature_unit', 'celsius');
+        const res = await fetch(url, { signal });
+        if (!res.ok) throw new Error('Weather failed');
+        return res.json();
+      }
+
+      // ----- Render -----
+      function swapCard(update) {
+        el.card.classList.add('swap');
+        setTimeout(() => {
+          update();
+          requestAnimationFrame(() => el.card.classList.remove('swap'));
+        }, 180);
+      }
+
+      async function loadCity(place) {
+        if (!place) return;
+        el.card.classList.add('loading');
+        setStatus('Loading weather…');
+        if (weatherAbort) weatherAbort.abort();
+        weatherAbort = new AbortController();
+
+        try {
+          const data = await fetchWeather(place.latitude, place.longitude, {
+            signal: weatherAbort.signal,
+          });
+          const c = data.current || {};
+          const isDay = c.is_day !== 0;
+
+          swapCard(() => {
+            el.city.textContent = place.name;
+            el.region.textContent = formatLocation(place);
+            el.temp.textContent = Math.round(c.temperature_2m);
+            el.description.textContent = describeCode(c.weather_code, isDay);
+            el.feelsLike.textContent =
+              'Feels like ' + Math.round(c.apparent_temperature) + '°';
+            el.humidity.textContent = Math.round(c.relative_humidity_2m) + '%';
+            const uv = c.uv_index;
+            el.uv.textContent = uv != null ? Number(uv).toFixed(1) : '--';
+            el.uvLevel.textContent = uvLevel(uv) || ' ';
+            el.wind.textContent = Math.round(c.wind_speed_10m) + ' km/h';
+            el.updated.textContent = formatTime(c.time);
+            renderVisuals(c.weather_code, isDay);
+          });
+
+          setStatus('');
+          persistCity(place);
+        } catch (err) {
+          if (err.name === 'AbortError') return;
+          console.error(err);
+          setStatus('Could not load weather. Check your connection.', true);
+        } finally {
+          el.card.classList.remove('loading');
+        }
+      }
+
+      function persistCity(place) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            name: place.name,
+            admin1: place.admin1,
+            country: place.country,
+            latitude: place.latitude,
+            longitude: place.longitude,
+          }));
+        } catch (_) { /* ignore */ }
+      }
+
+      function restoreCity() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return null;
+          const p = JSON.parse(raw);
+          if (p && p.latitude != null && p.longitude != null) return p;
+          return null;
+        } catch (_) { return null; }
+      }
+
+      // ----- Suggestions -----
+      function openSuggestions()  { el.suggestions.classList.add('open'); }
+      function closeSuggestions() { el.suggestions.classList.remove('open'); }
+
+      function renderSuggestions(results, query) {
+        if (!results || !results.length) {
+          el.suggestions.innerHTML =
+            '<div class="suggestions-empty">No cities found for "' +
+            escapeHtml(query) + '"</div>';
+          openSuggestions();
+          return;
+        }
+        el.suggestions.innerHTML = results.slice(0, 6).map((r, i) =>
+          '<button class="suggestion" type="button" data-index="' + i +
+          '" role="option">' +
+            '<span>' + escapeHtml(r.name) + '</span>' +
+            '<span class="s-sub">' + escapeHtml(formatLocation(r)) + '</span>' +
+          '</button>'
+        ).join('');
+        openSuggestions();
+        el.suggestions.querySelectorAll('.suggestion').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const idx = Number(btn.dataset.index);
+            const place = results[idx];
+            closeSuggestions();
+            el.search.value = '';
+            el.clear.classList.remove('visible');
+            el.search.blur();
+            loadCity(place);
+          });
+        });
+      }
+
+      const onSearchInput = debounce(async () => {
+        const q = el.search.value.trim();
+        el.clear.classList.toggle('visible', q.length > 0);
+        if (q.length < 2) { closeSuggestions(); return; }
+        if (searchAbort) searchAbort.abort();
+        searchAbort = new AbortController();
+        try {
+          const results = await geocode(q, { count: 6, signal: searchAbort.signal });
+          renderSuggestions(results, q);
+        } catch (err) {
+          if (err.name !== 'AbortError') console.error(err);
+        }
+      }, 250);
+
+      el.search.addEventListener('input', onSearchInput);
+      el.search.addEventListener('focus', () => {
+        if (el.suggestions.innerHTML) openSuggestions();
+      });
+      el.search.addEventListener('keydown', async (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const q = el.search.value.trim();
+          if (q.length < 2) return;
+          try {
+            const results = await geocode(q, { count: 1 });
+            if (results && results[0]) {
+              closeSuggestions();
+              el.search.value = '';
+              el.clear.classList.remove('visible');
+              el.search.blur();
+              loadCity(results[0]);
+            } else {
+              setStatus('No city found for "' + q + '".', true);
+            }
+          } catch (_) {
+            setStatus('Search failed. Check your connection.', true);
+          }
+        } else if (e.key === 'Escape') {
+          closeSuggestions();
+          el.search.blur();
+        }
+      });
+
+      el.clear.addEventListener('click', () => {
+        el.search.value = '';
+        el.clear.classList.remove('visible');
+        closeSuggestions();
+        el.search.focus();
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.search')) closeSuggestions();
+      });
+
+      // ----- Boot -----
+      async function boot() {
+        const saved = restoreCity();
+        if (saved) { loadCity(saved); return; }
+        try {
+          const results = await geocode('Brisbane', { count: 1 });
+          loadCity((results && results[0]) || BRISBANE);
+        } catch (_) {
+          loadCity(BRISBANE);
+        }
+      }
+
+      // Expose boot for chunk 2 to call after visuals are wired up.
+      window.__auroraBoot = boot;
+    })();
+  </script>
 </body>
 </html>
