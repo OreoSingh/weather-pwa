@@ -442,6 +442,160 @@
       .bg, .bg::before, .bg::after { animation: none !important; }
       .card { transition: none; }
     }
+
+    /* ----- Unit toggle ----- */
+    .unit-toggle {
+      display: flex;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .unit-btn {
+      padding: 5px 11px;
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.55);
+      border-radius: 18px;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .unit-btn.active {
+      background: rgba(179,136,255,0.3);
+      color: #fff;
+    }
+
+    /* ----- Forecast sections ----- */
+    .forecast-section {
+      width: 100%;
+      max-width: 480px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.14);
+      backdrop-filter: blur(24px) saturate(170%);
+      -webkit-backdrop-filter: blur(24px) saturate(170%);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.1);
+      overflow: hidden;
+    }
+    .forecast-title {
+      padding: 13px 18px 9px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    /* ----- Hourly strip ----- */
+    .hourly-list {
+      display: flex;
+      overflow-x: auto;
+      padding: 12px 10px;
+      gap: 6px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .hourly-list::-webkit-scrollbar { display: none; }
+    .hourly-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      padding: 10px 8px;
+      border-radius: 14px;
+      min-width: 58px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: background 0.2s ease;
+      flex-shrink: 0;
+    }
+    .hourly-cell.now {
+      background: rgba(179,136,255,0.18);
+      border-color: rgba(179,136,255,0.35);
+    }
+    .hourly-cell:hover { background: rgba(255,255,255,0.09); }
+    .hourly-time {
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.6);
+      letter-spacing: 0.02em;
+    }
+    .hourly-cell.now .hourly-time { color: #c9a9ff; }
+    .hourly-emoji { font-size: 22px; line-height: 1; }
+    .hourly-temp {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .hourly-precip {
+      font-size: 10px;
+      color: rgba(130,180,255,0.85);
+      min-height: 13px;
+    }
+
+    /* ----- Daily list ----- */
+    .daily-list { padding: 4px 0; }
+    .daily-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: background 0.15s ease;
+    }
+    .daily-row:last-child { border-bottom: 0; }
+    .daily-row:hover { background: rgba(255,255,255,0.04); }
+    .daily-day {
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.9);
+      min-width: 72px;
+    }
+    .daily-emoji { font-size: 22px; flex-shrink: 0; }
+    .daily-precip {
+      font-size: 12px;
+      color: rgba(130,180,255,0.85);
+      min-width: 36px;
+      text-align: center;
+    }
+    .daily-temps {
+      margin-left: auto;
+      display: flex;
+      gap: 8px;
+      align-items: baseline;
+    }
+    .daily-hi { font-size: 15px; font-weight: 600; color: #fff; }
+    .daily-lo { font-size: 14px; color: rgba(255,255,255,0.45); }
+
+    /* ----- Sun row ----- */
+    .sun-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 36px;
+      padding: 12px 18px 14px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .sun-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .sun-icon { font-size: 20px; line-height: 1; margin-bottom: 1px; }
+    .sun-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+    }
+    .sun-time {
+      font-size: 15px;
+      font-weight: 600;
+      color: #ffd580;
+    }
   </style>
 </head>
 <body>
@@ -485,6 +639,10 @@
           <div class="city" id="city">Brisbane</div>
           <div class="region" id="region">Queensland, Australia</div>
         </div>
+        <div class="unit-toggle" role="group" aria-label="Temperature unit">
+          <button class="unit-btn active" id="unitC" aria-pressed="true">°C</button>
+          <button class="unit-btn" id="unitF" aria-pressed="false">°F</button>
+        </div>
       </div>
 
       <div class="animation" id="animation" aria-hidden="true">
@@ -493,7 +651,7 @@
 
       <div class="temp">
         <span class="temp-value" id="temp">--</span>
-        <span class="temp-unit">°C</span>
+        <span class="temp-unit" id="tempUnit">°C</span>
       </div>
       <div class="description" id="description">Loading…</div>
       <div class="feels-like" id="feelsLike">Feels like --°</div>
@@ -524,7 +682,57 @@
           <span class="stat-value" id="wind">-- km/h</span>
         </div>
       </div>
+
+      <div class="stats" style="margin-top:10px">
+        <div class="stat">
+          <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 2v4M12 18v4M8 12H4M20 12h-4M6.34 6.34 4.22 4.22M19.78 19.78l-2.12-2.12M17.66 6.34l2.12-2.12M4.22 19.78l2.12-2.12"></path>
+            <circle cx="12" cy="12" r="4"></circle>
+          </svg>
+          <span class="stat-label">Precip</span>
+          <span class="stat-value" id="precip">-- mm</span>
+        </div>
+        <div class="stat">
+          <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M12 7v5l3 3"></path>
+            <path d="M12 3v1M12 20v1M3 12h1M20 12h1"></path>
+          </svg>
+          <span class="stat-label">Wind Dir</span>
+          <span class="stat-value" id="windDir">--</span>
+        </div>
+        <div class="stat">
+          <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"></path>
+            <circle cx="12" cy="9" r="2.5"></circle>
+          </svg>
+          <span class="stat-label">Pressure</span>
+          <span class="stat-value" id="pressure">-- hPa</span>
+        </div>
+      </div>
     </article>
+
+    <section class="forecast-section" id="hourlySection" style="display:none" aria-label="Hourly forecast">
+      <div class="forecast-title">24-Hour Forecast</div>
+      <div class="hourly-list" id="hourlyList"></div>
+    </section>
+
+    <section class="forecast-section" id="dailySection" style="display:none" aria-label="7-day forecast">
+      <div class="forecast-title">7-Day Forecast</div>
+      <div class="daily-list" id="dailyList"></div>
+      <div class="sun-row" id="sunRow" style="display:none">
+        <div class="sun-item">
+          <span class="sun-icon">🌅</span>
+          <span class="sun-label">Sunrise</span>
+          <span class="sun-time" id="sunriseVal">--:--</span>
+        </div>
+        <div class="sun-item">
+          <span class="sun-icon">🌇</span>
+          <span class="sun-label">Sunset</span>
+          <span class="sun-time" id="sunsetVal">--:--</span>
+        </div>
+      </div>
+    </section>
 
     <div class="status" id="status"></div>
 
@@ -542,6 +750,7 @@
       const GEOCODE_URL = 'https://geocoding-api.open-meteo.com/v1/search';
       const WEATHER_URL = 'https://api.open-meteo.com/v1/forecast';
       const STORAGE_KEY = 'aurora.lastCity';
+      const UNIT_KEY    = 'aurora.unit';
       const BRISBANE = {
         name: 'Brisbane',
         admin1: 'Queensland',
@@ -559,18 +768,69 @@
         city:          $('city'),
         region:        $('region'),
         temp:          $('temp'),
+        tempUnit:      $('tempUnit'),
         description:   $('description'),
         feelsLike:     $('feelsLike'),
         humidity:      $('humidity'),
         uv:            $('uv'),
         uvLevel:       $('uvLevel'),
         wind:          $('wind'),
+        precip:        $('precip'),
+        windDir:       $('windDir'),
+        pressure:      $('pressure'),
         updated:       $('updated'),
         status:        $('status'),
+        unitC:         $('unitC'),
+        unitF:         $('unitF'),
+        hourlySection: $('hourlySection'),
+        hourlyList:    $('hourlyList'),
+        dailySection:  $('dailySection'),
+        dailyList:     $('dailyList'),
+        sunRow:        $('sunRow'),
+        sunriseVal:    $('sunriseVal'),
+        sunsetVal:     $('sunsetVal'),
       };
 
       let searchAbort = null;
       let weatherAbort = null;
+      let lastData     = null;
+      let lastPlace    = null;
+
+      // ----- Unit helpers -----
+      function getUnit() {
+        try { return localStorage.getItem(UNIT_KEY) === 'F' ? 'F' : 'C'; }
+        catch (_) { return 'C'; }
+      }
+      function saveUnit(u) {
+        try { localStorage.setItem(UNIT_KEY, u); } catch (_) {}
+      }
+      function toDisplay(c) {
+        return getUnit() === 'F' ? Math.round(c * 9 / 5 + 32) : Math.round(c);
+      }
+
+      function windDirLabel(deg) {
+        if (deg == null) return '--';
+        const dirs = ['N','NE','E','SE','S','SW','W','NW'];
+        return dirs[Math.round(deg / 45) % 8];
+      }
+
+      function fmtHour(isoStr) {
+        const d = new Date(isoStr);
+        return d.toLocaleTimeString([], { hour: 'numeric', hour12: true })
+          .replace(':00', '').replace(' ', '').toLowerCase();
+      }
+
+      function fmtDay(isoStr, idx) {
+        if (idx === 0) return 'Today';
+        const d = new Date(isoStr + 'T12:00:00');
+        return d.toLocaleDateString([], { weekday: 'short' });
+      }
+
+      function fmtSunTime(isoStr) {
+        if (!isoStr) return '--:--';
+        const d = new Date(isoStr);
+        return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+      }
 
       function setStatus(msg, isError = false) {
         el.status.textContent = msg || '';
@@ -639,8 +899,17 @@
         url.searchParams.set('longitude', lon);
         url.searchParams.set(
           'current',
-          'temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,uv_index,is_day'
+          'temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,uv_index,is_day,precipitation,wind_direction_10m,surface_pressure'
         );
+        url.searchParams.set(
+          'hourly',
+          'temperature_2m,weather_code,precipitation_probability,is_day'
+        );
+        url.searchParams.set(
+          'daily',
+          'temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max,sunrise,sunset'
+        );
+        url.searchParams.set('forecast_days', '7');
         url.searchParams.set('timezone', 'auto');
         url.searchParams.set('wind_speed_unit', 'kmh');
         url.searchParams.set('temperature_unit', 'celsius');
@@ -648,6 +917,97 @@
         if (!res.ok) throw new Error('Weather failed');
         return res.json();
       }
+
+      // ----- Forecast render -----
+      function emojiForCode(code, isDayBool) {
+        return (window.__auroraEmoji || (() => '🌤️'))(code, isDayBool);
+      }
+
+      function renderHourly(hourly, currentIso) {
+        if (!hourly || !hourly.time || !hourly.time.length) {
+          el.hourlySection.style.display = 'none';
+          return;
+        }
+        const now = new Date(currentIso);
+        const times = hourly.time;
+        let startIdx = 0;
+        for (let i = 0; i < times.length; i++) {
+          if (new Date(times[i]) >= now) { startIdx = i; break; }
+        }
+        const end = Math.min(startIdx + 24, times.length);
+        let html = '';
+        for (let i = startIdx; i < end; i++) {
+          const isNow = i === startIdx;
+          const temp = toDisplay(hourly.temperature_2m[i]);
+          const precip = hourly.precipitation_probability[i];
+          const code = hourly.weather_code[i];
+          const isDayHour = hourly.is_day[i] !== 0;
+          const timeLabel = isNow ? 'Now' : fmtHour(times[i]);
+          const emoji = emojiForCode(code, isDayHour);
+          html += '<div class="hourly-cell' + (isNow ? ' now' : '') + '">' +
+            '<span class="hourly-time">' + timeLabel + '</span>' +
+            '<span class="hourly-emoji">' + emoji + '</span>' +
+            '<span class="hourly-temp">' + temp + '°</span>' +
+            '<span class="hourly-precip">' + (precip > 0 ? precip + '%' : '') + '</span>' +
+            '</div>';
+        }
+        el.hourlyList.innerHTML = html;
+        el.hourlySection.style.display = '';
+      }
+
+      function renderDaily(daily) {
+        if (!daily || !daily.time || !daily.time.length) {
+          el.dailySection.style.display = 'none';
+          return;
+        }
+        let html = '';
+        for (let i = 0; i < daily.time.length; i++) {
+          const hi = toDisplay(daily.temperature_2m_max[i]);
+          const lo = toDisplay(daily.temperature_2m_min[i]);
+          const code = daily.weather_code[i];
+          const precip = daily.precipitation_probability_max[i];
+          const emoji = emojiForCode(code, true);
+          const day = fmtDay(daily.time[i], i);
+          html += '<div class="daily-row">' +
+            '<span class="daily-day">' + day + '</span>' +
+            '<span class="daily-emoji">' + emoji + '</span>' +
+            '<span class="daily-precip">' + (precip > 0 ? precip + '%' : '') + '</span>' +
+            '<div class="daily-temps">' +
+              '<span class="daily-hi">' + hi + '°</span>' +
+              '<span class="daily-lo">' + lo + '°</span>' +
+            '</div>' +
+            '</div>';
+        }
+        el.dailyList.innerHTML = html;
+
+        if (daily.sunrise && daily.sunrise[0]) {
+          el.sunriseVal.textContent = fmtSunTime(daily.sunrise[0]);
+          el.sunsetVal.textContent  = fmtSunTime(daily.sunset && daily.sunset[0]);
+          el.sunRow.style.display = '';
+        } else {
+          el.sunRow.style.display = 'none';
+        }
+        el.dailySection.style.display = '';
+      }
+
+      function applyUnit() {
+        const u = getUnit();
+        el.tempUnit.textContent = u === 'F' ? '°F' : '°C';
+        el.unitC.classList.toggle('active', u === 'C');
+        el.unitF.classList.toggle('active', u === 'F');
+        el.unitC.setAttribute('aria-pressed', String(u === 'C'));
+        el.unitF.setAttribute('aria-pressed', String(u === 'F'));
+        if (lastData) {
+          const c = lastData.current || {};
+          el.temp.textContent     = toDisplay(c.temperature_2m);
+          el.feelsLike.textContent = 'Feels like ' + toDisplay(c.apparent_temperature) + '°';
+          if (lastData.hourly) renderHourly(lastData.hourly, c.time);
+          if (lastData.daily)  renderDaily(lastData.daily);
+        }
+      }
+
+      el.unitC.addEventListener('click', () => { saveUnit('C'); applyUnit(); });
+      el.unitF.addEventListener('click', () => { saveUnit('F'); applyUnit(); });
 
       // ----- Render -----
       function swapCard(update) {
@@ -669,24 +1029,35 @@
           const data = await fetchWeather(place.latitude, place.longitude, {
             signal: weatherAbort.signal,
           });
+          lastData  = data;
+          lastPlace = place;
           const c = data.current || {};
           const isDay = c.is_day !== 0;
 
           swapCard(() => {
-            el.city.textContent = place.name;
-            el.region.textContent = formatLocation(place);
-            el.temp.textContent = Math.round(c.temperature_2m);
+            el.city.textContent    = place.name;
+            el.region.textContent  = formatLocation(place);
+            el.temp.textContent    = toDisplay(c.temperature_2m);
+            el.tempUnit.textContent = getUnit() === 'F' ? '°F' : '°C';
             el.description.textContent = describeCode(c.weather_code, isDay);
             el.feelsLike.textContent =
-              'Feels like ' + Math.round(c.apparent_temperature) + '°';
+              'Feels like ' + toDisplay(c.apparent_temperature) + '°';
             el.humidity.textContent = Math.round(c.relative_humidity_2m) + '%';
             const uv = c.uv_index;
-            el.uv.textContent = uv != null ? Number(uv).toFixed(1) : '--';
+            el.uv.textContent      = uv != null ? Number(uv).toFixed(1) : '--';
             el.uvLevel.textContent = uvLevel(uv) || ' ';
-            el.wind.textContent = Math.round(c.wind_speed_10m) + ' km/h';
+            el.wind.textContent    = Math.round(c.wind_speed_10m) + ' km/h';
+            el.precip.textContent  =
+              c.precipitation != null ? c.precipitation.toFixed(1) + ' mm' : '-- mm';
+            el.windDir.textContent = windDirLabel(c.wind_direction_10m);
+            el.pressure.textContent =
+              c.surface_pressure != null ? Math.round(c.surface_pressure) + ' hPa' : '-- hPa';
             el.updated.textContent = formatTime(c.time);
             renderVisuals(c.weather_code, isDay);
           });
+
+          if (data.hourly) renderHourly(data.hourly, c.time);
+          if (data.daily)  renderDaily(data.daily);
 
           setStatus('');
           persistCity(place);
@@ -819,6 +1190,16 @@
           loadCity(BRISBANE);
         }
       }
+
+      // Set initial unit toggle state from saved preference.
+      (function initUnit() {
+        const u = getUnit();
+        el.unitC.classList.toggle('active', u === 'C');
+        el.unitF.classList.toggle('active', u === 'F');
+        el.unitC.setAttribute('aria-pressed', String(u === 'C'));
+        el.unitF.setAttribute('aria-pressed', String(u === 'F'));
+        el.tempUnit.textContent = u === 'F' ? '°F' : '°C';
+      })();
 
       // Expose boot for chunk 2 to call after visuals are wired up.
       window.__auroraBoot = boot;
@@ -1024,6 +1405,12 @@
         // Reset emoji opacity until Lottie is ready.
         emojiEl.style.opacity = '1';
         renderLottie(v.lottie);
+      };
+
+      // ----- Emoji lookup for forecast cells -----
+      window.__auroraEmoji = function (code, isDay) {
+        const key = codeToCondition(code, isDay);
+        return (VISUALS[key] || VISUALS['partly-day']).emoji;
       };
 
       // ----- Service worker -----
