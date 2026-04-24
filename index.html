@@ -2643,6 +2643,23 @@
       }
 
       function applyTheme(theme) {
+        // Tear down elements that belong to whichever theme we're leaving
+        if (theme !== 'ghibli') {
+          ['sootContainer', 'ghibliTotoro'].forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+          });
+          document.documentElement.removeAttribute('data-ghibli-condition');
+        }
+        if (theme !== 'savanna') {
+          ['savannaHorizon', 'savannaSun'].forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+          });
+          document.documentElement.removeAttribute('data-savanna-condition');
+          document.documentElement.removeAttribute('data-savanna-time');
+        }
+
         if (theme === 'default') {
           document.documentElement.removeAttribute('data-theme');
           // Restore the last Aurora gradient so default background looks correct immediately
@@ -2680,8 +2697,8 @@
             else if (_origDescribe) descEl.textContent = _origDescribe(lastCode, lastIsDay);
           }
           const condKey = codeToCondition(lastCode, lastIsDay);
-          updateGhibliVisuals(condKey);
-          updateSavannaVisuals(condKey);
+          if (theme === 'ghibli')  updateGhibliVisuals(condKey);
+          if (theme === 'savanna') updateSavannaVisuals(condKey);
         }
 
         updateSigil();
@@ -2737,8 +2754,8 @@
         }
         const condKey = codeToCondition(code, isDay);
         updateSigil();
-        updateGhibliVisuals(condKey);
-        updateSavannaVisuals(condKey);
+        if (theme === 'ghibli')  updateGhibliVisuals(condKey);
+        if (theme === 'savanna') updateSavannaVisuals(condKey);
       };
 
       // ----- Theme picker UI -----
