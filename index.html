@@ -1364,6 +1364,194 @@
       color: #ffe8b0;
     }
 
+    /* ===================== GoT: SNOW PARTICLES ===================== */
+    .got-snow {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 3; overflow: hidden;
+    }
+    .got-flake {
+      position: absolute; top: -12px;
+      border-radius: 50%;
+      background: rgba(215,225,242,0.90);
+      opacity: 0;
+      animation: got-snow var(--fd,9s) var(--fd2,0s) linear infinite;
+    }
+    [data-theme="got"][data-got-cond="cold"] .got-flake { opacity: 1; }
+    @keyframes got-snow {
+      0%   { transform: translate(0,0) rotate(0deg); opacity: 0; }
+      6%   { opacity: 0.84; }
+      94%  { opacity: 0.52; }
+      100% { transform: translate(var(--dx,20px),110vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ===================== GoT: TORCH FLICKER ===================== */
+    .got-torches {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 2;
+      opacity: 0; transition: opacity 0.8s ease;
+    }
+    [data-theme="got"] .got-torches { opacity: 1; }
+    .got-torch-glow {
+      position: absolute; bottom: 0;
+      width: 70px; height: 60vh;
+      transform-origin: 50% 100%;
+      animation: torch-flicker 2.15s ease-in-out infinite;
+    }
+    .got-torch-glow.left {
+      left: 0;
+      background: linear-gradient(to right, rgba(255,110,16,0.30) 0%, rgba(200,70,8,0.12) 55%, transparent 100%);
+    }
+    .got-torch-glow.right {
+      right: 0;
+      background: linear-gradient(to left, rgba(255,110,16,0.30) 0%, rgba(200,70,8,0.12) 55%, transparent 100%);
+    }
+    .got-torch-glow::after {
+      content: '';
+      position: absolute; inset: 0;
+      animation: torch-flicker 1.6s ease-in-out infinite reverse;
+      opacity: 0.5;
+    }
+    .got-torch-glow.left::after  { background: linear-gradient(to right, rgba(255,195,55,0.40) 0%, rgba(255,130,25,0.14) 45%, transparent 80%); }
+    .got-torch-glow.right::after { background: linear-gradient(to left,  rgba(255,195,55,0.40) 0%, rgba(255,130,25,0.14) 45%, transparent 80%); }
+    @keyframes torch-flicker {
+      0%   { opacity: 0.78; transform: scaleY(1.00); }
+      22%  { opacity: 1.00; transform: scaleY(1.09); }
+      38%  { opacity: 0.62; transform: scaleY(0.92); }
+      55%  { opacity: 0.90; transform: scaleY(1.06); }
+      73%  { opacity: 0.71; transform: scaleY(0.95); }
+      88%  { opacity: 0.93; transform: scaleY(1.07); }
+      100% { opacity: 0.78; transform: scaleY(1.00); }
+    }
+
+    /* ===================== GoT: STONE / IRON CARDS ===================== */
+    [data-theme="got"] .card::before {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: inherit;
+      background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(0,0,0,0.032) 20px, rgba(0,0,0,0.032) 21px),
+        repeating-linear-gradient(90deg, transparent, transparent 28px, rgba(0,0,0,0.022) 28px, rgba(0,0,0,0.022) 29px);
+      pointer-events: none; z-index: 0;
+    }
+    [data-theme="got"] .card {
+      border-color: rgba(155,125,53,0.38);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.72),
+                  inset 0 1px 0 rgba(155,125,53,0.22),
+                  inset 0 -1px 0 rgba(0,0,0,0.55),
+                  inset 4px 0 10px rgba(0,0,0,0.30),
+                  inset -4px 0 10px rgba(0,0,0,0.30);
+    }
+    [data-theme="got"] .forecast-section {
+      box-shadow: 0 12px 32px rgba(0,0,0,0.52),
+                  inset 0 1px 0 rgba(155,125,53,0.14),
+                  inset 4px 0 8px rgba(0,0,0,0.24),
+                  inset -4px 0 8px rgba(0,0,0,0.24);
+    }
+    /* Sigil larger behind temperature */
+    [data-theme="got"] .got-sigil svg { width: 76%; max-width: 230px; opacity: 0.095; }
+
+    /* ===================== Ghibli: TOTORO BOB ===================== */
+    [data-theme="ghibli"] .ghibli-totoro {
+      opacity: 0.28;
+      transform: translateY(0);
+      animation: totoro-bob 3.8s ease-in-out infinite;
+    }
+    [data-theme="ghibli"][data-ghibli-condition="rain"] .ghibli-totoro,
+    [data-theme="ghibli"][data-ghibli-condition="storm"] .ghibli-totoro { opacity: 0.42; }
+    @keyframes totoro-bob {
+      0%,100% { transform: translateY(0px); }
+      50%     { transform: translateY(-9px); }
+    }
+
+    /* ===================== Ghibli: CATBUS ===================== */
+    .ghibli-catbus {
+      position: fixed;
+      top: 22%;
+      left: -250px;
+      width: 230px;
+      pointer-events: none; z-index: 5;
+      opacity: 0;
+    }
+    .ghibli-catbus.go {
+      animation: catbus-dash 7.5s cubic-bezier(0.35,0,0.65,1) forwards;
+    }
+    @keyframes catbus-dash {
+      0%   { left: -250px; opacity: 0; }
+      6%   { opacity: 0.90; }
+      92%  { opacity: 0.90; }
+      100% { left: calc(100vw + 250px); opacity: 0; }
+    }
+
+    /* ===================== Ghibli: COLOUR-DRIFTING BLOBS ===================== */
+    @keyframes ghibli-blob-a {
+      0%,100% { transform: translate(0,0) scale(1);          filter: hue-rotate(0deg); }
+      25%     { transform: translate(6vmax,4vmax) scale(1.12); filter: hue-rotate(28deg); }
+      50%     { transform: translate(9vmax,7vmax) scale(1.20); filter: hue-rotate(-18deg); }
+      75%     { transform: translate(3vmax,2vmax) scale(1.07); filter: hue-rotate(14deg); }
+    }
+    @keyframes ghibli-blob-b {
+      0%,100% { transform: translate(0,0) scale(1);           filter: hue-rotate(0deg); }
+      33%     { transform: translate(-7vmax,-3vmax) scale(1.14); filter: hue-rotate(-24deg); }
+      66%     { transform: translate(-5vmax,-6vmax) scale(0.93); filter: hue-rotate(20deg); }
+    }
+    [data-theme="ghibli"] .bg::before { animation: ghibli-blob-a 34s ease-in-out infinite; }
+    [data-theme="ghibli"] .bg::after  { animation: ghibli-blob-b 42s ease-in-out infinite; }
+
+    /* ===================== Savanna: SCROLL NATURALLY ===================== */
+    /* Override position:fixed so horizon and sun scroll with the page */
+    .savanna-horizon { position: absolute; }
+    .savanna-sun     { position: absolute; }
+
+    /* ===================== Savanna: BIRDS ===================== */
+    .savanna-birds {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 3;
+      overflow: hidden;
+    }
+    .savanna-bird {
+      position: absolute;
+      animation: bird-fly var(--bd,20s) var(--bd2,0s) linear infinite;
+    }
+    @keyframes bird-fly {
+      0%   { transform: translateX(-80px); opacity: 0; }
+      5%   { opacity: 0.68; }
+      92%  { opacity: 0.68; }
+      100% { transform: translateX(calc(100vw + 80px)); opacity: 0; }
+    }
+
+    /* ===================== Savanna: HEAT SHIMMER ===================== */
+    .savanna-shimmer {
+      position: absolute; bottom: 190px;
+      left: 0; right: 0; height: 52px;
+      pointer-events: none; z-index: 2;
+      opacity: 0; transition: opacity 1s ease;
+    }
+    [data-theme="savanna"][data-savanna-condition="clear"] .savanna-shimmer { opacity: 1; }
+    .savanna-shimmer::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(transparent 0%, rgba(255,172,48,0.13) 50%, transparent 100%);
+      animation: heat-shimmer 2.9s ease-in-out infinite;
+    }
+    @keyframes heat-shimmer {
+      0%,100% { transform: scaleY(1.00) translateY(0px);  opacity: 0.50; }
+      50%     { transform: scaleY(1.45) translateY(-5px); opacity: 1.00; }
+    }
+
+    /* ===================== Savanna: TREE SWAY ===================== */
+    @keyframes acacia-sway {
+      0%,100% { transform: rotate(-1.2deg); }
+      50%     { transform: rotate( 1.2deg); }
+    }
+    [data-theme="savanna"] .acacia-left {
+      animation: acacia-sway 5.5s ease-in-out infinite;
+      transform-box: fill-box; transform-origin: center bottom;
+    }
+    [data-theme="savanna"] .acacia-right {
+      animation: acacia-sway 6.8s ease-in-out infinite reverse;
+      transform-box: fill-box; transform-origin: center bottom;
+    }
+
     /* =================== THEME CROSSFADE OVERLAY =================== */
     #themeFade {
       position: fixed;
@@ -2392,11 +2580,10 @@
       }
 
       function houseForCondition(condKey) {
-        if (condKey === 'clear-day' || condKey === 'clear-night') return 'targaryen';
-        if (condKey === 'snow')                                    return 'stark';
-        if (condKey === 'rain' || condKey === 'drizzle')          return 'tully';
-        if (condKey === 'thunder')                                 return 'baratheon';
-        return 'targaryen';
+        if (condKey === 'clear-day')                     return 'targaryen'; // dragon — hot/sunny
+        if (condKey === 'thunder')                       return 'baratheon'; // stag   — storms
+        if (condKey === 'rain' || condKey === 'drizzle') return 'tully';     // trout  — rain
+        return 'stark';                                                       // direwolf — cold/cloudy/night
       }
 
       // ── Ghibli descriptions ───────────────────────────────────
@@ -2503,20 +2690,26 @@
                  C560 108,640 94,720 100 C800 106,880 118,960 113
                  C1040 108,1120 96,1200 103 C1280 110,1360 118,1440 112 L1440 200 Z"
               fill="url(#sg)"/>
-        <!-- Left acacia tree -->
+        <!-- Left acacia trunk + branches -->
         <rect x="196" y="68" width="8" height="58" rx="3" fill="#0c0604"/>
         <line x1="200" y1="88" x2="172" y2="76" stroke="#0c0604" stroke-width="5" stroke-linecap="round"/>
         <line x1="200" y1="84" x2="228" y2="74" stroke="#0c0604" stroke-width="5" stroke-linecap="round"/>
-        <ellipse cx="185" cy="66" rx="36" ry="10" fill="#0c0604"/>
-        <ellipse cx="214" cy="70" rx="26" ry="9"  fill="#0c0604"/>
-        <ellipse cx="200" cy="60" rx="20" ry="9"  fill="#0c0604"/>
-        <!-- Right acacia tree -->
+        <!-- Left acacia canopy (CSS sway target) -->
+        <g class="acacia-left">
+          <ellipse cx="185" cy="66" rx="36" ry="10" fill="#0c0604"/>
+          <ellipse cx="214" cy="70" rx="26" ry="9"  fill="#0c0604"/>
+          <ellipse cx="200" cy="60" rx="20" ry="9"  fill="#0c0604"/>
+        </g>
+        <!-- Right acacia trunk + branches -->
         <rect x="1236" y="60" width="10" height="65" rx="3" fill="#0c0604"/>
         <line x1="1241" y1="82" x2="1210" y2="70" stroke="#0c0604" stroke-width="6" stroke-linecap="round"/>
         <line x1="1241" y1="78" x2="1272" y2="68" stroke="#0c0604" stroke-width="6" stroke-linecap="round"/>
-        <ellipse cx="1224" cy="58" rx="40" ry="11" fill="#0c0604"/>
-        <ellipse cx="1256" cy="63" rx="30" ry="10" fill="#0c0604"/>
-        <ellipse cx="1241" cy="52" rx="24" ry="10" fill="#0c0604"/>
+        <!-- Right acacia canopy (CSS sway target) -->
+        <g class="acacia-right">
+          <ellipse cx="1224" cy="58" rx="40" ry="11" fill="#0c0604"/>
+          <ellipse cx="1256" cy="63" rx="30" ry="10" fill="#0c0604"/>
+          <ellipse cx="1241" cy="52" rx="24" ry="10" fill="#0c0604"/>
+        </g>
         <!-- Background small tree centre -->
         <rect x="718" y="88" width="6" height="28" rx="2" fill="#0c0604" opacity="0.7"/>
         <ellipse cx="721" cy="83" rx="18" ry="7" fill="#0c0604" opacity="0.7"/>
@@ -2560,6 +2753,37 @@
           el.id = 'savannaSun';
           el.className = 'savanna-sun';
           document.body.appendChild(el);
+        }
+        if (!document.getElementById('savannaBirds')) {
+          const birds = document.createElement('div');
+          birds.id = 'savannaBirds';
+          birds.className = 'savanna-birds';
+          birds.setAttribute('aria-hidden', 'true');
+          const configs = [
+            { top:'8%',  w:44, sw:'3.0', dur:21, delay:0  },
+            { top:'14%', w:30, sw:'3.5', dur:28, delay:8  },
+            { top:'4%',  w:56, sw:'2.4', dur:18, delay:3  },
+            { top:'19%', w:36, sw:'3.2', dur:25, delay:14 },
+            { top:'11%', w:26, sw:'3.8', dur:33, delay:6  },
+            { top:'17%', w:50, sw:'2.7', dur:20, delay:19 },
+            { top:'6%',  w:40, sw:'3.0', dur:23, delay:11 },
+          ];
+          configs.forEach(function (c) {
+            const b = document.createElement('div');
+            b.className = 'savanna-bird';
+            const h = Math.round(c.w * 0.44);
+            b.innerHTML = '<svg viewBox="0 0 50 22" width="' + c.w + '" height="' + h + '" xmlns="http://www.w3.org/2000/svg"><path d="M1 16 Q13 3 25 13 Q37 3 49 16" stroke="#1a0a04" stroke-width="' + c.sw + '" stroke-linecap="round" fill="none" opacity="0.72"/></svg>';
+            b.style.cssText = 'top:' + c.top + ';--bd:' + c.dur + 's;--bd2:' + c.delay + 's';
+            birds.appendChild(b);
+          });
+          document.body.appendChild(birds);
+        }
+        if (!document.getElementById('savannaShimmer')) {
+          const shimmer = document.createElement('div');
+          shimmer.id = 'savannaShimmer';
+          shimmer.className = 'savanna-shimmer';
+          shimmer.setAttribute('aria-hidden', 'true');
+          document.body.appendChild(shimmer);
         }
       }
 
@@ -2614,11 +2838,111 @@
           }
           document.body.appendChild(wrap);
         }
+        if (!document.getElementById('ghibliCatbus')) {
+          const bus = document.createElement('div');
+          bus.id = 'ghibliCatbus';
+          bus.className = 'ghibli-catbus';
+          bus.setAttribute('aria-hidden', 'true');
+          bus.innerHTML = CATBUS_SVG;
+          document.body.appendChild(bus);
+        }
+        if (!_catbusTimer) {
+          _catbusTimer = setInterval(function () {
+            const cond = document.documentElement.getAttribute('data-ghibli-condition');
+            if (cond === 'clear') launchCatbus();
+          }, 30000);
+        }
       }
 
       function updateGhibliVisuals(condKey) {
         const gc = ghibliConditionClass(condKey);
         document.documentElement.setAttribute('data-ghibli-condition', gc);
+      }
+
+      // ── GoT condition class ───────────────────────────────────────
+      function gotConditionClass(condKey) {
+        if (condKey === 'clear-day')                     return 'hot';
+        if (condKey === 'thunder')                       return 'storm';
+        if (condKey === 'rain' || condKey === 'drizzle') return 'rain';
+        return 'cold'; // snow, overcast, partly, fog, clear-night
+      }
+
+      function updateGotCondition(condKey) {
+        document.documentElement.setAttribute('data-got-cond', gotConditionClass(condKey));
+      }
+
+      function initGotElements() {
+        if (!document.getElementById('gotTorches')) {
+          const wrap = document.createElement('div');
+          wrap.id = 'gotTorches';
+          wrap.className = 'got-torches';
+          wrap.setAttribute('aria-hidden', 'true');
+          wrap.innerHTML = '<div class="got-torch-glow left"></div><div class="got-torch-glow right"></div>';
+          document.body.appendChild(wrap);
+        }
+        if (!document.getElementById('gotSnow')) {
+          const snow = document.createElement('div');
+          snow.id = 'gotSnow';
+          snow.className = 'got-snow';
+          snow.setAttribute('aria-hidden', 'true');
+          for (let i = 0; i < 40; i++) {
+            const f = document.createElement('div');
+            f.className = 'got-flake';
+            const sz = 2 + Math.random() * 4;
+            const dx = (Math.random() - 0.5) * 130;
+            f.style.cssText = [
+              'width:'  + sz + 'px',
+              'height:' + sz + 'px',
+              'left:'   + (Math.random() * 100) + 'vw',
+              '--dx:'   + dx + 'px',
+              '--fd:'   + (6 + Math.random() * 9) + 's',
+              '--fd2:'  + (Math.random() * 9) + 's',
+            ].join(';');
+            snow.appendChild(f);
+          }
+          document.body.appendChild(snow);
+        }
+      }
+
+      // ── Catbus ──────────────────────────────────────────────────
+      const CATBUS_SVG = `<svg viewBox="0 0 250 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="14" y="22" width="208" height="64" rx="22" fill="#c4a860"/>
+        <line x1="64"  y1="22" x2="64"  y2="86" stroke="#a88840" stroke-width="1.5" opacity="0.4"/>
+        <line x1="110" y1="22" x2="110" y2="86" stroke="#a88840" stroke-width="1.5" opacity="0.4"/>
+        <line x1="156" y1="22" x2="156" y2="86" stroke="#a88840" stroke-width="1.5" opacity="0.4"/>
+        <rect x="22"  y="33" width="30" height="22" rx="6" fill="rgba(210,240,255,0.50)"/>
+        <rect x="62"  y="33" width="30" height="22" rx="6" fill="rgba(210,240,255,0.50)"/>
+        <rect x="102" y="33" width="30" height="22" rx="6" fill="rgba(210,240,255,0.50)"/>
+        <rect x="142" y="33" width="30" height="22" rx="6" fill="rgba(210,240,255,0.50)"/>
+        <circle cx="217" cy="38" r="12" fill="#1c1508"/>
+        <circle cx="217" cy="68" r="12" fill="#1c1508"/>
+        <ellipse cx="217" cy="38" rx="7" ry="8" fill="#88cc44"/>
+        <ellipse cx="217" cy="68" rx="7" ry="8" fill="#88cc44"/>
+        <ellipse cx="218" cy="36" rx="3" ry="4" fill="#060806"/>
+        <ellipse cx="218" cy="66" rx="3" ry="4" fill="#060806"/>
+        <ellipse cx="232" cy="53" rx="9" ry="6" fill="#c8a060"/>
+        <ellipse cx="235" cy="53" rx="5.5" ry="3.5" fill="#0c0a08" opacity="0.65"/>
+        <line x1="238" y1="50" x2="248" y2="46" stroke="#c4a060" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+        <line x1="238" y1="53" x2="250" y2="53" stroke="#c4a060" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+        <line x1="238" y1="56" x2="248" y2="60" stroke="#c4a060" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+        <path d="M214 22 L206 8 L222 16Z" fill="#c4a860"/>
+        <path d="M14 54 Q0 44 4 30 Q8 18 17 28" stroke="#c4a860" stroke-width="8" fill="none" stroke-linecap="round"/>
+        <ellipse cx="55"  cy="92" rx="14" ry="10" fill="#a88840" transform="rotate(-12 55 92)"/>
+        <ellipse cx="95"  cy="95" rx="14" ry="10" fill="#a88840" transform="rotate( 10 95 95)"/>
+        <ellipse cx="132" cy="92" rx="14" ry="10" fill="#a88840" transform="rotate(-10 132 92)"/>
+        <ellipse cx="168" cy="95" rx="14" ry="10" fill="#a88840" transform="rotate(  8 168 95)"/>
+        <ellipse cx="200" cy="92" rx="14" ry="10" fill="#a88840" transform="rotate(-12 200 92)"/>
+      </svg>`;
+
+      let _catbusTimer = null;
+
+      function launchCatbus() {
+        const bus = document.getElementById('ghibliCatbus');
+        if (!bus || bus.classList.contains('go')) return;
+        bus.classList.add('go');
+        bus.addEventListener('animationend', function () {
+          bus.classList.remove('go');
+        }, { once: true });
       }
 
       let lastCode  = null;
@@ -2644,15 +2968,23 @@
 
       function applyTheme(theme) {
         // Tear down elements that belong to whichever theme we're leaving
+        if (theme !== 'got') {
+          ['gotTorches', 'gotSnow'].forEach(function (id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+          });
+          document.documentElement.removeAttribute('data-got-cond');
+        }
         if (theme !== 'ghibli') {
-          ['sootContainer', 'ghibliTotoro'].forEach((id) => {
+          if (_catbusTimer) { clearInterval(_catbusTimer); _catbusTimer = null; }
+          ['sootContainer', 'ghibliTotoro', 'ghibliCatbus'].forEach(function (id) {
             const el = document.getElementById(id);
             if (el) el.remove();
           });
           document.documentElement.removeAttribute('data-ghibli-condition');
         }
         if (theme !== 'savanna') {
-          ['savannaHorizon', 'savannaSun'].forEach((id) => {
+          ['savannaHorizon', 'savannaSun', 'savannaBirds', 'savannaShimmer'].forEach(function (id) {
             const el = document.getElementById(id);
             if (el) el.remove();
           });
@@ -2671,10 +3003,11 @@
         }
         saveTheme(theme);
 
-        document.querySelectorAll('.theme-option[data-theme-id]').forEach((btn) => {
+        document.querySelectorAll('.theme-option[data-theme-id]').forEach(function (btn) {
           btn.classList.toggle('active', btn.dataset.themeId === theme);
         });
 
+        if (theme === 'got')     initGotElements();
         if (theme === 'ghibli')  initGhibliElements();
         if (theme === 'savanna') initSavannaElements();
 
@@ -2697,6 +3030,7 @@
             else if (_origDescribe) descEl.textContent = _origDescribe(lastCode, lastIsDay);
           }
           const condKey = codeToCondition(lastCode, lastIsDay);
+          if (theme === 'got')     updateGotCondition(condKey);
           if (theme === 'ghibli')  updateGhibliVisuals(condKey);
           if (theme === 'savanna') updateSavannaVisuals(condKey);
         }
@@ -2754,6 +3088,7 @@
         }
         const condKey = codeToCondition(code, isDay);
         updateSigil();
+        if (theme === 'got')     updateGotCondition(condKey);
         if (theme === 'ghibli')  updateGhibliVisuals(condKey);
         if (theme === 'savanna') updateSavannaVisuals(condKey);
       };
