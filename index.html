@@ -17,7 +17,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
   <title>Aurora Weather</title>
 
@@ -869,6 +869,291 @@
       border-color: rgba(155,125,53,0.6);
       color: #d4c4a0;
     }
+
+    /* ============================================================
+       STUDIO GHIBLI THEME
+       ============================================================ */
+    .theme-swatch-ghibli { background: linear-gradient(135deg, #7ec8e3 0%, #a8d8c4 100%); }
+
+    /* Totoro — fixed, peeking from the bottom-right corner */
+    .ghibli-totoro {
+      position: fixed;
+      bottom: -18px;
+      right: 22px;
+      width: 88px;
+      pointer-events: none;
+      z-index: 4;
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+    .ghibli-totoro svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      fill: #2a3a28;
+    }
+    [data-theme="ghibli"][data-ghibli-condition="rain"] .ghibli-totoro,
+    [data-theme="ghibli"][data-ghibli-condition="drizzle"] .ghibli-totoro {
+      opacity: 0.18;
+      transform: translateY(0);
+    }
+
+    /* Soot sprites — floating across the screen on cloudy days */
+    .soot-container {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      overflow: hidden;
+    }
+    .soot-sprite {
+      position: absolute;
+      border-radius: 50%;
+      background: #222;
+      box-shadow: 0 0 5px 2px rgba(20,20,20,0.28);
+      opacity: 0;
+      animation: soot-drift var(--dur, 9s) var(--delay, 0s) ease-in-out infinite;
+      animation-play-state: paused;
+    }
+    .soot-sprite::before, .soot-sprite::after {
+      content: '';
+      position: absolute;
+      width: 28%;
+      height: 28%;
+      border-radius: 50%;
+      background: white;
+      top: 23%;
+    }
+    .soot-sprite::before { left: 18%; }
+    .soot-sprite::after  { right: 18%; }
+    [data-theme="ghibli"][data-ghibli-condition="cloudy"] .soot-sprite {
+      animation-play-state: running;
+    }
+    @keyframes soot-drift {
+      0%   { opacity: 0;    transform: translate(0, 0); }
+      8%   { opacity: 0.72; }
+      25%  { transform: translate(calc(var(--tx) * -0.28), calc(var(--ty) * 0.22)); }
+      55%  { transform: translate(calc(var(--tx) *  0.38), calc(var(--ty) * 0.56)); }
+      78%  { transform: translate(calc(var(--tx) * -0.12), calc(var(--ty) * 0.80)); }
+      90%  { opacity: 0.60; }
+      100% { opacity: 0;    transform: translate(var(--tx), var(--ty)); }
+    }
+
+    /* Base Ghibli UI */
+    [data-theme="ghibli"] body {
+      font-family: 'Nunito', 'Trebuchet MS', Verdana, sans-serif;
+      background: #cce4f4;
+      color: #3a4050;
+    }
+
+    /* Watercolour background — default (clear) */
+    [data-theme="ghibli"] .bg {
+      background: linear-gradient(160deg, #b4d8f0 0%, #cce8f8 40%, #e0f2ff 100%);
+      animation: none;
+    }
+    [data-theme="ghibli"] .bg::before {
+      background: radial-gradient(circle, #fce8c0 0%, transparent 65%);
+      opacity: 0.55;
+      animation: blob-a 30s ease-in-out infinite;
+    }
+    [data-theme="ghibli"] .bg::after {
+      background: radial-gradient(circle, #c4e4f8 0%, transparent 65%);
+      opacity: 0.45;
+      animation: blob-b 36s ease-in-out infinite;
+    }
+    /* Clear — warm sky blue */
+    [data-theme="ghibli"][data-ghibli-condition="clear"] .bg {
+      background: linear-gradient(160deg, #a8d4ee 0%, #c4e4f8 35%, #daf0ff 70%, #eef8ff 100%);
+    }
+    [data-theme="ghibli"][data-ghibli-condition="clear"] .bg::before {
+      background: radial-gradient(circle, #ffe4a0 0%, transparent 65%); opacity: 0.6;
+    }
+    [data-theme="ghibli"][data-ghibli-condition="clear"] .bg::after {
+      background: radial-gradient(circle, #b8e4ff 0%, transparent 65%); opacity: 0.45;
+    }
+    /* Cloudy — grey-lavender */
+    [data-theme="ghibli"][data-ghibli-condition="cloudy"] .bg {
+      background: linear-gradient(160deg, #bab8d0 0%, #cccae0 40%, #dcdaee 70%, #eae8f8 100%);
+    }
+    [data-theme="ghibli"][data-ghibli-condition="cloudy"] .bg::before {
+      background: radial-gradient(circle, #ccc8e0 0%, transparent 65%); opacity: 0.5;
+    }
+    [data-theme="ghibli"][data-ghibli-condition="cloudy"] .bg::after {
+      background: radial-gradient(circle, #b4b0cc 0%, transparent 65%); opacity: 0.4;
+    }
+    /* Rain — soft sage green */
+    [data-theme="ghibli"][data-ghibli-condition="rain"] .bg {
+      background: linear-gradient(160deg, #96b49c 0%, #b0c8b4 35%, #c4dcc8 70%, #d8eed8 100%);
+    }
+    [data-theme="ghibli"][data-ghibli-condition="rain"] .bg::before {
+      background: radial-gradient(circle, #a8c8a8 0%, transparent 65%); opacity: 0.5;
+    }
+    [data-theme="ghibli"][data-ghibli-condition="rain"] .bg::after {
+      background: radial-gradient(circle, #b8d4b4 0%, transparent 65%); opacity: 0.4;
+    }
+    /* Snow — pale blue-white */
+    [data-theme="ghibli"][data-ghibli-condition="snow"] .bg {
+      background: linear-gradient(160deg, #c4d8ec 0%, #d4e8f4 40%, #e8f4ff 70%, #f4f8ff 100%);
+    }
+    [data-theme="ghibli"][data-ghibli-condition="snow"] .bg::before {
+      background: radial-gradient(circle, #daeeff 0%, transparent 65%); opacity: 0.5;
+    }
+    /* Storm — muted steel */
+    [data-theme="ghibli"][data-ghibli-condition="storm"] .bg {
+      background: linear-gradient(160deg, #7888a0 0%, #8898b0 40%, #9aa8bc 70%, #aab8cc 100%);
+    }
+    [data-theme="ghibli"][data-ghibli-condition="storm"] .bg::before {
+      background: radial-gradient(circle, #8898b4 0%, transparent 65%); opacity: 0.45;
+    }
+
+    [data-theme="ghibli"] .stars { display: none; }
+
+    [data-theme="ghibli"] .brand {
+      letter-spacing: 0.04em;
+      text-transform: none;
+      font-size: 15px;
+      font-weight: 700;
+      color: #5a6878;
+    }
+    [data-theme="ghibli"] .brand-dot {
+      background: linear-gradient(135deg, #7ec8e3, #a8d8c4);
+      box-shadow: 0 0 10px rgba(126,200,227,0.5);
+    }
+
+    [data-theme="ghibli"] .search-input-wrap {
+      background: rgba(255,255,255,0.54);
+      border-color: rgba(100,150,190,0.22);
+      box-shadow: 0 6px 20px rgba(80,130,180,0.1);
+    }
+    [data-theme="ghibli"] .search-input-wrap:focus-within {
+      border-color: rgba(100,165,210,0.5);
+      background: rgba(255,255,255,0.72);
+    }
+    [data-theme="ghibli"] .search input { color: #3a4a5a; }
+    [data-theme="ghibli"] .search input::placeholder { color: rgba(80,110,145,0.55); }
+    [data-theme="ghibli"] .search-clear { background: rgba(100,150,190,0.15); color: rgba(60,90,125,0.8); }
+
+    [data-theme="ghibli"] .suggestions {
+      background: rgba(240,250,255,0.96);
+      border-color: rgba(100,150,190,0.2);
+      box-shadow: 0 16px 40px rgba(80,130,180,0.18);
+    }
+    [data-theme="ghibli"] .suggestion { color: #3a4a5a; }
+    [data-theme="ghibli"] .suggestion:hover,
+    [data-theme="ghibli"] .suggestion:focus-visible { background: rgba(100,165,220,0.1); }
+    [data-theme="ghibli"] .suggestion .s-sub { color: rgba(80,110,145,0.65); }
+    [data-theme="ghibli"] .suggestions-empty { color: rgba(80,110,145,0.6); }
+
+    [data-theme="ghibli"] .card {
+      background: rgba(255,255,255,0.48);
+      border-color: rgba(140,195,230,0.3);
+      box-shadow: 0 16px 48px rgba(80,140,200,0.16), inset 0 1px 0 rgba(255,255,255,0.8);
+      backdrop-filter: blur(22px) saturate(110%);
+      -webkit-backdrop-filter: blur(22px) saturate(110%);
+    }
+    [data-theme="ghibli"] .city { color: #2a3a4a; font-weight: 700; }
+    [data-theme="ghibli"] .region { color: rgba(65,95,130,0.7); }
+    [data-theme="ghibli"] .updated { color: rgba(80,115,150,0.55); }
+
+    [data-theme="ghibli"] .unit-toggle {
+      background: rgba(255,255,255,0.42);
+      border-color: rgba(140,195,230,0.28);
+    }
+    [data-theme="ghibli"] .unit-btn { color: rgba(75,110,145,0.6); }
+    [data-theme="ghibli"] .unit-btn.active {
+      background: rgba(126,200,227,0.28);
+      color: #1a3a50;
+    }
+
+    [data-theme="ghibli"] .temp-value {
+      background: linear-gradient(180deg, #3a5a7a 0%, #5a8aaa 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    [data-theme="ghibli"] .temp-unit { color: rgba(55,85,115,0.8); }
+    [data-theme="ghibli"] .description {
+      color: #2a5060;
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+    [data-theme="ghibli"] .feels-like { color: rgba(65,100,135,0.65); }
+
+    [data-theme="ghibli"] .stat {
+      background: rgba(255,255,255,0.36);
+      border-color: rgba(140,195,230,0.22);
+    }
+    [data-theme="ghibli"] .stat:hover { background: rgba(255,255,255,0.55); }
+    [data-theme="ghibli"] .stat-label { color: rgba(75,115,150,0.7); }
+    [data-theme="ghibli"] .stat-value { color: #1a3a4a; }
+    [data-theme="ghibli"] .stat-sub { color: rgba(75,115,150,0.6); }
+
+    [data-theme="ghibli"] .forecast-section {
+      background: rgba(255,255,255,0.44);
+      border-color: rgba(140,195,230,0.25);
+      box-shadow: 0 10px 28px rgba(80,140,200,0.12), inset 0 1px 0 rgba(255,255,255,0.7);
+    }
+    [data-theme="ghibli"] .forecast-title {
+      color: rgba(75,115,150,0.7);
+      border-bottom-color: rgba(140,195,230,0.18);
+      font-weight: 700;
+    }
+
+    [data-theme="ghibli"] .hourly-cell {
+      background: rgba(255,255,255,0.3);
+      border-color: rgba(140,195,230,0.18);
+    }
+    [data-theme="ghibli"] .hourly-cell.now {
+      background: rgba(126,200,227,0.22);
+      border-color: rgba(126,200,227,0.5);
+    }
+    [data-theme="ghibli"] .hourly-cell:hover { background: rgba(255,255,255,0.52); }
+    [data-theme="ghibli"] .hourly-time { color: rgba(75,115,150,0.7); }
+    [data-theme="ghibli"] .hourly-cell.now .hourly-time { color: #3a7a9a; }
+    [data-theme="ghibli"] .hourly-temp { color: #1a3a4a; }
+    [data-theme="ghibli"] .hourly-precip { color: rgba(70,120,175,0.8); }
+
+    [data-theme="ghibli"] .daily-row { border-bottom-color: rgba(140,195,230,0.14); }
+    [data-theme="ghibli"] .daily-row:hover { background: rgba(255,255,255,0.24); }
+    [data-theme="ghibli"] .daily-day { color: rgba(45,75,110,0.9); }
+    [data-theme="ghibli"] .daily-precip { color: rgba(70,120,175,0.8); }
+    [data-theme="ghibli"] .daily-hi { color: #1a3a4a; }
+    [data-theme="ghibli"] .daily-lo { color: rgba(75,115,150,0.45); }
+
+    [data-theme="ghibli"] .sun-row { border-top-color: rgba(140,195,230,0.16); }
+    [data-theme="ghibli"] .sun-label { color: rgba(75,115,150,0.65); }
+    [data-theme="ghibli"] .sun-time { color: #b87820; }
+
+    [data-theme="ghibli"] .status { color: rgba(65,100,135,0.7); }
+    [data-theme="ghibli"] .status.error { color: #b05050; }
+    [data-theme="ghibli"] .footer { color: rgba(75,115,150,0.5); }
+    [data-theme="ghibli"] .footer a { color: rgba(75,115,150,0.75); }
+    [data-theme="ghibli"] .skeleton {
+      background: linear-gradient(90deg,
+        rgba(140,195,230,0.1) 0%, rgba(140,195,230,0.24) 50%, rgba(140,195,230,0.1) 100%);
+    }
+
+    /* Ghibli picker overrides */
+    [data-theme="ghibli"] .theme-picker {
+      background: rgba(240,250,255,0.96);
+      border-color: rgba(140,195,230,0.28);
+    }
+    [data-theme="ghibli"] .theme-option { color: rgba(45,75,110,0.85); }
+    [data-theme="ghibli"] .theme-option:hover:not(:disabled) { background: rgba(100,165,220,0.1); }
+    [data-theme="ghibli"] .theme-option.active { background: rgba(126,200,227,0.22); color: #1a3a4a; }
+    [data-theme="ghibli"] .theme-btn {
+      background: rgba(255,255,255,0.46);
+      border-color: rgba(140,195,230,0.32);
+      color: rgba(75,115,150,0.75);
+    }
+    [data-theme="ghibli"] .theme-btn:hover,
+    [data-theme="ghibli"] .theme-btn[aria-expanded="true"] {
+      background: rgba(255,255,255,0.65);
+      border-color: rgba(126,200,227,0.55);
+      color: #1a3a4a;
+    }
   </style>
 </head>
 <body>
@@ -902,10 +1187,9 @@
               <span class="theme-swatch theme-swatch-got"></span>
               Game of Thrones
             </button>
-            <button class="theme-option coming-soon" disabled role="menuitem" aria-disabled="true">
-              <span class="theme-swatch theme-swatch-cs"></span>
-              <span class="coming-soon-label">Coming Soon</span>
-              <span class="theme-badge">✦</span>
+            <button class="theme-option" data-theme-id="ghibli" role="menuitem">
+              <span class="theme-swatch theme-swatch-ghibli"></span>
+              Studio Ghibli
             </button>
             <button class="theme-option coming-soon" disabled role="menuitem" aria-disabled="true">
               <span class="theme-swatch theme-swatch-cs"></span>
@@ -1744,7 +2028,7 @@
 
       const THEME_KEY = 'aurora.theme';
 
-      // GoT weather description overrides
+      // ── GoT weather descriptions ──────────────────────────────
       const GOT_DESC = {
         0:  { d: 'Clear skies across the Seven Kingdoms',        n: 'The realm slumbers beneath a clear sky' },
         1:  { d: 'Clear skies with gentle winds',                n: 'A quiet night over the realm' },
@@ -1875,6 +2159,117 @@
         return 'targaryen';
       }
 
+      // ── Ghibli descriptions ───────────────────────────────────
+      const GHIBLI_DESC = {
+        0:  { d: 'A perfect day for an adventure',              n: 'Stars light the path home' },
+        1:  { d: 'The sky is full of gentle clouds',            n: 'A peaceful night under open skies' },
+        2:  { d: 'Clouds drift like old friends',               n: 'Soft clouds sail past the moon' },
+        3:  { d: 'The world rests beneath grey skies',          n: 'A quiet, overcast night' },
+        45: { d: 'Catbus is on its way…',                  n: 'The night fog belongs to Catbus' },
+        48: { d: 'Catbus is on its way…',                  n: 'A thick mist glides through the dark' },
+        51: { d: 'The forest is drinking',                      n: 'A gentle rain taps on the leaves' },
+        53: { d: 'The forest is drinking',                      n: 'Rain patters softly on the roof' },
+        55: { d: 'The rain sings to the earth',                 n: 'The rain sings through the night' },
+        56: { d: 'Tiny ice crystals sparkle in the air',        n: 'A cold mist drifts through the dark' },
+        57: { d: 'The cold rain bites gently',                  n: 'Freezing drizzle in the quiet night' },
+        61: { d: 'The forest is drinking',                      n: 'Rain murmurs through the dark' },
+        63: { d: 'A steady rain fills the air with peace',      n: 'The rain sings its night song' },
+        65: { d: 'The rain comes down in rivers',               n: 'A heavy rain washes the night clean' },
+        66: { d: 'Rain turns to crystal on the branches',       n: 'Freezing rain glitters in the dark' },
+        67: { d: 'The world turns to glass in the cold',        n: 'Ice rain falls through the quiet night' },
+        71: { d: 'The first snowflakes are dancing',            n: 'Snow falls silently as the world sleeps' },
+        73: { d: 'Snow covers everything in peace',             n: 'A gentle snowfall blankets the night' },
+        75: { d: 'A deep snowfall quiets the world',            n: 'Heavy snow hushes the night' },
+        77: { d: 'Snow grains drift like tiny seeds',           n: 'Snow grains scatter through the night' },
+        80: { d: 'Sun showers — look for rainbows!',            n: 'Light showers drift through the night' },
+        81: { d: 'A warm rain passes through',                  n: 'Rain showers soften the night' },
+        82: { d: 'A wild rain sweeps through the valley',       n: 'Heavy showers rush through the night' },
+        85: { d: 'Snow showers drift down gently',              n: 'Soft snow showers fall in the night' },
+        86: { d: 'A heavy snow shower settles in',              n: 'Heavy snow showers in the night' },
+        95: { d: 'A great storm stirs the heavens',             n: 'Thunder rolls through the night sky' },
+        96: { d: 'Thunder and hail ring out like bells',        n: 'Hail and thunder shake the night' },
+        99: { d: 'The sky is alive with thunder and hail',      n: 'A fierce storm lights up the night' },
+      };
+
+      // Totoro SVG — simplified silhouette
+      const TOTORO_SVG = `<svg viewBox="0 0 160 210" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+        <path d="M80 18C56 18 34 38 28 66C22 90 26 116 22 140C18 165 24 186 40 194
+                 C52 200 68 198 80 198C92 198 108 200 120 194C136 186 142 165 138 140
+                 C134 116 138 90 132 66C126 38 104 18 80 18Z"/>
+        <path d="M42 30L28 2L64 22Z"/>
+        <path d="M118 30L132 2L96 22Z"/>
+        <ellipse cx="80" cy="142" rx="46" ry="50" fill="white" opacity="0.14"/>
+        <ellipse cx="24" cy="162" rx="20" ry="15" transform="rotate(-22 24 162)"/>
+        <ellipse cx="136" cy="162" rx="20" ry="15" transform="rotate(22 136 162)"/>
+        <ellipse cx="10" cy="172" rx="8" ry="6"/>
+        <ellipse cx="20" cy="178" rx="8" ry="6"/>
+        <ellipse cx="32" cy="180" rx="8" ry="6"/>
+        <ellipse cx="150" cy="172" rx="8" ry="6"/>
+        <ellipse cx="140" cy="178" rx="8" ry="6"/>
+        <ellipse cx="128" cy="180" rx="8" ry="6"/>
+        <ellipse cx="60" cy="76" rx="15" ry="17" fill="white"/>
+        <ellipse cx="100" cy="76" rx="15" ry="17" fill="white"/>
+        <ellipse cx="63" cy="79" rx="9" ry="11"/>
+        <ellipse cx="103" cy="79" rx="9" ry="11"/>
+        <ellipse cx="65" cy="75" rx="3.5" ry="3.5" fill="white"/>
+        <ellipse cx="105" cy="75" rx="3.5" ry="3.5" fill="white"/>
+        <ellipse cx="80" cy="104" rx="9" ry="7"/>
+        <path d="M67 118Q80 130 93 118" stroke="currentColor" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <path d="M60 152L80 140L100 152" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.22"/>
+        <path d="M56 168L80 158L104 168" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.17"/>
+      </svg>`;
+
+      // Map condition key → Ghibli background category
+      function ghibliConditionClass(condKey) {
+        if (condKey === 'clear-day' || condKey === 'clear-night') return 'clear';
+        if (['partly-day','partly-night','overcast','fog'].indexOf(condKey) >= 0) return 'cloudy';
+        if (condKey === 'rain' || condKey === 'drizzle') return 'rain';
+        if (condKey === 'snow') return 'snow';
+        if (condKey === 'thunder') return 'storm';
+        return 'clear';
+      }
+
+      function initGhibliElements() {
+        if (!document.getElementById('ghibliTotoro')) {
+          const el = document.createElement('div');
+          el.id = 'ghibliTotoro';
+          el.className = 'ghibli-totoro';
+          el.setAttribute('aria-hidden', 'true');
+          el.innerHTML = TOTORO_SVG;
+          document.body.appendChild(el);
+        }
+        if (!document.getElementById('sootContainer')) {
+          const wrap = document.createElement('div');
+          wrap.id = 'sootContainer';
+          wrap.className = 'soot-container';
+          wrap.setAttribute('aria-hidden', 'true');
+          for (let i = 0; i < 14; i++) {
+            const s = document.createElement('div');
+            s.className = 'soot-sprite';
+            const sz  = 11 + Math.random() * 11;
+            const tx  = (Math.random() - 0.5) * 140;
+            const ty  = -(38 + Math.random() * 140);
+            s.style.cssText = [
+              'width:'  + sz + 'px',
+              'height:' + sz + 'px',
+              'left:'   + (Math.random() * 96) + 'vw',
+              'top:'    + (12 + Math.random() * 70) + 'vh',
+              '--tx:'   + tx + 'px',
+              '--ty:'   + ty + 'px',
+              '--dur:'  + (6  + Math.random() * 10) + 's',
+              '--delay:'+ (Math.random() * 14) + 's',
+            ].join(';');
+            wrap.appendChild(s);
+          }
+          document.body.appendChild(wrap);
+        }
+      }
+
+      function updateGhibliVisuals(condKey) {
+        const gc = ghibliConditionClass(condKey);
+        document.documentElement.setAttribute('data-ghibli-condition', gc);
+      }
+
       let lastCode  = null;
       let lastIsDay = true;
       let _origDescribe;
@@ -1906,41 +2301,56 @@
           btn.classList.toggle('active', btn.dataset.themeId === theme);
         });
 
-        // Immediately update description text if we already have weather data
+        if (theme === 'ghibli') initGhibliElements();
+
+        // Immediately re-render description + visuals for the active theme
         if (lastCode !== null) {
           const descEl = document.getElementById('description');
           if (descEl) {
+            let text;
             if (theme === 'got') {
-              const entry = GOT_DESC[lastCode];
-              if (entry) descEl.textContent = lastIsDay ? entry.d : entry.n;
-            } else if (_origDescribe) {
-              descEl.textContent = _origDescribe(lastCode, lastIsDay);
+              const e = GOT_DESC[lastCode];
+              text = e ? (lastIsDay ? e.d : e.n) : null;
+            } else if (theme === 'ghibli') {
+              const e = GHIBLI_DESC[lastCode];
+              text = e ? (lastIsDay ? e.d : e.n) : null;
             }
+            if (text) descEl.textContent = text;
+            else if (_origDescribe) descEl.textContent = _origDescribe(lastCode, lastIsDay);
           }
+          const condKey = codeToCondition(lastCode, lastIsDay);
+          updateGhibliVisuals(condKey);
         }
 
         updateSigil();
       }
 
-      // Intercept describe to inject GoT text
+      // Intercept describe — injects GoT or Ghibli text
       _origDescribe = window.__auroraDescribe;
       window.__auroraDescribe = function (code, isDay) {
         lastCode  = code;
         lastIsDay = isDay;
-        if (document.documentElement.getAttribute('data-theme') === 'got') {
+        const theme = document.documentElement.getAttribute('data-theme');
+        if (theme === 'got') {
           const entry = GOT_DESC[code];
+          if (entry) return isDay ? entry.d : entry.n;
+        }
+        if (theme === 'ghibli') {
+          const entry = GHIBLI_DESC[code];
           if (entry) return isDay ? entry.d : entry.n;
         }
         return _origDescribe ? _origDescribe(code, isDay) : '—';
       };
 
-      // Intercept visuals to capture current condition and update sigil
+      // Intercept visuals — sigil (GoT) + Ghibli background/Totoro
       _origVisuals = window.__auroraVisuals;
       window.__auroraVisuals = function (code, isDay) {
         lastCode  = code;
         lastIsDay = isDay;
         if (_origVisuals) _origVisuals(code, isDay);
+        const condKey = codeToCondition(code, isDay);
         updateSigil();
+        updateGhibliVisuals(condKey);
       };
 
       // ----- Theme picker UI -----
