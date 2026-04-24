@@ -15,6 +15,10 @@
   <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png" />
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
 
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
   <title>Aurora Weather</title>
 
   <style>
@@ -596,6 +600,275 @@
       font-weight: 600;
       color: #ffd580;
     }
+
+    /* ----- Header right cluster ----- */
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ----- Theme toggle button ----- */
+    .theme-picker-wrap { position: relative; }
+    .theme-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.09);
+      border: 1px solid rgba(255,255,255,0.16);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.72);
+      flex-shrink: 0;
+      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    }
+    .theme-btn:hover, .theme-btn[aria-expanded="true"] {
+      background: rgba(255,255,255,0.16);
+      color: #fff;
+      border-color: rgba(179,136,255,0.5);
+    }
+    .theme-btn svg { width: 17px; height: 17px; }
+
+    /* ----- Theme picker panel ----- */
+    .theme-picker {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      min-width: 195px;
+      padding: 6px;
+      border-radius: 18px;
+      background: rgba(14, 7, 32, 0.93);
+      border: 1px solid rgba(255,255,255,0.15);
+      backdrop-filter: blur(28px) saturate(160%);
+      -webkit-backdrop-filter: blur(28px) saturate(160%);
+      box-shadow: 0 18px 48px rgba(0,0,0,0.55);
+      z-index: 30;
+      display: none;
+    }
+    .theme-picker.open { display: block; }
+    .theme-option {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 13px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.82);
+      transition: background 0.15s ease;
+      text-align: left;
+    }
+    .theme-option:hover:not(:disabled) { background: rgba(255,255,255,0.1); }
+    .theme-option.active { background: rgba(179,136,255,0.22); color: #fff; }
+    .theme-option:disabled { opacity: 0.36; cursor: not-allowed; }
+    .theme-swatch {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 1.5px solid rgba(255,255,255,0.2);
+    }
+    .theme-swatch-default { background: linear-gradient(135deg, #b388ff 0%, #82b1ff 100%); }
+    .theme-swatch-got     { background: linear-gradient(135deg, #5c4a1e 0%, #9b7d35 100%); }
+    .theme-swatch-cs      { background: rgba(255,255,255,0.07); }
+    .coming-soon-label    { flex: 1; }
+    .theme-badge {
+      font-size: 10px;
+      color: rgba(255,255,255,0.3);
+      font-weight: 400;
+    }
+
+    /* ----- GoT house-sigil watermark ----- */
+    .got-sigil {
+      display: none;
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      z-index: 0;
+    }
+    .got-sigil svg {
+      width: 56%;
+      max-width: 185px;
+      height: auto;
+      opacity: 0.07;
+      color: #c9a060;
+      fill: currentColor;
+      transition: opacity 0.6s ease;
+    }
+    [data-theme="got"] .got-sigil { display: flex; }
+    /* card content floats above the watermark */
+    [data-theme="got"] .card > :not(.got-sigil) { position: relative; z-index: 1; }
+
+    /* ============================================================
+       GAME OF THRONES THEME
+       ============================================================ */
+    [data-theme="got"] body {
+      font-family: 'Cinzel', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+      background: #0f0e0c;
+      color: #d4c4a0;
+    }
+
+    [data-theme="got"] .bg {
+      background: linear-gradient(160deg, #0f0e0c 0%, #1c1a16 35%, #201d19 70%, #0f0e0c 100%);
+      animation: none;
+    }
+    [data-theme="got"] .bg::before {
+      background: radial-gradient(circle, #3d2800 0%, transparent 65%);
+      opacity: 0.5;
+    }
+    [data-theme="got"] .bg::after {
+      background: radial-gradient(circle, #1a1100 0%, transparent 65%);
+      opacity: 0.4;
+    }
+    [data-theme="got"] .stars { opacity: 0.35; }
+
+    [data-theme="got"] .brand { letter-spacing: 0.18em; color: #a08840; }
+    [data-theme="got"] .brand-dot {
+      background: linear-gradient(135deg, #9b7d35, #d4a840);
+      box-shadow: 0 0 10px rgba(180,140,40,0.6);
+    }
+
+    [data-theme="got"] .search-input-wrap {
+      background: rgba(28,22,16,0.82);
+      border-color: rgba(155,125,53,0.32);
+    }
+    [data-theme="got"] .search-input-wrap:focus-within {
+      border-color: rgba(155,125,53,0.65);
+      background: rgba(38,30,20,0.9);
+    }
+    [data-theme="got"] .search input { color: #d4c4a0; }
+    [data-theme="got"] .search input::placeholder { color: rgba(180,155,100,0.45); }
+    [data-theme="got"] .search-clear { background: rgba(155,125,53,0.18); color: rgba(200,175,120,0.8); }
+
+    [data-theme="got"] .suggestions {
+      background: rgba(18,15,11,0.96);
+      border-color: rgba(155,125,53,0.28);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+    }
+    [data-theme="got"] .suggestion { color: #d4c4a0; }
+    [data-theme="got"] .suggestion:hover,
+    [data-theme="got"] .suggestion:focus-visible { background: rgba(155,125,53,0.1); }
+    [data-theme="got"] .suggestion .s-sub { color: rgba(180,155,100,0.55); }
+    [data-theme="got"] .suggestions-empty { color: rgba(180,155,100,0.55); }
+
+    [data-theme="got"] .card {
+      background: rgba(26,22,17,0.88);
+      border-color: rgba(155,125,53,0.28);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.65), inset 0 1px 0 rgba(155,125,53,0.18);
+    }
+
+    [data-theme="got"] .city { font-size: 20px; color: #e8d8b0; letter-spacing: 0.05em; }
+    [data-theme="got"] .region { color: rgba(180,155,100,0.65); }
+    [data-theme="got"] .updated { color: rgba(155,125,53,0.55); }
+
+    [data-theme="got"] .unit-toggle {
+      background: rgba(28,22,16,0.8);
+      border-color: rgba(155,125,53,0.28);
+    }
+    [data-theme="got"] .unit-btn { color: rgba(180,155,100,0.55); }
+    [data-theme="got"] .unit-btn.active {
+      background: rgba(155,125,53,0.28);
+      color: #d4c4a0;
+    }
+
+    [data-theme="got"] .temp-value {
+      background: linear-gradient(180deg, #f0ddb0 0%, #a07830 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    [data-theme="got"] .temp-unit { color: rgba(200,175,120,0.8); }
+    [data-theme="got"] .description {
+      color: #c9b68a;
+      font-style: italic;
+      font-size: 16px;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+    }
+    [data-theme="got"] .feels-like { color: rgba(180,155,100,0.6); }
+
+    [data-theme="got"] .stat {
+      background: rgba(22,18,13,0.7);
+      border-color: rgba(155,125,53,0.18);
+    }
+    [data-theme="got"] .stat:hover { background: rgba(32,26,18,0.8); }
+    [data-theme="got"] .stat-label { color: rgba(155,125,53,0.65); }
+    [data-theme="got"] .stat-value { color: #d4c4a0; }
+    [data-theme="got"] .stat-sub { color: rgba(155,125,53,0.55); }
+
+    [data-theme="got"] .forecast-section {
+      background: rgba(26,22,17,0.88);
+      border-color: rgba(155,125,53,0.22);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.45), inset 0 1px 0 rgba(155,125,53,0.12);
+    }
+    [data-theme="got"] .forecast-title {
+      color: rgba(155,125,53,0.65);
+      border-bottom-color: rgba(155,125,53,0.14);
+      letter-spacing: 0.14em;
+    }
+
+    [data-theme="got"] .hourly-cell {
+      background: rgba(20,16,12,0.65);
+      border-color: rgba(155,125,53,0.14);
+    }
+    [data-theme="got"] .hourly-cell.now {
+      background: rgba(155,125,53,0.14);
+      border-color: rgba(155,125,53,0.38);
+    }
+    [data-theme="got"] .hourly-cell:hover { background: rgba(32,26,18,0.72); }
+    [data-theme="got"] .hourly-time { color: rgba(155,125,53,0.65); }
+    [data-theme="got"] .hourly-cell.now .hourly-time { color: #c9a060; }
+    [data-theme="got"] .hourly-temp { color: #d4c4a0; }
+    [data-theme="got"] .hourly-precip { color: rgba(130,165,220,0.75); }
+
+    [data-theme="got"] .daily-row { border-bottom-color: rgba(155,125,53,0.1); }
+    [data-theme="got"] .daily-row:hover { background: rgba(155,125,53,0.05); }
+    [data-theme="got"] .daily-day { color: rgba(200,178,128,0.9); }
+    [data-theme="got"] .daily-precip { color: rgba(130,165,220,0.75); }
+    [data-theme="got"] .daily-hi { color: #d4c4a0; }
+    [data-theme="got"] .daily-lo { color: rgba(180,155,100,0.4); }
+
+    [data-theme="got"] .sun-row { border-top-color: rgba(155,125,53,0.14); }
+    [data-theme="got"] .sun-label { color: rgba(155,125,53,0.58); }
+    [data-theme="got"] .sun-time { color: #c9a060; }
+
+    [data-theme="got"] .status { color: rgba(180,155,100,0.65); }
+    [data-theme="got"] .status.error { color: #e0a0a0; }
+
+    [data-theme="got"] .footer { color: rgba(155,125,53,0.45); }
+    [data-theme="got"] .footer a { color: rgba(155,125,53,0.7); }
+
+    [data-theme="got"] .skeleton {
+      background: linear-gradient(90deg,
+        rgba(155,125,53,0.07) 0%,
+        rgba(155,125,53,0.16) 50%,
+        rgba(155,125,53,0.07) 100%);
+    }
+
+    /* GoT overrides for the theme picker itself */
+    [data-theme="got"] .theme-picker {
+      background: rgba(16,13,9,0.96);
+      border-color: rgba(155,125,53,0.28);
+    }
+    [data-theme="got"] .theme-option { color: rgba(200,175,120,0.85); }
+    [data-theme="got"] .theme-option:hover:not(:disabled) { background: rgba(155,125,53,0.1); }
+    [data-theme="got"] .theme-option.active { background: rgba(155,125,53,0.2); color: #d4c4a0; }
+    [data-theme="got"] .theme-btn {
+      background: rgba(28,22,16,0.82);
+      border-color: rgba(155,125,53,0.32);
+      color: rgba(200,175,120,0.75);
+    }
+    [data-theme="got"] .theme-btn:hover,
+    [data-theme="got"] .theme-btn[aria-expanded="true"] {
+      background: rgba(38,30,20,0.9);
+      border-color: rgba(155,125,53,0.6);
+      color: #d4c4a0;
+    }
   </style>
 </head>
 <body>
@@ -608,7 +881,40 @@
         <span class="brand-dot"></span>
         <span>Aurora</span>
       </div>
-      <div class="updated" id="updated" aria-live="polite"></div>
+      <div class="header-right">
+        <div class="updated" id="updated" aria-live="polite"></div>
+        <div class="theme-picker-wrap" id="themePickerWrap">
+          <button class="theme-btn" id="themeBtn" aria-label="Change theme" aria-expanded="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="13.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+              <circle cx="17.5" cy="10.5" r="1" fill="currentColor" stroke="none"/>
+              <circle cx="8.5" cy="7.5" r="1" fill="currentColor" stroke="none"/>
+              <circle cx="6.5" cy="12.5" r="1" fill="currentColor" stroke="none"/>
+              <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
+            </svg>
+          </button>
+          <div class="theme-picker" id="themePicker" role="menu" aria-label="Choose theme">
+            <button class="theme-option" data-theme-id="default" role="menuitem">
+              <span class="theme-swatch theme-swatch-default"></span>
+              Default
+            </button>
+            <button class="theme-option" data-theme-id="got" role="menuitem">
+              <span class="theme-swatch theme-swatch-got"></span>
+              Game of Thrones
+            </button>
+            <button class="theme-option coming-soon" disabled role="menuitem" aria-disabled="true">
+              <span class="theme-swatch theme-swatch-cs"></span>
+              <span class="coming-soon-label">Coming Soon</span>
+              <span class="theme-badge">✦</span>
+            </button>
+            <button class="theme-option coming-soon" disabled role="menuitem" aria-disabled="true">
+              <span class="theme-swatch theme-swatch-cs"></span>
+              <span class="coming-soon-label">Coming Soon</span>
+              <span class="theme-badge">✦</span>
+            </button>
+          </div>
+        </div>
+      </div>
     </header>
 
     <section class="search" role="search">
@@ -634,6 +940,7 @@
     </section>
 
     <article class="card" id="card" aria-live="polite">
+      <div class="got-sigil" id="gotSigil" aria-hidden="true"></div>
       <div class="card-top">
         <div class="location">
           <div class="city" id="city">Brisbane</div>
@@ -1427,6 +1734,250 @@
 
       // Kick off the app now that visuals + describe are wired up.
       if (window.__auroraBoot) window.__auroraBoot();
+    })();
+  </script>
+
+  <script>
+    // ===== Aurora Weather — chunk 3: theme system =====
+    (() => {
+      'use strict';
+
+      const THEME_KEY = 'aurora.theme';
+
+      // GoT weather description overrides
+      const GOT_DESC = {
+        0:  { d: 'Clear skies across the Seven Kingdoms',        n: 'The realm slumbers beneath a clear sky' },
+        1:  { d: 'Clear skies with gentle winds',                n: 'A quiet night over the realm' },
+        2:  { d: 'Clouds drift above the Seven Kingdoms',        n: 'Clouds veil the moon above the realm' },
+        3:  { d: 'Grey clouds blanket the realm',                n: 'Dark skies hang over the kingdoms' },
+        45: { d: 'The mists of the Fingers roll in',             n: 'Fog cloaks the realm in shadow' },
+        48: { d: 'A thick rime fog grips the land',              n: 'Treacherous fog blankets the night' },
+        51: { d: 'A light rain graces the realm',                n: 'Gentle rain falls upon the land' },
+        53: { d: 'A steady rain upon the realm',                 n: 'Rain drums upon the stone walls' },
+        55: { d: 'Heavy rains drench the Seven Kingdoms',        n: 'The realm weeps through the night' },
+        56: { d: 'Freezing rains coat the roads in ice',         n: 'Ice rain falls upon the darkness' },
+        57: { d: 'A bitter freezing drizzle',                    n: 'Freezing drizzle grips the night' },
+        61: { d: 'The Gods weep today',                          n: 'The Gods weep through the night' },
+        63: { d: 'The Gods weep today',                          n: 'Rain falls as the realm sleeps' },
+        65: { d: 'The Gods weep in fury',                        n: 'Heavy rains descend upon the realm' },
+        66: { d: 'Freezing rains fall upon the realm',           n: 'Ice rains fill the night' },
+        67: { d: 'A fearsome freezing rain',                     n: 'Freezing rain through the dark hours' },
+        71: { d: 'Winter is Coming',                             n: 'Snow falls silently upon the realm' },
+        73: { d: 'Winter is Coming',                             n: 'Winter snow blankets the land' },
+        75: { d: 'Winter has Come',                              n: 'Heavy snows bury the realm' },
+        77: { d: 'Snow grains on the winter winds',              n: 'Winter grains drift through the night' },
+        80: { d: 'Rain showers sweep the realm',                 n: 'Showers fall upon the sleeping realm' },
+        81: { d: 'The Gods weep upon us',                        n: 'Rain showers drench the night' },
+        82: { d: 'Violent rains strike the realm',               n: 'Violent showers rage through the dark' },
+        85: { d: 'Winter is Coming — snow showers fall',         n: 'Snow showers in the cold night' },
+        86: { d: 'Winter has Come — heavy snow falls',           n: 'Heavy snow showers bury the realm' },
+        95: { d: 'Fury of the Storm God upon us',                n: 'A terrible storm rages through the night' },
+        96: { d: 'The Storm God sends hail upon the realm',      n: 'Thunder and hail strike in darkness' },
+        99: { d: 'Wrath of the Old Gods — thunder with hail',   n: 'Thunder and hail rage through the night' },
+      };
+
+      // House sigil SVGs (inline, recognizable heraldic silhouettes)
+      const SIGILS = {
+        // Targaryen — three-headed dragon
+        targaryen: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+          <path d="M100 32C88 32 78 38 72 48C62 42 48 44 42 54C36 64 40 78 50 84
+                   C38 86 28 96 28 108C28 122 38 132 52 132C48 138 46 146 50 154
+                   L30 174H46L40 190L58 180L68 198L80 180L100 190L120 180L132 198
+                   L142 180L160 190L154 174H170L150 154C154 146 152 138 148 132
+                   C162 132 172 122 172 108C172 96 162 86 150 84C160 78 164 64 158 54
+                   C152 44 138 42 128 48C122 38 112 32 100 32Z"/>
+          <path d="M52 132L18 112L36 140Z"/>
+          <path d="M148 132L182 112L164 140Z"/>
+          <ellipse cx="83" cy="102" rx="7" ry="8" fill="white" opacity="0.6"/>
+          <ellipse cx="117" cy="102" rx="7" ry="8" fill="white" opacity="0.6"/>
+          <ellipse cx="85" cy="104" rx="4" ry="5"/>
+          <ellipse cx="119" cy="104" rx="4" ry="5"/>
+        </svg>`,
+
+        // Stark — direwolf head
+        stark: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+          <path d="M100 28C74 28 50 44 44 68C38 84 44 100 42 114
+                   C28 108 14 114 14 130C14 142 24 150 38 144
+                   C32 158 36 172 50 170C60 170 68 162 72 150
+                   C78 164 88 174 100 174C112 174 122 164 128 150
+                   C132 162 140 170 150 170C164 172 168 158 162 144
+                   C176 150 186 142 186 130C186 114 172 108 158 114
+                   C156 100 162 84 156 68C150 44 126 28 100 28Z"/>
+          <path d="M74 54L60 24L80 48Z"/>
+          <path d="M126 54L140 24L120 48Z"/>
+          <ellipse cx="80" cy="98" rx="9" ry="10" fill="white" opacity="0.8"/>
+          <ellipse cx="120" cy="98" rx="9" ry="10" fill="white" opacity="0.8"/>
+          <ellipse cx="82" cy="100" rx="5" ry="6"/>
+          <ellipse cx="122" cy="100" rx="5" ry="6"/>
+          <ellipse cx="100" cy="128" rx="11" ry="8"/>
+          <path d="M84 142Q100 154 116 142" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round"/>
+        </svg>`,
+
+        // Tully — leaping trout
+        tully: `<svg viewBox="0 0 240 170" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+          <ellipse cx="105" cy="85" rx="72" ry="50"/>
+          <path d="M177 85L220 58L213 85L220 112Z"/>
+          <path d="M48 85Q26 68 12 85Q26 102 48 85Z"/>
+          <path d="M82 35C90 22 120 22 128 35"/>
+          <path d="M82 135C90 148 120 148 128 135"/>
+          <ellipse cx="52" cy="72" rx="13" ry="13" fill="white" opacity="0.8"/>
+          <ellipse cx="54" cy="74" rx="8" ry="8"/>
+          <path d="M96 54Q108 85 96 116" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.25"/>
+          <path d="M116 48Q130 85 116 122" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.2"/>
+          <path d="M136 54Q148 85 136 116" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.15"/>
+        </svg>`,
+
+        // Baratheon — crowned stag
+        baratheon: `<svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+          <ellipse cx="100" cy="168" rx="46" ry="38"/>
+          <rect x="77" y="200" width="13" height="32" rx="6.5"/>
+          <rect x="110" y="200" width="13" height="32" rx="6.5"/>
+          <path d="M88 135C88 115 95 100 100 95C105 100 112 115 112 135Z"/>
+          <ellipse cx="100" cy="90" rx="24" ry="22"/>
+          <path d="M88 108Q100 120 112 108Q108 125 100 127Q92 125 88 108Z"/>
+          <ellipse cx="91" cy="86" rx="5" ry="5" fill="white" opacity="0.9"/>
+          <ellipse cx="109" cy="86" rx="5" ry="5" fill="white" opacity="0.9"/>
+          <ellipse cx="92" cy="87" rx="3" ry="3"/>
+          <ellipse cx="110" cy="87" rx="3" ry="3"/>
+          <line x1="83" y1="73" x2="70" y2="50" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>
+          <line x1="70" y1="50" x2="52" y2="28" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
+          <line x1="70" y1="50" x2="58" y2="40" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+          <line x1="70" y1="50" x2="66" y2="36" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+          <line x1="52" y1="28" x2="40" y2="12" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+          <line x1="52" y1="28" x2="46" y2="14" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+          <line x1="117" y1="73" x2="130" y2="50" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>
+          <line x1="130" y1="50" x2="148" y2="28" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
+          <line x1="130" y1="50" x2="142" y2="40" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+          <line x1="130" y1="50" x2="134" y2="36" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+          <line x1="148" y1="28" x2="160" y2="12" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+          <line x1="148" y1="28" x2="154" y2="14" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+        </svg>`,
+      };
+
+      // Mirrors codeToCondition from chunk 2 (display logic, not API)
+      function codeToCondition(code, isDay) {
+        if (code === 0) return isDay ? 'clear-day' : 'clear-night';
+        if (code === 1 || code === 2) return isDay ? 'partly-day' : 'partly-night';
+        if (code === 3) return 'overcast';
+        if (code === 45 || code === 48) return 'fog';
+        if ([51, 53, 55, 56, 57].indexOf(code) >= 0) return 'drizzle';
+        if ([61, 63, 65, 66, 67, 80, 81, 82].indexOf(code) >= 0) return 'rain';
+        if ([71, 73, 75, 77, 85, 86].indexOf(code) >= 0) return 'snow';
+        if ([95, 96, 99].indexOf(code) >= 0) return 'thunder';
+        return isDay ? 'partly-day' : 'partly-night';
+      }
+
+      function houseForCondition(condKey) {
+        if (condKey === 'clear-day' || condKey === 'clear-night') return 'targaryen';
+        if (condKey === 'snow')                                    return 'stark';
+        if (condKey === 'rain' || condKey === 'drizzle')          return 'tully';
+        if (condKey === 'thunder')                                 return 'baratheon';
+        return 'targaryen';
+      }
+
+      let lastCode  = null;
+      let lastIsDay = true;
+      let _origDescribe;
+      let _origVisuals;
+
+      function updateSigil() {
+        const sigilEl = document.getElementById('gotSigil');
+        if (!sigilEl || lastCode === null) return;
+        const house = houseForCondition(codeToCondition(lastCode, lastIsDay));
+        sigilEl.innerHTML = SIGILS[house] || '';
+      }
+
+      function getTheme() {
+        try { return localStorage.getItem(THEME_KEY) || 'default'; } catch (_) { return 'default'; }
+      }
+      function saveTheme(t) {
+        try { localStorage.setItem(THEME_KEY, t); } catch (_) {}
+      }
+
+      function applyTheme(theme) {
+        if (theme === 'default') {
+          document.documentElement.removeAttribute('data-theme');
+        } else {
+          document.documentElement.setAttribute('data-theme', theme);
+        }
+        saveTheme(theme);
+
+        document.querySelectorAll('.theme-option[data-theme-id]').forEach((btn) => {
+          btn.classList.toggle('active', btn.dataset.themeId === theme);
+        });
+
+        // Immediately update description text if we already have weather data
+        if (lastCode !== null) {
+          const descEl = document.getElementById('description');
+          if (descEl) {
+            if (theme === 'got') {
+              const entry = GOT_DESC[lastCode];
+              if (entry) descEl.textContent = lastIsDay ? entry.d : entry.n;
+            } else if (_origDescribe) {
+              descEl.textContent = _origDescribe(lastCode, lastIsDay);
+            }
+          }
+        }
+
+        updateSigil();
+      }
+
+      // Intercept describe to inject GoT text
+      _origDescribe = window.__auroraDescribe;
+      window.__auroraDescribe = function (code, isDay) {
+        lastCode  = code;
+        lastIsDay = isDay;
+        if (document.documentElement.getAttribute('data-theme') === 'got') {
+          const entry = GOT_DESC[code];
+          if (entry) return isDay ? entry.d : entry.n;
+        }
+        return _origDescribe ? _origDescribe(code, isDay) : '—';
+      };
+
+      // Intercept visuals to capture current condition and update sigil
+      _origVisuals = window.__auroraVisuals;
+      window.__auroraVisuals = function (code, isDay) {
+        lastCode  = code;
+        lastIsDay = isDay;
+        if (_origVisuals) _origVisuals(code, isDay);
+        updateSigil();
+      };
+
+      // ----- Theme picker UI -----
+      const themeBtn    = document.getElementById('themeBtn');
+      const themePicker = document.getElementById('themePicker');
+
+      function openPicker() {
+        themePicker.classList.add('open');
+        themeBtn.setAttribute('aria-expanded', 'true');
+      }
+      function closePicker() {
+        themePicker.classList.remove('open');
+        themeBtn.setAttribute('aria-expanded', 'false');
+      }
+
+      themeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        themePicker.classList.contains('open') ? closePicker() : openPicker();
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('#themePickerWrap')) closePicker();
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closePicker();
+      });
+
+      document.querySelectorAll('.theme-option[data-theme-id]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          applyTheme(btn.dataset.themeId);
+          closePicker();
+        });
+      });
+
+      // Restore saved theme on load
+      applyTheme(getTheme());
     })();
   </script>
 </body>
