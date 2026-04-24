@@ -2625,6 +2625,8 @@
       let lastIsDay = true;
       let _origDescribe;
       let _origVisuals;
+      let _lastAuroraGradient = '';
+      const _bgEl = document.querySelector('.bg');
 
       function updateSigil() {
         const sigilEl = document.getElementById('gotSigil');
@@ -2643,8 +2645,12 @@
       function applyTheme(theme) {
         if (theme === 'default') {
           document.documentElement.removeAttribute('data-theme');
+          // Restore the last Aurora gradient so default background looks correct immediately
+          if (_bgEl && _lastAuroraGradient) _bgEl.style.backgroundImage = _lastAuroraGradient;
         } else {
           document.documentElement.setAttribute('data-theme', theme);
+          // Clear inline style so CSS theme backgrounds can take over
+          if (_bgEl) _bgEl.style.backgroundImage = '';
         }
         saveTheme(theme);
 
@@ -2719,6 +2725,16 @@
         lastCode  = code;
         lastIsDay = isDay;
         if (_origVisuals) _origVisuals(code, isDay);
+        // _origVisuals sets bg.style.backgroundImage as an inline style which would
+        // override CSS theme backgrounds. Save it for default, clear it for themes.
+        const theme = document.documentElement.getAttribute('data-theme');
+        if (!theme) {
+          if (_bgEl && _bgEl.style.backgroundImage) {
+            _lastAuroraGradient = _bgEl.style.backgroundImage;
+          }
+        } else {
+          if (_bgEl) _bgEl.style.backgroundImage = '';
+        }
         const condKey = codeToCondition(code, isDay);
         updateSigil();
         updateGhibliVisuals(condKey);
