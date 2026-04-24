@@ -17,7 +17,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Nunito:wght@300;400;500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
   <title>Aurora Weather</title>
 
@@ -635,49 +635,109 @@
       position: absolute;
       top: calc(100% + 10px);
       right: 0;
-      min-width: 195px;
+      min-width: 210px;
       padding: 6px;
-      border-radius: 18px;
-      background: rgba(14, 7, 32, 0.93);
-      border: 1px solid rgba(255,255,255,0.15);
-      backdrop-filter: blur(28px) saturate(160%);
-      -webkit-backdrop-filter: blur(28px) saturate(160%);
-      box-shadow: 0 18px 48px rgba(0,0,0,0.55);
+      border-radius: 20px;
+      background: rgba(12, 6, 28, 0.94);
+      border: 1px solid rgba(255,255,255,0.13);
+      backdrop-filter: blur(32px) saturate(160%);
+      -webkit-backdrop-filter: blur(32px) saturate(160%);
+      box-shadow: 0 20px 56px rgba(0,0,0,0.6), 0 4px 16px rgba(0,0,0,0.3);
       z-index: 30;
-      display: none;
+      /* animate open/close with opacity + transform */
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(-8px) scale(0.96);
+      transform-origin: top right;
+      transition: opacity 0.18s ease, transform 0.18s ease,
+                  visibility 0s linear 0.18s;
     }
-    .theme-picker.open { display: block; }
+    .theme-picker.open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+      transition: opacity 0.18s ease, transform 0.18s ease,
+                  visibility 0s linear 0s;
+    }
+    .picker-label {
+      padding: 7px 13px 4px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+    }
     .theme-option {
       width: 100%;
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 10px 13px;
+      padding: 8px 10px;
       border-radius: 12px;
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 500;
-      color: rgba(255,255,255,0.82);
-      transition: background 0.15s ease;
+      color: rgba(255,255,255,0.78);
+      transition: background 0.14s ease, color 0.14s ease;
       text-align: left;
     }
-    .theme-option:hover:not(:disabled) { background: rgba(255,255,255,0.1); }
-    .theme-option.active { background: rgba(179,136,255,0.22); color: #fff; }
-    .theme-option:disabled { opacity: 0.36; cursor: not-allowed; }
-    .theme-swatch {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      border: 1.5px solid rgba(255,255,255,0.2);
+    .theme-option:hover:not(:disabled) {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
     }
-    .theme-swatch-default { background: linear-gradient(135deg, #b388ff 0%, #82b1ff 100%); }
-    .theme-swatch-got     { background: linear-gradient(135deg, #5c4a1e 0%, #9b7d35 100%); }
-    .theme-swatch-cs      { background: rgba(255,255,255,0.07); }
-    .coming-soon-label    { flex: 1; }
+    .theme-option.active { color: #fff; }
+    .theme-option:disabled { opacity: 0.32; cursor: not-allowed; }
+
+    /* Icon tile */
+    .theme-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.14s ease;
+    }
+    .theme-option:hover:not(:disabled) .theme-icon { transform: scale(1.08); }
+    .theme-icon svg { width: 14px; height: 14px; }
+    .theme-icon-default { background: linear-gradient(135deg, #4820a8 0%, #2060d8 100%); }
+    .theme-icon-got     { background: linear-gradient(135deg, #3c2808 0%, #7a5518 100%); }
+    .theme-icon-ghibli  { background: linear-gradient(135deg, #3880b8 0%, #50a898 100%); }
+    .theme-icon-savanna { background: linear-gradient(135deg, #a82808 0%, #d86818 100%); }
+    .theme-icon-cs      { background: rgba(255,255,255,0.07); }
+
+    /* Label + check */
+    .theme-label { flex: 1; }
+    .theme-check {
+      width: 14px;
+      height: 14px;
+      opacity: 0;
+      flex-shrink: 0;
+      transition: opacity 0.14s ease;
+      color: rgba(179,136,255,0.9);
+    }
+    .theme-option.active .theme-check { opacity: 1; }
+    .theme-option.active .theme-label { font-weight: 600; }
+
+    /* Divider */
+    .theme-divider {
+      height: 1px;
+      background: rgba(255,255,255,0.07);
+      margin: 4px 8px;
+    }
+    /* Coming-soon sub-row */
+    .coming-soon-label { flex: 1; }
     .theme-badge {
-      font-size: 10px;
-      color: rgba(255,255,255,0.3);
-      font-weight: 400;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.28);
+      background: rgba(255,255,255,0.07);
+      padding: 2px 6px;
+      border-radius: 5px;
     }
 
     /* ----- GoT house-sigil watermark ----- */
@@ -1154,9 +1214,170 @@
       border-color: rgba(126,200,227,0.55);
       color: #1a3a4a;
     }
+
+    /* =================== AFRICAN SAVANNA THEME =================== */
+    [data-theme="savanna"] body,
+    [data-theme="savanna"] .app { font-family: 'Raleway', sans-serif; }
+
+    /* Default background (sunset) */
+    [data-theme="savanna"] .bg {
+      background: linear-gradient(180deg, #e8891a 0%, #c45010 40%, #8c2808 100%);
+      transition: filter 1.2s ease;
+    }
+
+    /* Time-of-day gradient variants */
+    [data-theme="savanna"][data-savanna-time="dawn"] .bg {
+      background: linear-gradient(180deg, #f5c87a 0%, #e87a2a 35%, #8c3018 70%, #3a1808 100%);
+    }
+    [data-theme="savanna"][data-savanna-time="morning"] .bg {
+      background: linear-gradient(180deg, #f5e058 0%, #e8a028 40%, #c05818 80%, #8c3010 100%);
+    }
+    [data-theme="savanna"][data-savanna-time="midday"] .bg {
+      background: linear-gradient(180deg, #f5c830 0%, #e88c18 45%, #c05c10 80%, #8c3808 100%);
+    }
+    [data-theme="savanna"][data-savanna-time="sunset"] .bg {
+      background: linear-gradient(180deg, #f03c18 0%, #c02808 30%, #882010 65%, #3a0c08 100%);
+    }
+    [data-theme="savanna"][data-savanna-time="dusk"] .bg {
+      background: linear-gradient(180deg, #7c2840 0%, #a03818 30%, #6c1c10 65%, #280c18 100%);
+    }
+    [data-theme="savanna"][data-savanna-time="night"] .bg {
+      background: linear-gradient(180deg, #18082c 0%, #280c28 35%, #1c0c18 65%, #100810 100%);
+    }
+
+    /* Weather condition brightness/saturation modifiers */
+    [data-theme="savanna"][data-savanna-condition="cloudy"] .bg { filter: brightness(0.85) saturate(0.75); }
+    [data-theme="savanna"][data-savanna-condition="rain"]   .bg { filter: brightness(0.70) saturate(0.65); }
+    [data-theme="savanna"][data-savanna-condition="snow"]   .bg { filter: brightness(0.90) saturate(0.30); }
+    [data-theme="savanna"][data-savanna-condition="storm"]  .bg { filter: brightness(0.55) saturate(0.50); }
+
+    /* Stars at night */
+    [data-theme="savanna"] .stars { opacity: 0; transition: opacity 1.2s ease; }
+    [data-theme="savanna"][data-savanna-time="dusk"]  .stars { opacity: 0.4; }
+    [data-theme="savanna"][data-savanna-time="night"] .stars { opacity: 1; }
+
+    /* Savanna horizon silhouette */
+    .savanna-horizon {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      width: 100%;
+      height: 200px;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    [data-theme="savanna"] .savanna-horizon { opacity: 1; }
+
+    /* Savanna animated sun */
+    .savanna-sun {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.6s ease, background 2s ease, bottom 2s ease,
+                  left 2s ease, right 2s ease, width 1.5s ease, height 1.5s ease,
+                  box-shadow 2s ease;
+    }
+    [data-theme="savanna"] .savanna-sun { opacity: 1; }
+
+    /* Sun: dawn — low on the left, pink-gold */
+    [data-theme="savanna"][data-savanna-time="dawn"] .savanna-sun {
+      width: 56px; height: 56px;
+      bottom: 18vh; left: 16vw;
+      background: radial-gradient(circle, #ffc080 0%, #ff8040 60%, rgba(255,100,30,0) 100%);
+      box-shadow: 0 0 40px 20px rgba(255,140,60,0.35);
+    }
+    /* Sun: morning — climbing left-centre */
+    [data-theme="savanna"][data-savanna-time="morning"] .savanna-sun {
+      width: 64px; height: 64px;
+      bottom: 40vh; left: 26vw;
+      background: radial-gradient(circle, #ffe060 0%, #ffb020 60%, rgba(255,160,0,0) 100%);
+      box-shadow: 0 0 60px 28px rgba(255,180,20,0.4);
+    }
+    /* Sun: midday — high centre */
+    [data-theme="savanna"][data-savanna-time="midday"] .savanna-sun {
+      width: 72px; height: 72px;
+      bottom: 62vh; left: calc(50vw - 36px);
+      background: radial-gradient(circle, #fff5a0 0%, #ffd020 60%, rgba(255,200,0,0) 100%);
+      box-shadow: 0 0 80px 36px rgba(255,210,30,0.45);
+    }
+    /* Sun: sunset — descending on the right, deep red-orange */
+    [data-theme="savanna"][data-savanna-time="sunset"] .savanna-sun {
+      width: 72px; height: 72px;
+      bottom: 24vh; left: calc(72vw - 36px);
+      background: radial-gradient(circle, #ff8060 0%, #e03010 60%, rgba(200,30,0,0) 100%);
+      box-shadow: 0 0 80px 40px rgba(220,60,20,0.45);
+    }
+    /* Sun: dusk — mostly set, far right */
+    [data-theme="savanna"][data-savanna-time="dusk"] .savanna-sun {
+      width: 60px; height: 60px;
+      bottom: 6vh; left: calc(82vw - 30px);
+      background: radial-gradient(circle, #e06040 0%, #a02010 60%, rgba(140,20,0,0) 100%);
+      box-shadow: 0 0 60px 30px rgba(160,40,10,0.4);
+    }
+    /* Sun: night — hidden */
+    [data-theme="savanna"][data-savanna-time="night"] .savanna-sun { opacity: 0 !important; }
+
+    /* Card + text overrides */
+    [data-theme="savanna"] .card {
+      background: rgba(20, 8, 4, 0.45);
+      border-color: rgba(200, 120, 40, 0.22);
+      backdrop-filter: blur(18px);
+    }
+    [data-theme="savanna"] .temp-value  { color: #ffe8b0; }
+    [data-theme="savanna"] .description { color: #f0c880; }
+    [data-theme="savanna"] .feel,
+    [data-theme="savanna"] .wind,
+    [data-theme="savanna"] .humidity    { color: rgba(240,200,120,0.7); }
+    [data-theme="savanna"] .city        { color: #ffd080; }
+    [data-theme="savanna"] .country     { color: rgba(240,200,120,0.6); }
+    [data-theme="savanna"] .search input {
+      background: rgba(20, 8, 4, 0.4);
+      border-color: rgba(200, 120, 40, 0.3);
+      color: #ffe8c0;
+    }
+    [data-theme="savanna"] .search input::placeholder { color: rgba(240,200,120,0.45); }
+    [data-theme="savanna"] .updated { color: rgba(240,200,120,0.5); }
+
+    /* Theme picker overrides */
+    [data-theme="savanna"] .theme-picker {
+      background: rgba(20, 8, 4, 0.90);
+      border-color: rgba(200, 120, 40, 0.25);
+    }
+    [data-theme="savanna"] .picker-label       { color: rgba(240,200,120,0.5); }
+    [data-theme="savanna"] .theme-option        { color: rgba(240,200,120,0.85); }
+    [data-theme="savanna"] .theme-option:hover:not(:disabled) { background: rgba(200,120,40,0.12); }
+    [data-theme="savanna"] .theme-option.active { background: rgba(200,120,40,0.22); color: #ffe8b0; }
+    [data-theme="savanna"] .theme-divider       { background: rgba(200,120,40,0.15); }
+    [data-theme="savanna"] .theme-check         { color: #ffb060; }
+    [data-theme="savanna"] .theme-btn {
+      background: rgba(20, 8, 4, 0.4);
+      border-color: rgba(200, 120, 40, 0.3);
+      color: rgba(240,200,120,0.75);
+    }
+    [data-theme="savanna"] .theme-btn:hover,
+    [data-theme="savanna"] .theme-btn[aria-expanded="true"] {
+      background: rgba(20, 8, 4, 0.6);
+      border-color: rgba(200, 120, 40, 0.55);
+      color: #ffe8b0;
+    }
+
+    /* =================== THEME CROSSFADE OVERLAY =================== */
+    #themeFade {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      pointer-events: none;
+      background: #000;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
   </style>
 </head>
 <body>
+  <div id="themeFade" aria-hidden="true"></div>
   <div class="bg" aria-hidden="true"></div>
   <div class="stars" aria-hidden="true"></div>
 
@@ -1179,22 +1400,41 @@
             </svg>
           </button>
           <div class="theme-picker" id="themePicker" role="menu" aria-label="Choose theme">
+            <p class="picker-label">Appearance</p>
             <button class="theme-option" data-theme-id="default" role="menuitem">
-              <span class="theme-swatch theme-swatch-default"></span>
-              Default
+              <span class="theme-icon theme-icon-default">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </span>
+              <span class="theme-label">Default</span>
+              <svg class="theme-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
             </button>
             <button class="theme-option" data-theme-id="got" role="menuitem">
-              <span class="theme-swatch theme-swatch-got"></span>
-              Game of Thrones
+              <span class="theme-icon theme-icon-got">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2 5h4l-3.2 2.5 1.2 4.5L12 11.5 8 14l1.2-4.5L6 7h4z"/><rect x="10" y="14" width="4" height="8" rx="1"/><rect x="9" y="17" width="6" height="1.5" rx="0.75"/></svg>
+              </span>
+              <span class="theme-label">Game of Thrones</span>
+              <svg class="theme-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
             </button>
             <button class="theme-option" data-theme-id="ghibli" role="menuitem">
-              <span class="theme-swatch theme-swatch-ghibli"></span>
-              Studio Ghibli
+              <span class="theme-icon theme-icon-ghibli">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><circle cx="10" cy="13" r="1.2" fill="currentColor" stroke="none"/><circle cx="14" cy="13" r="1.2" fill="currentColor" stroke="none"/></svg>
+              </span>
+              <span class="theme-label">Studio Ghibli</span>
+              <svg class="theme-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
             </button>
-            <button class="theme-option coming-soon" disabled role="menuitem" aria-disabled="true">
-              <span class="theme-swatch theme-swatch-cs"></span>
-              <span class="coming-soon-label">Coming Soon</span>
-              <span class="theme-badge">✦</span>
+            <button class="theme-option" data-theme-id="savanna" role="menuitem">
+              <span class="theme-icon theme-icon-savanna">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+              </span>
+              <span class="theme-label">African Savanna</span>
+              <svg class="theme-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            </button>
+            <div class="theme-divider"></div>
+            <button class="theme-option" disabled role="menuitem" aria-disabled="true">
+              <span class="theme-icon theme-icon-cs">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </span>
+              <span class="theme-label">Coming Soon</span>
             </button>
           </div>
         </div>
@@ -2219,6 +2459,117 @@
         <path d="M56 168L80 158L104 168" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.17"/>
       </svg>`;
 
+      // ── Savanna weather descriptions ──────────────────────────
+      const SAVANNA_DESC = {
+        0:  { d: 'The savanna breathes today',                   n: 'The stars guide the wanderers home' },
+        1:  { d: 'The savanna breathes today',                   n: 'The stars guide the wanderers home' },
+        2:  { d: 'The spirits of the Pride Lands stir',          n: 'Shadows drift across the moonlit plains' },
+        3:  { d: 'The spirits of the Pride Lands stir',          n: 'Shadows drift across the moonlit plains' },
+        45: { d: 'The mist rises from the watering hole',        n: 'The mist rises from the watering hole' },
+        48: { d: 'The mist rises from the watering hole',        n: 'A thick mist wraps the night plains' },
+        51: { d: 'The Great Migration begins',                   n: 'The Great Migration begins' },
+        53: { d: 'The Great Migration begins',                   n: 'The Great Migration begins' },
+        55: { d: 'The Great Migration begins',                   n: 'The Great Migration begins' },
+        56: { d: 'The Great Migration begins',                   n: 'The Great Migration begins' },
+        57: { d: 'The Great Migration begins',                   n: 'The Great Migration begins' },
+        61: { d: 'The Great Migration begins',                   n: 'The Great Migration begins' },
+        63: { d: 'The Great Migration begins',                   n: 'The Great Migration begins' },
+        65: { d: 'The Great Migration begins',                   n: 'The Great Migration begins' },
+        66: { d: 'The Great Migration begins',                   n: 'The Great Migration begins' },
+        67: { d: 'The Great Migration begins',                   n: 'The Great Migration begins' },
+        71: { d: 'A rare cold sweeps the plains',                n: 'A rare cold sweeps the plains' },
+        73: { d: 'A rare cold sweeps the plains',                n: 'A rare cold sweeps the plains' },
+        75: { d: 'A rare cold sweeps the plains',                n: 'A rare cold sweeps the plains' },
+        77: { d: 'A rare cold sweeps the plains',                n: 'A rare cold sweeps the plains' },
+        80: { d: 'The Great Migration begins',                   n: 'The Great Migration begins' },
+        81: { d: 'The Great Migration begins',                   n: 'The Great Migration begins' },
+        82: { d: 'The ancestors speak in the thunder',           n: 'The ancestors speak in the thunder' },
+        85: { d: 'A rare cold sweeps the plains',                n: 'A rare cold sweeps the plains' },
+        86: { d: 'A rare cold sweeps the plains',                n: 'A rare cold sweeps the plains' },
+        95: { d: 'The ancestors speak in the thunder',           n: 'The ancestors speak in the thunder' },
+        96: { d: 'The ancestors speak in the thunder',           n: 'The ancestors speak in the thunder' },
+        99: { d: 'The ancestors speak in the thunder',           n: 'The ancestors speak in the thunder' },
+      };
+
+      // Savanna horizon SVG — acacia silhouette + rolling hills
+      const SAVANNA_HORIZON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 200" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+        <defs>
+          <linearGradient id="sg" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stop-color="#1a0a04" stop-opacity="0.85"/>
+            <stop offset="100%" stop-color="#0c0604" stop-opacity="1"/>
+          </linearGradient>
+        </defs>
+        <path d="M0 200 L0 115 C80 108,160 100,240 106 C320 112,400 122,480 115
+                 C560 108,640 94,720 100 C800 106,880 118,960 113
+                 C1040 108,1120 96,1200 103 C1280 110,1360 118,1440 112 L1440 200 Z"
+              fill="url(#sg)"/>
+        <!-- Left acacia tree -->
+        <rect x="196" y="68" width="8" height="58" rx="3" fill="#0c0604"/>
+        <line x1="200" y1="88" x2="172" y2="76" stroke="#0c0604" stroke-width="5" stroke-linecap="round"/>
+        <line x1="200" y1="84" x2="228" y2="74" stroke="#0c0604" stroke-width="5" stroke-linecap="round"/>
+        <ellipse cx="185" cy="66" rx="36" ry="10" fill="#0c0604"/>
+        <ellipse cx="214" cy="70" rx="26" ry="9"  fill="#0c0604"/>
+        <ellipse cx="200" cy="60" rx="20" ry="9"  fill="#0c0604"/>
+        <!-- Right acacia tree -->
+        <rect x="1236" y="60" width="10" height="65" rx="3" fill="#0c0604"/>
+        <line x1="1241" y1="82" x2="1210" y2="70" stroke="#0c0604" stroke-width="6" stroke-linecap="round"/>
+        <line x1="1241" y1="78" x2="1272" y2="68" stroke="#0c0604" stroke-width="6" stroke-linecap="round"/>
+        <ellipse cx="1224" cy="58" rx="40" ry="11" fill="#0c0604"/>
+        <ellipse cx="1256" cy="63" rx="30" ry="10" fill="#0c0604"/>
+        <ellipse cx="1241" cy="52" rx="24" ry="10" fill="#0c0604"/>
+        <!-- Background small tree centre -->
+        <rect x="718" y="88" width="6" height="28" rx="2" fill="#0c0604" opacity="0.7"/>
+        <ellipse cx="721" cy="83" rx="18" ry="7" fill="#0c0604" opacity="0.7"/>
+        <!-- Bushes / rocks -->
+        <ellipse cx="380"  cy="118" rx="22" ry="9"  fill="#0c0604"/>
+        <ellipse cx="560"  cy="110" rx="16" ry="7"  fill="#0c0604"/>
+        <ellipse cx="870"  cy="116" rx="20" ry="8"  fill="#0c0604"/>
+        <ellipse cx="1060" cy="111" rx="14" ry="6"  fill="#0c0604"/>
+      </svg>`;
+
+      // Map condition key → Savanna condition class
+      function savannaConditionClass(condKey) {
+        if (condKey === 'clear-day' || condKey === 'clear-night') return 'clear';
+        if (['partly-day','partly-night','overcast','fog'].indexOf(condKey) >= 0) return 'cloudy';
+        if (condKey === 'rain' || condKey === 'drizzle') return 'rain';
+        if (condKey === 'snow') return 'snow';
+        if (condKey === 'thunder') return 'storm';
+        return 'clear';
+      }
+
+      // Map current hour → dawn/morning/midday/sunset/dusk/night
+      function getTimeOfDay(hour) {
+        if (hour >= 5  && hour < 7)  return 'dawn';
+        if (hour >= 7  && hour < 11) return 'morning';
+        if (hour >= 11 && hour < 15) return 'midday';
+        if (hour >= 15 && hour < 19) return 'sunset';
+        if (hour >= 19 && hour < 21) return 'dusk';
+        return 'night';
+      }
+
+      function initSavannaElements() {
+        if (!document.getElementById('savannaHorizon')) {
+          const el = document.createElement('div');
+          el.id = 'savannaHorizon';
+          el.className = 'savanna-horizon';
+          el.innerHTML = SAVANNA_HORIZON_SVG;
+          document.body.appendChild(el);
+        }
+        if (!document.getElementById('savannaSun')) {
+          const el = document.createElement('div');
+          el.id = 'savannaSun';
+          el.className = 'savanna-sun';
+          document.body.appendChild(el);
+        }
+      }
+
+      function updateSavannaVisuals(condKey) {
+        const sc = savannaConditionClass(condKey);
+        const tod = getTimeOfDay(new Date().getHours());
+        document.documentElement.setAttribute('data-savanna-condition', sc);
+        document.documentElement.setAttribute('data-savanna-time', tod);
+      }
+
       // Map condition key → Ghibli background category
       function ghibliConditionClass(condKey) {
         if (condKey === 'clear-day' || condKey === 'clear-night') return 'clear';
@@ -2301,7 +2652,8 @@
           btn.classList.toggle('active', btn.dataset.themeId === theme);
         });
 
-        if (theme === 'ghibli') initGhibliElements();
+        if (theme === 'ghibli')  initGhibliElements();
+        if (theme === 'savanna') initSavannaElements();
 
         // Immediately re-render description + visuals for the active theme
         if (lastCode !== null) {
@@ -2314,18 +2666,33 @@
             } else if (theme === 'ghibli') {
               const e = GHIBLI_DESC[lastCode];
               text = e ? (lastIsDay ? e.d : e.n) : null;
+            } else if (theme === 'savanna') {
+              const e = SAVANNA_DESC[lastCode];
+              text = e ? (lastIsDay ? e.d : e.n) : null;
             }
             if (text) descEl.textContent = text;
             else if (_origDescribe) descEl.textContent = _origDescribe(lastCode, lastIsDay);
           }
           const condKey = codeToCondition(lastCode, lastIsDay);
           updateGhibliVisuals(condKey);
+          updateSavannaVisuals(condKey);
         }
 
         updateSigil();
       }
 
-      // Intercept describe — injects GoT or Ghibli text
+      // Crossfade overlay — briefly flashes black between theme switches
+      const themeFadeEl = document.getElementById('themeFade');
+      function switchThemeWithFade(theme) {
+        if (!themeFadeEl) { applyTheme(theme); return; }
+        themeFadeEl.style.opacity = '1';
+        setTimeout(() => {
+          applyTheme(theme);
+          themeFadeEl.style.opacity = '0';
+        }, 150);
+      }
+
+      // Intercept describe — injects GoT, Ghibli, or Savanna text
       _origDescribe = window.__auroraDescribe;
       window.__auroraDescribe = function (code, isDay) {
         lastCode  = code;
@@ -2339,10 +2706,14 @@
           const entry = GHIBLI_DESC[code];
           if (entry) return isDay ? entry.d : entry.n;
         }
+        if (theme === 'savanna') {
+          const entry = SAVANNA_DESC[code];
+          if (entry) return isDay ? entry.d : entry.n;
+        }
         return _origDescribe ? _origDescribe(code, isDay) : '—';
       };
 
-      // Intercept visuals — sigil (GoT) + Ghibli background/Totoro
+      // Intercept visuals — sigil (GoT) + Ghibli + Savanna
       _origVisuals = window.__auroraVisuals;
       window.__auroraVisuals = function (code, isDay) {
         lastCode  = code;
@@ -2351,6 +2722,7 @@
         const condKey = codeToCondition(code, isDay);
         updateSigil();
         updateGhibliVisuals(condKey);
+        updateSavannaVisuals(condKey);
       };
 
       // ----- Theme picker UI -----
@@ -2381,12 +2753,12 @@
 
       document.querySelectorAll('.theme-option[data-theme-id]').forEach((btn) => {
         btn.addEventListener('click', () => {
-          applyTheme(btn.dataset.themeId);
+          switchThemeWithFade(btn.dataset.themeId);
           closePicker();
         });
       });
 
-      // Restore saved theme on load
+      // Restore saved theme on load (no fade on initial load)
       applyTheme(getTheme());
     })();
   </script>
