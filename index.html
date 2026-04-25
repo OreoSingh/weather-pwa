@@ -536,7 +536,15 @@
       letter-spacing: 0.02em;
     }
     .hourly-cell.now .hourly-time { color: #c9a9ff; }
-    .hourly-emoji { font-size: 22px; line-height: 1; }
+    .hourly-emoji {
+      width: 24px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      position: relative;
+    }
     .hourly-temp {
       font-size: 14px;
       font-weight: 600;
@@ -566,7 +574,42 @@
       color: rgba(255,255,255,0.9);
       min-width: 72px;
     }
-    .daily-emoji { font-size: 22px; flex-shrink: 0; }
+    .daily-emoji {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      line-height: 1;
+    }
+    .forecast-icon {
+      position: relative;
+      width: 24px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .forecast-icon-lottie {
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .forecast-icon-fallback {
+      position: absolute;
+      inset: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      opacity: 1;
+      transition: opacity 0.25s ease;
+    }
+    .forecast-icon.ready .forecast-icon-lottie { opacity: 1; }
+    .forecast-icon.ready .forecast-icon-fallback { opacity: 0; }
     .daily-precip {
       font-size: 12px;
       color: rgba(130,180,255,0.85);
@@ -597,7 +640,15 @@
       align-items: center;
       gap: 2px;
     }
-    .sun-icon { font-size: 20px; line-height: 1; margin-bottom: 1px; }
+    .sun-icon {
+      width: 40px;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      margin-bottom: 1px;
+    }
     .sun-label {
       font-size: 10px;
       font-weight: 600;
@@ -1383,10 +1434,10 @@
       to   { transform: scaleY(1); }
     }
     @keyframes savanna-bird-fly {
-      0%   { transform: translate(-10vw, var(--y)) scale(0.4); opacity: 0; }
+      0%   { transform: translate(110vw, var(--y)) scale(0.4); opacity: 0; }
       10%  { opacity: 0.6; }
       90%  { opacity: 0.6; }
-      100% { transform: translate(110vw, var(--y2)) scale(0.6); opacity: 0; }
+      100% { transform: translate(-20vw, var(--y2)) scale(0.6); opacity: 0; }
     }
 
     /* Antelope silhouettes */
@@ -1645,10 +1696,16 @@
     }
     /* Rain */
     [data-theme="got"][data-got-cond="rain"] .got-particle.rain {
-      background: rgba(170, 210, 255, 0.4);
-      width: 1px; height: 18px;
+      background: linear-gradient(to bottom, rgba(200, 225, 255, 0.5), rgba(130, 165, 210, 0.1));
+      width: 1px;
+      height: 20px;
       border-radius: 0;
-      animation: got-fall var(--fd) var(--fd2) linear infinite;
+      animation: got-rain-fall var(--rd, 1.7s) var(--rdelay, 0s) linear infinite;
+    }
+    @keyframes got-rain-fall {
+      0%   { transform: translate(0, -20px) rotate(13deg); opacity: 0; }
+      8%   { opacity: 0.9; }
+      100% { transform: translate(28px, 115vh) rotate(13deg); opacity: 0; }
     }
     @keyframes got-fall {
       0%   { transform: translate(0,-20px) rotate(0deg); opacity: 0; }
@@ -1770,12 +1827,161 @@
       opacity: 0;
       transition: opacity 0.15s ease;
     }
+    /* ----- Ambient Layer & Animations ----- */
+    .ambient-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .ambient-rain {
+      position: absolute;
+      width: 1px;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.15);
+      top: -100px;
+      animation: rain-fall 0.7s linear infinite;
+    }
+    @keyframes rain-fall {
+      to { transform: translateY(110vh); }
+    }
+
+    .ambient-snow {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: white;
+      border-radius: 50%;
+      top: -10px;
+      animation: snow-fall 4s linear infinite;
+    }
+    @keyframes snow-fall {
+      to { transform: translateY(110vh) translateX(30px); }
+    }
+
+    .ambient-cloud {
+      position: absolute;
+      width: 300px;
+      height: 150px;
+      background: rgba(255, 255, 255, 0.05);
+      filter: blur(50px);
+      border-radius: 50%;
+      animation: cloud-drift 40s linear infinite;
+    }
+    @keyframes cloud-drift {
+      from { left: -350px; }
+      to { left: 110vw; }
+    }
+
+    /* ----- Ghibli Elements ----- */
+    .soot-sprite {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #000;
+      border-radius: 50%;
+      box-shadow: 0 0 5px #000;
+      animation: soot-wobble 0.4s ease-in-out infinite alternate;
+    }
+    @keyframes soot-wobble {
+      from { transform: translate(0,0); }
+      to { transform: translate(3px, -3px); }
+    }
+
+    .sakura-petal {
+      position: absolute;
+      user-select: none;
+      animation: sakura-fall 12s linear infinite;
+    }
+    @keyframes sakura-fall {
+      0% { transform: translate(0,0) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translate(150px, 110vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* ----- Creature Containers ----- */
+    .dragon-container {
+      position: fixed;
+      top: 72px;
+      right: 20px;
+      width: 180px;
+      height: 180px;
+      z-index: 5;
+      pointer-events: none;
+    }
+    .ghibli-totoro-lottie {
+      position: fixed;
+      right: 24px;
+      bottom: 8px;
+      width: 110px;
+      height: 110px;
+      opacity: 0.62;
+      z-index: 5;
+      pointer-events: none;
+    }
+    .ghibli-kodama {
+      position: fixed;
+      left: 22px;
+      bottom: 146px;
+      width: 18px;
+      height: 28px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.35);
+      z-index: 5;
+      animation: kodama-bob 2.8s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .ghibli-kodama::before,
+    .ghibli-kodama::after {
+      content: '';
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: #222;
+      top: 9px;
+    }
+    .ghibli-kodama::before { left: 5px; }
+    .ghibli-kodama::after { right: 5px; }
+    @keyframes kodama-bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    .savanna-animal-track {
+      position: fixed;
+      bottom: 40px;
+      left: 0;
+      width: 100%;
+      height: 130px;
+      z-index: 5;
+      pointer-events: none;
+      overflow: visible;
+    }
+
+    .animal-lottie {
+      position: absolute;
+      height: 120px;
+      bottom: 0;
+      animation: animal-walk 45s linear infinite;
+      transform: translateX(-260px);
+      will-change: transform;
+    }
+    @keyframes animal-walk {
+      from { transform: translateX(-260px); }
+      to { transform: translateX(calc(100vw + 260px)); }
+    }
   </style>
 </head>
 <body>
   <div id="themeFade" aria-hidden="true"></div>
   <div class="bg" aria-hidden="true"></div>
   <div class="stars" aria-hidden="true"></div>
+  <div id="ambient-layer" class="ambient-layer" aria-hidden="true"></div>
 
   <main class="app">
     <header class="header">
@@ -1957,12 +2163,12 @@
       <div class="daily-list" id="dailyList"></div>
       <div class="sun-row" id="sunRow" style="display:none">
         <div class="sun-item">
-          <span class="sun-icon">🌅</span>
+          <span class="sun-icon" id="sunriseIcon"></span>
           <span class="sun-label">Sunrise</span>
           <span class="sun-time" id="sunriseVal">--:--</span>
         </div>
         <div class="sun-item">
-          <span class="sun-icon">🌇</span>
+          <span class="sun-icon" id="sunsetIcon"></span>
           <span class="sun-label">Sunset</span>
           <span class="sun-time" id="sunsetVal">--:--</span>
         </div>
@@ -2157,6 +2363,12 @@
       function emojiForCode(code, isDayBool) {
         return (window.__auroraEmoji || (() => '🌤️'))(code, isDayBool);
       }
+      function iconMarkupForCode(code, isDayBool) {
+        const build = window.__auroraIconMarkup;
+        if (typeof build === 'function') return build(code, isDayBool);
+        const emoji = emojiForCode(code, isDayBool);
+        return '<span class="forecast-icon"><span class="forecast-icon-fallback">' + emoji + '</span></span>';
+      }
 
       function renderHourly(hourly, currentIso) {
         if (!hourly || !hourly.time || !hourly.time.length) {
@@ -2178,15 +2390,16 @@
           const code = hourly.weather_code[i];
           const isDayHour = hourly.is_day[i] !== 0;
           const timeLabel = isNow ? 'Now' : fmtHour(times[i]);
-          const emoji = emojiForCode(code, isDayHour);
+          const icon = iconMarkupForCode(code, isDayHour);
           html += '<div class="hourly-cell' + (isNow ? ' now' : '') + '">' +
             '<span class="hourly-time">' + timeLabel + '</span>' +
-            '<span class="hourly-emoji">' + emoji + '</span>' +
+            '<span class="hourly-emoji">' + icon + '</span>' +
             '<span class="hourly-temp">' + temp + '°</span>' +
             '<span class="hourly-precip">' + (precip > 0 ? precip + '%' : '') + '</span>' +
             '</div>';
         }
         el.hourlyList.innerHTML = html;
+        if (window.__auroraHydrateForecastIcons) window.__auroraHydrateForecastIcons(el.hourlyList);
         el.hourlySection.style.display = '';
       }
 
@@ -2201,11 +2414,11 @@
           const lo = toDisplay(daily.temperature_2m_min[i]);
           const code = daily.weather_code[i];
           const precip = daily.precipitation_probability_max[i];
-          const emoji = emojiForCode(code, true);
+          const icon = iconMarkupForCode(code, true);
           const day = fmtDay(daily.time[i], i);
           html += '<div class="daily-row">' +
             '<span class="daily-day">' + day + '</span>' +
-            '<span class="daily-emoji">' + emoji + '</span>' +
+            '<span class="daily-emoji">' + icon + '</span>' +
             '<span class="daily-precip">' + (precip > 0 ? precip + '%' : '') + '</span>' +
             '<div class="daily-temps">' +
               '<span class="daily-hi">' + hi + '°</span>' +
@@ -2214,6 +2427,7 @@
             '</div>';
         }
         el.dailyList.innerHTML = html;
+        if (window.__auroraHydrateForecastIcons) window.__auroraHydrateForecastIcons(el.dailyList);
 
         if (daily.sunrise && daily.sunrise[0]) {
           el.sunriseVal.textContent = fmtSunTime(daily.sunrise[0]);
@@ -2622,6 +2836,56 @@
         });
       }
 
+      function mountSunIcon(iconId, url) {
+        const icon = document.getElementById(iconId);
+        if (!icon) return;
+        icon.innerHTML = '';
+        ensureLottie().then((ok) => {
+          if (!ok) {
+            icon.style.display = 'none';
+            return;
+          }
+          const player = document.createElement('lottie-player');
+          player.setAttribute('src', url);
+          player.setAttribute('background', 'transparent');
+          player.setAttribute('speed', '1');
+          player.setAttribute('loop', '');
+          player.setAttribute('autoplay', '');
+          player.style.width = '40px';
+          player.style.height = '40px';
+          player.addEventListener('error', () => {
+            icon.style.display = 'none';
+          });
+          icon.appendChild(player);
+        });
+      }
+      window.__auroraIconMarkup = function (code, isDay) {
+        const key = codeToCondition(code, isDay);
+        const visual = VISUALS[key] || VISUALS['partly-day'];
+        return '<span class="forecast-icon">' +
+          '<lottie-player class="forecast-icon-lottie" src="' + visual.lottie + '" background="transparent" speed="1" loop autoplay></lottie-player>' +
+          '<span class="forecast-icon-fallback">' + visual.emoji + '</span>' +
+          '</span>';
+      };
+      window.__auroraHydrateForecastIcons = function (root) {
+        if (!root) return;
+        ensureLottie().then((ok) => {
+          if (!ok) return;
+          root.querySelectorAll('.forecast-icon').forEach((icon) => {
+            const player = icon.querySelector('.forecast-icon-lottie');
+            if (!player || player.dataset.wired === '1') return;
+            player.dataset.wired = '1';
+            player.addEventListener('ready', () => {
+              icon.classList.add('ready');
+            });
+            player.addEventListener('error', () => {
+              icon.classList.remove('ready');
+              player.style.display = 'none';
+            });
+          });
+        });
+      };
+
       // ----- Visuals hook called from chunk 1 -----
       window.__auroraVisuals = function (code, isDay) {
         const key = codeToCondition(code, isDay);
@@ -2650,6 +2914,7 @@
 
       // Expose codeToCondition for reuse by chunk 3 (theme system).
       window.__auroraCondition = codeToCondition;
+      window.__auroraEnsureLottie = ensureLottie;
 
       // ----- Service worker -----
       if ('serviceWorker' in navigator) {
@@ -2662,6 +2927,9 @@
 
       // Warm up Lottie so the first swap feels instant.
       ensureLottie();
+      // Sunrise / sunset use separate assets and fail silently if unavailable.
+      mountSunIcon('sunriseIcon', 'https://assets9.lottiefiles.com/packages/lf20_xlmz9xwm.json');
+      mountSunIcon('sunsetIcon', 'https://assets9.lottiefiles.com/packages/lf20_ymbNDJ.json');
 
       // Kick off the app now that visuals + describe are wired up.
       if (window.__auroraBoot) window.__auroraBoot();
@@ -2674,6 +2942,175 @@
       'use strict';
 
       const THEME_KEY = 'aurora.theme';
+
+      // ----- Ambient & Creature Helpers -----
+      function clearAmbientLayer() {
+        const layer = document.getElementById('ambient-layer');
+        if (layer) layer.innerHTML = '';
+      }
+
+      function updateAmbientLayer(condKey) {
+        clearAmbientLayer();
+        const layer = document.getElementById('ambient-layer');
+        if (!layer) return;
+
+        if (condKey === 'rain' || condKey === 'drizzle' || condKey === 'thunder') {
+          for (let i = 0; i < 40; i++) {
+            const rain = document.createElement('div');
+            rain.className = 'ambient-rain';
+            rain.style.left = Math.random() * 100 + 'vw';
+            rain.style.animationDuration = (0.5 + Math.random() * 0.3) + 's';
+            rain.style.animationDelay = Math.random() * 2 + 's';
+            layer.appendChild(rain);
+          }
+        } else if (condKey === 'snow') {
+          for (let i = 0; i < 30; i++) {
+            const snow = document.createElement('div');
+            snow.className = 'ambient-snow';
+            snow.style.left = Math.random() * 100 + 'vw';
+            snow.style.animationDuration = (3 + Math.random() * 2) + 's';
+            snow.style.animationDelay = Math.random() * 5 + 's';
+            layer.appendChild(snow);
+          }
+        } else if (
+          condKey === 'partly-day' ||
+          condKey === 'partly-night' ||
+          condKey === 'overcast' ||
+          condKey === 'fog'
+        ) {
+          for (let i = 0; i < 5; i++) {
+            const cloud = document.createElement('div');
+            cloud.className = 'ambient-cloud';
+            cloud.style.top = Math.random() * 80 + 'vh';
+            cloud.style.animationDuration = (30 + Math.random() * 20) + 's';
+            cloud.style.animationDelay = -(Math.random() * 40) + 's';
+            layer.appendChild(cloud);
+          }
+        }
+      }
+
+      function updateThemeCreatures(theme, condKey) {
+        document.querySelectorAll('.dragon-container, .savanna-animal-track, .soot-sprite, .sakura-petal, .ghibli-totoro-lottie, .ghibli-kodama').forEach(el => el.remove());
+        const layer = document.getElementById('ambient-layer');
+        if (!layer) return;
+
+        function mountSafeLottie(host, url, opts = {}) {
+          if (!host) return;
+          const ensure = window.__auroraEnsureLottie || (() => Promise.resolve(Boolean(customElements.get('lottie-player'))));
+          ensure().then((ok) => {
+            if (!ok) {
+              host.style.display = 'none';
+              return;
+            }
+            const p = document.createElement('lottie-player');
+            p.setAttribute('src', url);
+            p.setAttribute('background', 'transparent');
+            p.setAttribute('speed', String(opts.speed || 1));
+            p.setAttribute('loop', '');
+            p.setAttribute('autoplay', '');
+            p.style.width = '100%';
+            p.style.height = '100%';
+            p.style.transform = opts.flipX ? 'scaleX(-1)' : 'none';
+            p.addEventListener('error', () => {
+              host.style.display = 'none';
+            });
+            host.appendChild(p);
+          });
+        }
+
+        if (theme === 'got') {
+          const drag = document.createElement('div');
+          drag.className = 'dragon-container';
+          mountSafeLottie(
+            drag,
+            'https://lottie.host/81a9f143-6d00-474c-83b5-128a1c97a8e7/C6O7j0h3t0.json',
+            { speed: 1 }
+          );
+          layer.appendChild(drag);
+        } else if (theme === 'ghibli') {
+          const totoro = document.createElement('div');
+          totoro.className = 'ghibli-totoro-lottie';
+          mountSafeLottie(
+            totoro,
+            'https://lottie.host/9c0f6f63-5c9b-4d8f-ae8a-5e2f6d3fa2f1/1mQw2bRk8N.json',
+            { speed: 1 }
+          );
+          layer.appendChild(totoro);
+          for (let i = 0; i < 8; i++) {
+            const soot = document.createElement('div');
+            soot.className = 'soot-sprite';
+            soot.style.left = Math.random() * 100 + 'vw';
+            soot.style.top = Math.random() * 100 + 'vh';
+            soot.style.animationDelay = Math.random() * 2 + 's';
+            layer.appendChild(soot);
+          }
+          for (let i = 0; i < 15; i++) {
+            const petal = document.createElement('div');
+            petal.className = 'sakura-petal';
+            petal.textContent = '🌸';
+            petal.style.left = Math.random() * 100 + 'vw';
+            petal.style.top = '-20px';
+            petal.style.fontSize = (12 + Math.random() * 12) + 'px';
+            petal.style.animationDuration = (8 + Math.random() * 8) + 's';
+            petal.style.animationDelay = Math.random() * 10 + 's';
+            layer.appendChild(petal);
+          }
+          if (condKey === 'fog') {
+            const kodama = document.createElement('div');
+            kodama.className = 'ghibli-kodama';
+            layer.appendChild(kodama);
+          }
+        } else if (theme === 'savanna') {
+          const track = document.createElement('div');
+          track.className = 'savanna-animal-track';
+
+          function addSavannaAnimal(config) {
+            const host = document.createElement('div');
+            host.className = 'animal-lottie';
+            host.style.width = config.width;
+            host.style.height = config.height;
+            host.style.bottom = config.bottom;
+            host.style.top = config.top;
+            host.style.animationDuration = config.duration;
+            host.style.animationDelay = config.delay;
+            mountSafeLottie(host, config.url, { speed: config.speed || 1, flipX: false });
+            track.appendChild(host);
+          }
+
+          addSavannaAnimal({
+            url: 'https://lottie.host/8e895781-64d5-4702-8664-884860714774/2lX3N1pG5V.json', // elephant walk
+            width: '150px',
+            height: '120px',
+            bottom: '0',
+            top: 'auto',
+            duration: '52s',
+            delay: '0s',
+            speed: 0.8,
+          });
+          addSavannaAnimal({
+            url: 'https://lottie.host/4bb8a2e9-bca2-450e-a695-e11fa89e56dd/WK2qr4rmj9.json', // giraffe
+            width: '130px',
+            height: '120px',
+            bottom: '0',
+            top: 'auto',
+            duration: '62s',
+            delay: '-18s',
+            speed: 0.85,
+          });
+          addSavannaAnimal({
+            url: 'https://lottie.host/0ca78e95-d780-4f9b-8f35-a2045ecf3f8f/8v3PJ9M2hE.json', // antelope run
+            width: '110px',
+            height: '90px',
+            bottom: '8px',
+            top: 'auto',
+            duration: '40s',
+            delay: '-8s',
+            speed: 1.05,
+          });
+
+          layer.appendChild(track);
+        }
+      }
 
       // ── GoT weather descriptions ──────────────────────────────
       const GOT_DESC = {
@@ -2900,15 +3337,6 @@
 
       let _catbusTimer = null;
 
-      function launchCatbus() {
-        const bus = document.getElementById('ghibliCatbus');
-        if (!bus || bus.classList.contains('go')) return;
-        bus.classList.add('go');
-        bus.addEventListener('animationend', function () {
-          bus.classList.remove('go');
-        }, { once: true });
-      }
-
       function initGhibliElements() {
         if (!document.getElementById('ghibliClouds')) {
           const wrap = document.createElement('div');
@@ -2958,14 +3386,6 @@
           el.innerHTML = TOTORO_SVG;
           document.body.appendChild(el);
         }
-        if (!document.getElementById('ghibliCatbus')) {
-          const bus = document.createElement('div');
-          bus.id = 'ghibliCatbus';
-          bus.className = 'ghibli-catbus';
-          bus.setAttribute('aria-hidden', 'true');
-          bus.innerHTML = CATBUS_SVG;
-          document.body.appendChild(bus);
-        }
         if (!document.getElementById('ghibliSoots')) {
           const wrap = document.createElement('div');
           wrap.id = 'ghibliSoots';
@@ -2985,12 +3405,7 @@
           const card = document.getElementById('card');
           if (card) card.appendChild(wrap);
         }
-        if (!_catbusTimer) {
-          _catbusTimer = setInterval(function () {
-            const cond = document.documentElement.getAttribute('data-ghibli-condition');
-            if (cond === 'clear') launchCatbus();
-          }, 30000);
-        }
+        if (!_catbusTimer) _catbusTimer = true;
       }
 
       function ghibliConditionClass(condKey) {
@@ -3041,19 +3456,13 @@
               '--rot:'  + rot + 'deg',
               '--fd:'   + (3 + Math.random() * 6) + 's',
               '--fd2:'  + (Math.random() * 8) + 's',
+              '--rd:'   + (1.5 + Math.random() * 0.5) + 's',
+              '--rdelay:' + (Math.random() * 1.2) + 's',
               'width:'  + (isRain ? 1 : 2 + Math.random() * 3) + 'px',
               'height:' + (isRain ? 18 : 2 + Math.random() * 3) + 'px',
             ].join(';');
             wrap.appendChild(p);
           }
-          document.body.appendChild(wrap);
-        }
-        if (!document.getElementById('gotDragon')) {
-          const wrap = document.createElement('div');
-          wrap.id = 'gotDragon';
-          wrap.className = 'got-dragon';
-          wrap.setAttribute('aria-hidden', 'true');
-          wrap.innerHTML = `<svg viewBox="0 0 100 50"><path d="M10 25 Q30 0 50 15 Q70 0 90 25 Q70 40 50 25 Q30 40 10 25 Z M50 15 Q60 5 70 15 Q60 20 50 25 Q40 20 30 15 Q40 5 50 15" fill="#050505"/></svg>`;
           document.body.appendChild(wrap);
         }
       }
@@ -3086,10 +3495,6 @@
             <svg class="savanna-layer front" viewBox="0 0 1000 100" preserveAspectRatio="none">
               <path d="M0 100 V90 Q200 70 400 90 T700 80 T1000 90 V100 Z" />
             </svg>
-            <div id="savannaAntelopes"></div>
-            <div id="savannaElephant" class="savanna-elephant">
-              <svg viewBox="0 0 60 40"><path d="M10 30 Q15 10 25 15 Q30 5 45 15 Q50 35 45 40 Q40 30 35 30 Q30 40 25 40 Q20 30 15 35 Z M45 15 Q55 20 50 40 Q45 35 45 15" fill="#1a0f0a"/><circle cx="40" cy="12" r="1.5" fill="#ffdeb3"/></svg>
-            </div>
             <div class="savanna-shimmer"></div>
           `;
           document.body.appendChild(bg);
@@ -3108,14 +3513,6 @@
             birdWrap.appendChild(b);
           }
 
-          const antWrap = document.getElementById('savannaAntelopes');
-          for (let i = 0; i < 4; i++) {
-            const a = document.createElement('div');
-            a.className = 'savanna-antelope';
-            a.style.left = (15 + Math.random() * 70) + 'vw';
-            a.style.animationDelay = (Math.random() * 5) + 's';
-            antWrap.appendChild(a);
-          }
         }
         
         // Add parallax listener
@@ -3220,6 +3617,8 @@
           }
           if (theme === 'ghibli')  updateGhibliVisuals(condKey);
           if (theme === 'savanna') updateSavannaVisuals(condKey);
+          updateAmbientLayer(condKey);
+          updateThemeCreatures(theme, condKey);
         }
 
         updateSigil();
@@ -3279,6 +3678,8 @@
         if (theme === 'got')     updateGotCondition(condKey);
         if (theme === 'ghibli')  updateGhibliVisuals(condKey);
         if (theme === 'savanna') updateSavannaVisuals(condKey);
+        updateAmbientLayer(condKey);
+        updateThemeCreatures(theme, condKey);
       };
 
       // ----- Theme picker UI -----
