@@ -649,6 +649,32 @@
       line-height: 1;
       margin-bottom: 1px;
     }
+    .sun-icon svg { width: 100%; height: 100%; display: block; }
+    .sun-horizon { stroke: rgba(255,255,255,0.72); stroke-width: 2; }
+    .sunrise-core {
+      fill: #FFD700;
+      animation: sunrise-bob 2s ease-in-out infinite;
+      transform-origin: 50px 46px;
+    }
+    .sunset-core {
+      fill: #FF6B35;
+      animation: sunset-bob 2s ease-in-out infinite;
+      transform-origin: 50px 46px;
+    }
+    .sunrise-ray { stroke: #FFD700; stroke-width: 2; stroke-linecap: round; animation: sun-ray-pulse 2s infinite; }
+    .sunset-ray { stroke: #FF4500; stroke-width: 2; stroke-linecap: round; animation: sun-ray-pulse 2s infinite; }
+    @keyframes sunrise-bob {
+      0%,100% { transform: translateY(4px); }
+      50% { transform: translateY(0); }
+    }
+    @keyframes sunset-bob {
+      0%,100% { transform: translateY(4px); }
+      50% { transform: translateY(0); }
+    }
+    @keyframes sun-ray-pulse {
+      0%,100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
     .sun-label {
       font-size: 10px;
       font-weight: 600;
@@ -1628,8 +1654,8 @@
 
     /* Sakura / Leaves */
     .ghibli-particle {
-      position: fixed; top: -20px;
-      pointer-events: none; z-index: 4;
+      position: fixed; top: -20vh;
+      pointer-events: none; z-index: 1;
       animation: ghibli-fall var(--dur) linear infinite;
     }
     .sakura { background: #ffc0cb; border-radius: 10px 0 10px 0; }
@@ -1784,24 +1810,6 @@
     }
 
     /* ===================== Ghibli: CATBUS ===================== */
-    .ghibli-catbus {
-      position: fixed;
-      top: 22%;
-      left: -250px;
-      width: 230px;
-      pointer-events: none; z-index: 5;
-      opacity: 0;
-    }
-    .ghibli-catbus.go {
-      animation: catbus-dash 7.5s cubic-bezier(0.35,0,0.65,1) forwards;
-    }
-    @keyframes catbus-dash {
-      0%   { left: -250px; opacity: 0; }
-      6%   { opacity: 0.90; }
-      92%  { opacity: 0.90; }
-      100% { left: calc(100vw + 250px); opacity: 0; }
-    }
-
     /* ===================== Ghibli: COLOUR-DRIFTING BLOBS ===================== */
     @keyframes ghibli-blob-a {
       0%,100% { transform: translate(0,0) scale(1);          filter: hue-rotate(0deg); }
@@ -1954,10 +1962,10 @@
 
     .savanna-animal-track {
       position: fixed;
-      bottom: 40px;
+      bottom: 0;
       left: 0;
       width: 100%;
-      height: 130px;
+      height: 15vh;
       z-index: 5;
       pointer-events: none;
       overflow: visible;
@@ -1966,14 +1974,14 @@
     .animal-lottie {
       position: absolute;
       height: 120px;
-      bottom: 0;
+      bottom: 1.2vh;
       animation: animal-walk 45s linear infinite;
-      transform: translateX(-260px);
+      transform: translateX(110vw);
       will-change: transform;
     }
     @keyframes animal-walk {
-      from { transform: translateX(-260px); }
-      to { transform: translateX(calc(100vw + 260px)); }
+      from { transform: translateX(110vw); }
+      to { transform: translateX(-300px); }
     }
   </style>
 </head>
@@ -2836,28 +2844,33 @@
         });
       }
 
-      function mountSunIcon(iconId, url) {
+      function mountCssSunIcon(iconId, kind) {
         const icon = document.getElementById(iconId);
         if (!icon) return;
-        icon.innerHTML = '';
-        ensureLottie().then((ok) => {
-          if (!ok) {
-            icon.style.display = 'none';
-            return;
-          }
-          const player = document.createElement('lottie-player');
-          player.setAttribute('src', url);
-          player.setAttribute('background', 'transparent');
-          player.setAttribute('speed', '1');
-          player.setAttribute('loop', '');
-          player.setAttribute('autoplay', '');
-          player.style.width = '40px';
-          player.style.height = '40px';
-          player.addEventListener('error', () => {
-            icon.style.display = 'none';
-          });
-          icon.appendChild(player);
-        });
+        if (kind === 'sunrise') {
+          icon.innerHTML = '<svg viewBox="0 0 100 60" aria-hidden="true">' +
+            '<line class="sun-horizon" x1="14" y1="42" x2="86" y2="42"></line>' +
+            '<path class="sunrise-core" d="M34 42a16 16 0 0 1 32 0Z"></path>' +
+            '<line class="sunrise-ray" x1="50" y1="10" x2="50" y2="18"></line>' +
+            '<line class="sunrise-ray" x1="34" y1="14" x2="39" y2="21"></line>' +
+            '<line class="sunrise-ray" x1="66" y1="14" x2="61" y2="21"></line>' +
+            '<line class="sunrise-ray" x1="24" y1="24" x2="32" y2="27"></line>' +
+            '<line class="sunrise-ray" x1="76" y1="24" x2="68" y2="27"></line>' +
+            '<line class="sunrise-ray" x1="50" y1="20" x2="50" y2="26"></line>' +
+            '</svg>';
+        } else {
+          icon.innerHTML = '<svg viewBox="0 0 100 60" aria-hidden="true">' +
+            '<line class="sun-horizon" x1="14" y1="42" x2="86" y2="42"></line>' +
+            '<path class="sunset-core" d="M34 46a16 16 0 0 1 32 0Z"></path>' +
+            '<line class="sunset-ray" x1="50" y1="12" x2="50" y2="20"></line>' +
+            '<line class="sunset-ray" x1="34" y1="16" x2="39" y2="23"></line>' +
+            '<line class="sunset-ray" x1="66" y1="16" x2="61" y2="23"></line>' +
+            '<line class="sunset-ray" x1="24" y1="26" x2="32" y2="29"></line>' +
+            '<line class="sunset-ray" x1="76" y1="26" x2="68" y2="29"></line>' +
+            '<line class="sunset-ray" x1="50" y1="22" x2="50" y2="28"></line>' +
+            '</svg>';
+        }
+        icon.style.display = '';
       }
       window.__auroraIconMarkup = function (code, isDay) {
         const key = codeToCondition(code, isDay);
@@ -2875,13 +2888,18 @@
             const player = icon.querySelector('.forecast-icon-lottie');
             if (!player || player.dataset.wired === '1') return;
             player.dataset.wired = '1';
+            let failed = false;
             player.addEventListener('ready', () => {
               icon.classList.add('ready');
             });
             player.addEventListener('error', () => {
+              failed = true;
               icon.classList.remove('ready');
               player.style.display = 'none';
             });
+            setTimeout(() => {
+              if (!failed) icon.classList.add('ready');
+            }, 1200);
           });
         });
       };
@@ -2927,9 +2945,8 @@
 
       // Warm up Lottie so the first swap feels instant.
       ensureLottie();
-      // Sunrise / sunset use separate assets and fail silently if unavailable.
-      mountSunIcon('sunriseIcon', 'https://assets9.lottiefiles.com/packages/lf20_xlmz9xwm.json');
-      mountSunIcon('sunsetIcon', 'https://assets9.lottiefiles.com/packages/lf20_ymbNDJ.json');
+      mountCssSunIcon('sunriseIcon', 'sunrise');
+      mountCssSunIcon('sunsetIcon', 'sunset');
 
       // Kick off the app now that visuals + describe are wired up.
       if (window.__auroraBoot) window.__auroraBoot();
@@ -2996,10 +3013,22 @@
 
         function mountSafeLottie(host, url, opts = {}) {
           if (!host) return;
+          const fallback = () => {
+            if (opts.fallbackEmoji) {
+              host.textContent = opts.fallbackEmoji;
+              host.style.display = '';
+              host.style.fontSize = opts.fallbackSize || '42px';
+              host.style.lineHeight = '1';
+              host.style.textAlign = 'center';
+              host.style.filter = opts.fallbackFilter || 'none';
+            } else {
+              host.style.display = 'none';
+            }
+          };
           const ensure = window.__auroraEnsureLottie || (() => Promise.resolve(Boolean(customElements.get('lottie-player'))));
           ensure().then((ok) => {
             if (!ok) {
-              host.style.display = 'none';
+              fallback();
               return;
             }
             const p = document.createElement('lottie-player');
@@ -3012,28 +3041,22 @@
             p.style.height = '100%';
             p.style.transform = opts.flipX ? 'scaleX(-1)' : 'none';
             p.addEventListener('error', () => {
-              host.style.display = 'none';
+              p.remove();
+              fallback();
             });
             host.appendChild(p);
           });
         }
 
         if (theme === 'got') {
-          const drag = document.createElement('div');
-          drag.className = 'dragon-container';
-          mountSafeLottie(
-            drag,
-            'https://lottie.host/81a9f143-6d00-474c-83b5-128a1c97a8e7/C6O7j0h3t0.json',
-            { speed: 1 }
-          );
-          layer.appendChild(drag);
+          return;
         } else if (theme === 'ghibli') {
           const totoro = document.createElement('div');
           totoro.className = 'ghibli-totoro-lottie';
           mountSafeLottie(
             totoro,
             'https://lottie.host/9c0f6f63-5c9b-4d8f-ae8a-5e2f6d3fa2f1/1mQw2bRk8N.json',
-            { speed: 1 }
+            { speed: 1, fallbackEmoji: '🌳', fallbackSize: '70px', fallbackFilter: 'opacity(0.7)' }
           );
           layer.appendChild(totoro);
           for (let i = 0; i < 8; i++) {
@@ -3073,7 +3096,13 @@
             host.style.top = config.top;
             host.style.animationDuration = config.duration;
             host.style.animationDelay = config.delay;
-            mountSafeLottie(host, config.url, { speed: config.speed || 1, flipX: false });
+            mountSafeLottie(host, config.url, {
+              speed: config.speed || 1,
+              flipX: false,
+              fallbackEmoji: config.fallbackEmoji,
+              fallbackSize: config.fallbackSize || '52px',
+              fallbackFilter: 'brightness(0.7) saturate(0.9)',
+            });
             track.appendChild(host);
           }
 
@@ -3082,30 +3111,36 @@
             width: '150px',
             height: '120px',
             bottom: '0',
-            top: 'auto',
+            top: '',
             duration: '52s',
             delay: '0s',
             speed: 0.8,
+            fallbackEmoji: '🐘',
+            fallbackSize: '56px',
           });
           addSavannaAnimal({
             url: 'https://lottie.host/4bb8a2e9-bca2-450e-a695-e11fa89e56dd/WK2qr4rmj9.json', // giraffe
             width: '130px',
             height: '120px',
             bottom: '0',
-            top: 'auto',
+            top: '',
             duration: '62s',
             delay: '-18s',
             speed: 0.85,
+            fallbackEmoji: '🦒',
+            fallbackSize: '52px',
           });
           addSavannaAnimal({
             url: 'https://lottie.host/0ca78e95-d780-4f9b-8f35-a2045ecf3f8f/8v3PJ9M2hE.json', // antelope run
             width: '110px',
             height: '90px',
-            bottom: '8px',
-            top: 'auto',
+            bottom: '0',
+            top: '',
             duration: '40s',
             delay: '-8s',
             speed: 1.05,
+            fallbackEmoji: '🦌',
+            fallbackSize: '48px',
           });
 
           layer.appendChild(track);
@@ -3304,36 +3339,6 @@
         96: { d: 'The ancestors speak in the thunder',           n: 'The ancestors speak in the thunder' },
         99: { d: 'The ancestors speak in the thunder',           n: 'The ancestors speak in the thunder' },
       };
-
-      // ── Catbus SVG + timer (declared before initGhibliElements which uses them) ──
-      const CATBUS_SVG = `<svg viewBox="0 0 250 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <rect x="14" y="22" width="208" height="64" rx="22" fill="#c4a860"/>
-        <line x1="64"  y1="22" x2="64"  y2="86" stroke="#a88840" stroke-width="1.5" opacity="0.4"/>
-        <line x1="110" y1="22" x2="110" y2="86" stroke="#a88840" stroke-width="1.5" opacity="0.4"/>
-        <line x1="156" y1="22" x2="156" y2="86" stroke="#a88840" stroke-width="1.5" opacity="0.4"/>
-        <rect x="22"  y="33" width="30" height="22" rx="6" fill="rgba(210,240,255,0.50)"/>
-        <rect x="62"  y="33" width="30" height="22" rx="6" fill="rgba(210,240,255,0.50)"/>
-        <rect x="102" y="33" width="30" height="22" rx="6" fill="rgba(210,240,255,0.50)"/>
-        <rect x="142" y="33" width="30" height="22" rx="6" fill="rgba(210,240,255,0.50)"/>
-        <circle cx="217" cy="38" r="12" fill="#1c1508"/>
-        <circle cx="217" cy="68" r="12" fill="#1c1508"/>
-        <ellipse cx="217" cy="38" rx="7" ry="8" fill="#88cc44"/>
-        <ellipse cx="217" cy="68" rx="7" ry="8" fill="#88cc44"/>
-        <ellipse cx="218" cy="36" rx="3" ry="4" fill="#060806"/>
-        <ellipse cx="218" cy="66" rx="3" ry="4" fill="#060806"/>
-        <ellipse cx="232" cy="53" rx="9" ry="6" fill="#c8a060"/>
-        <ellipse cx="235" cy="53" rx="5.5" ry="3.5" fill="#0c0a08" opacity="0.65"/>
-        <line x1="238" y1="50" x2="248" y2="46" stroke="#c4a060" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
-        <line x1="238" y1="53" x2="250" y2="53" stroke="#c4a060" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
-        <line x1="238" y1="56" x2="248" y2="60" stroke="#c4a060" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
-        <path d="M214 22 L206 8 L222 16Z" fill="#c4a860"/>
-        <path d="M14 54 Q0 44 4 30 Q8 18 17 28" stroke="#c4a060" stroke-width="8" fill="none" stroke-linecap="round"/>
-        <ellipse cx="55"  cy="92" rx="14" ry="10" fill="#a88840" transform="rotate(-12 55 92)"/>
-        <ellipse cx="95"  cy="95" rx="14" ry="10" fill="#a88840" transform="rotate( 10 95 95)"/>
-        <ellipse cx="132" cy="92" rx="14" ry="10" fill="#a88840" transform="rotate(-10 132 92)"/>
-        <ellipse cx="168" cy="95" rx="14" ry="10" fill="#a88840" transform="rotate(  8 168 95)"/>
-        <ellipse cx="200" cy="92" rx="14" ry="10" fill="#a88840" transform="rotate(-12 200 92)"/>
-      </svg>`;
 
       let _catbusTimer = null;
 
