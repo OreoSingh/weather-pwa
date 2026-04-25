@@ -1276,28 +1276,55 @@
     .savanna-layer.front { height: 10vh; fill: #1a0f0a; }
 
     .savanna-sun {
-      position: absolute; bottom: 20vh; left: 50%;
-      width: 130px; height: 130px;
-      background: #fff8e1;
+      position: absolute; bottom: 25vh; left: 50%;
+      width: 110px; height: 110px;
+      background: radial-gradient(circle at 40% 40%, #fff8e1 0%, #ffde33 40%, #ff9800 100%);
       border-radius: 50%;
       transform: translateX(-50%);
-      box-shadow: 0 0 80px #ff6b00, 0 0 150px rgba(255,107,0,0.5);
-      animation: savanna-sun-pulse 10s ease-in-out infinite;
+      box-shadow: 0 0 40px #ff6b00, 0 0 100px rgba(255,107,0,0.4);
+      filter: blur(1px);
+      animation: savanna-sun-pulse 12s ease-in-out infinite;
     }
     @keyframes savanna-sun-pulse {
-      0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.9; }
-      50%      { transform: translateX(-50%) scale(1.05); opacity: 1; }
+      0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.85; }
+      50%      { transform: translateX(-50%) scale(1.08); opacity: 1; }
     }
 
-    .savanna-birds-wrap { position: absolute; inset: 0; pointer-events: none; }
+    .savanna-birds-wrap { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
     .savanna-bird {
       position: absolute;
       width: 20px; height: 10px;
       animation: savanna-bird-fly var(--dur) var(--delay) linear infinite;
     }
+    .savanna-bird svg { 
+      filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3)); 
+      opacity: 0.7; 
+      animation: savanna-bird-flap 0.6s ease-in-out infinite alternate;
+    }
+    @keyframes savanna-bird-flap {
+      from { transform: scaleY(0.4); }
+      to   { transform: scaleY(1); }
+    }
     @keyframes savanna-bird-fly {
-      0%   { transform: translate(-50px, var(--y)) scale(0.5); opacity: 0; }
-      10%  { opacity: 0.8; }
+      0%   { transform: translate(-10vw, var(--y)) scale(0.4); opacity: 0; }
+      10%  { opacity: 0.6; }
+      90%  { opacity: 0.6; }
+      100% { transform: translate(110vw, var(--y2)) scale(0.6); opacity: 0; }
+    }
+
+    /* Antelope silhouettes */
+    .savanna-antelope {
+      position: absolute;
+      bottom: 8vh;
+      width: 40px; height: 30px;
+      background: url('data:image/svg+xml,%3Csvg viewBox="0 0 40 30" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M10 25 Q15 10 20 20 T30 20 T35 25" fill="%232a1810"/%3E%3Ccircle cx="12" cy="18" r="2" fill="%232a1810"/%3E%3Cpath d="M12 18 L10 10 M12 18 L14 10" stroke="%232a1810" stroke-width="1"/%3E%3C/svg%3E') no-repeat;
+      opacity: 0.4;
+      animation: antelope-graze 10s ease-in-out infinite alternate;
+    }
+    @keyframes antelope-graze {
+      from { transform: translateX(0) rotate(0deg); }
+      to { transform: translateX(10px) rotate(2deg); }
+    }
       90%  { opacity: 0.8; }
       100% { transform: translate(110vw, var(--y2)) scale(1); opacity: 0; }
     }
@@ -1380,6 +1407,11 @@
       opacity: 0; transition: opacity 1s ease;
     }
     [data-theme="ghibli"] .ghibli-clouds { opacity: 0.7; }
+    /* Ghibli: WATERCOLOR BACKGROUND */
+    [data-theme="ghibli"] .bg {
+      background: linear-gradient(180deg, #d4f1f4 0%, #75e6da 40%, #189ab4 100%);
+      transition: background 1.2s ease;
+    }
     .ghibli-cloud {
       position: absolute;
       background: white;
@@ -1418,7 +1450,14 @@
       transform: translateY(100%);
       transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    [data-theme="ghibli"] .ghibli-totoro { transform: translateY(0); }
+    [data-theme="ghibli"] .ghibli-totoro { 
+      transform: translateY(0); 
+      animation: totoro-bounce 5s ease-in-out infinite;
+    }
+    @keyframes totoro-bounce {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50%      { transform: translateY(-10px) scale(1.02); }
+    }
     .ghibli-totoro svg { width: 100%; filter: drop-shadow(0 -5px 15px rgba(0,0,0,0.1)); }
     .totoro-eye { animation: totoro-blink 4s infinite; }
     @keyframes totoro-blink {
@@ -1479,6 +1518,17 @@
       border: 1px solid #3c352a;
       box-shadow: 0 15px 35px rgba(0,0,0,0.6);
     }
+    /* GoT: DARK STONE BACKGROUND */
+    [data-theme="got"] .bg {
+      background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
+      transition: background 1.2s ease;
+    }
+    [data-theme="got"][data-got-cond="storm"] .bg {
+      background: linear-gradient(180deg, #0a0a0f 0%, #000 100%);
+    }
+    [data-theme="got"][data-got-cond="hot"] .bg {
+      background: linear-gradient(180deg, #2a1a0a 0%, #1a0d0d 100%);
+    }
     [data-theme="got"] .got-sigil svg {
       width: 85%;
       max-width: 260px;
@@ -1486,10 +1536,13 @@
       filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
     }
     [data-theme="got"] .motto {
-      font-size: 10px;
-      letter-spacing: 0.25em;
+      display: block;
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
-      color: #a08840;
+      color: #cbb4ff;
+      text-shadow: 0 0 8px rgba(179, 136, 255, 0.6);
       margin-top: 4px;
       font-weight: 700;
       opacity: 0.8;
@@ -2808,7 +2861,17 @@
       }
 
       function updateSavannaVisuals(condKey) {
-        // No special condition classes for savanna yet, just basic theme
+        document.documentElement.setAttribute('data-savanna-condition', condKey);
+        // Time of day logic for savanna
+        const now = new Date();
+        const hr = now.getHours();
+        let time = 'midday';
+        if (hr >= 5 && hr < 8) time = 'dawn';
+        else if (hr >= 8 && hr < 11) time = 'morning';
+        else if (hr >= 17 && hr < 19) time = 'sunset';
+        else if (hr >= 19 && hr < 21) time = 'dusk';
+        else if (hr >= 21 || hr < 5) time = 'night';
+        document.documentElement.setAttribute('data-savanna-time', time);
       }
 
       function initSavannaElements() {
@@ -2819,6 +2882,7 @@
           bg.innerHTML = `
             <div class="savanna-sun"></div>
             <div class="savanna-birds-wrap" id="savannaBirds"></div>
+            <div id="savannaAntelopes"></div>
             <svg class="savanna-layer back" viewBox="0 0 1000 100" preserveAspectRatio="none">
               <path d="M0 100 V80 Q250 60 500 80 T1000 80 V100 Z" />
             </svg>
@@ -2830,28 +2894,39 @@
           document.body.appendChild(bg);
 
           const birdWrap = document.getElementById('savannaBirds');
-          for (let i = 0; i < 6; i++) {
+          for (let i = 0; i < 8; i++) {
             const b = document.createElement('div');
             b.className = 'savanna-bird';
             b.innerHTML = `<svg viewBox="0 0 20 10" fill="#000"><path d="M0 5 Q5 0 10 5 T20 5 L18 6 Q10 2 2 6 Z"/></svg>`;
             b.style.cssText = [
               '--y:'     + (10 + Math.random() * 40) + 'vh',
               '--y2:'    + (10 + Math.random() * 40) + 'vh',
-              '--dur:'   + (15 + Math.random() * 20) + 's',
-              '--delay:' + (Math.random() * 15) + 's',
+              '--dur:'   + (20 + Math.random() * 25) + 's',
+              '--delay:' + (Math.random() * 20) + 's',
             ].join(';');
             birdWrap.appendChild(b);
+          }
+
+          const antWrap = document.getElementById('savannaAntelopes');
+          for (let i = 0; i < 4; i++) {
+            const a = document.createElement('div');
+            a.className = 'savanna-antelope';
+            a.style.left = (15 + Math.random() * 70) + 'vw';
+            a.style.animationDelay = (Math.random() * 5) + 's';
+            antWrap.appendChild(a);
           }
         }
         
         // Add parallax listener
         window.addEventListener('mousemove', (e) => {
           if (document.documentElement.getAttribute('data-theme') !== 'savanna') return;
-          const x = (e.clientX / window.innerWidth - 0.5) * 20;
+          const x = (e.clientX / window.innerWidth - 0.5) * 30;
           const back = document.querySelector('.savanna-layer.back');
           const front = document.querySelector('.savanna-layer.front');
-          if (back) back.style.transform = `translateX(${x * 0.5}px)`;
-          if (front) front.style.transform = `translateX(${x}px)`;
+          const sun = document.querySelector('.savanna-sun');
+          if (back) back.style.transform = `translateX(${x * 0.4}px)`;
+          if (front) front.style.transform = `translateX(${x * 0.8}px)`;
+          if (sun) sun.style.transform = `translateX(calc(-50% + ${x * 0.15}px))`;
         });
       }
 
@@ -2878,47 +2953,36 @@
       }
 
       function applyTheme(theme) {
-        // Tear down elements that belong to whichever theme we're leaving
-        if (theme !== 'got') {
-          ['gotParticles'].forEach(function (id) {
-            const el = document.getElementById(id);
-            if (el) el.remove();
-          });
-          document.documentElement.removeAttribute('data-got-cond');
-          const mottoEl = document.getElementById('motto');
-          if (mottoEl) mottoEl.style.display = 'none';
-        }
+        // Tear down all custom elements regardless of theme to ensure a clean state
+        const artifacts = [
+          'gotParticles', 'gotSigil', 'motto',
+          'ghibliClouds', 'ghibliParticles', 'ghibliTotoro', 'ghibliCatbus',
+          'savannaBg', 'savannaBirds', 'savannaAntelopes'
+        ];
+        artifacts.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            if (id === 'motto') el.style.display = 'none';
+            else if (id !== 'gotSigil') el.remove();
+          }
+        });
 
-        if (theme !== 'ghibli') {
-          if (_catbusTimer) { clearInterval(_catbusTimer); _catbusTimer = null; }
-          ['ghibliClouds', 'ghibliParticles', 'ghibliTotoro', 'ghibliCatbus'].forEach(function (id) {
-            const el = document.getElementById(id);
-            if (el) el.remove();
-          });
-          document.documentElement.removeAttribute('data-ghibli-condition');
-        }
-
-        if (theme !== 'savanna') {
-          ['savannaBg'].forEach(function (id) {
-            const el = document.getElementById(id);
-            if (el) el.remove();
-          });
-          document.documentElement.removeAttribute('data-savanna-condition');
-          document.documentElement.removeAttribute('data-savanna-time');
-        }
+        // Clean up data attributes
+        document.documentElement.removeAttribute('data-got-cond');
+        document.documentElement.removeAttribute('data-ghibli-condition');
+        document.documentElement.removeAttribute('data-savanna-condition');
+        document.documentElement.removeAttribute('data-savanna-time');
 
         if (theme === 'default') {
           document.documentElement.removeAttribute('data-theme');
-          // Restore the last Aurora gradient so default background looks correct immediately
           if (_bgEl && _lastAuroraGradient) _bgEl.style.backgroundImage = _lastAuroraGradient;
         } else {
           document.documentElement.setAttribute('data-theme', theme);
-          // Clear inline style so CSS theme backgrounds can take over
           if (_bgEl) _bgEl.style.backgroundImage = '';
         }
         saveTheme(theme);
 
-        document.querySelectorAll('.theme-option[data-theme-id]').forEach(function (btn) {
+        document.querySelectorAll('.theme-option[data-theme-id]').forEach(btn => {
           btn.classList.toggle('active', btn.dataset.themeId === theme);
         });
 
@@ -2926,7 +2990,6 @@
         if (theme === 'ghibli')  initGhibliElements();
         if (theme === 'savanna') initSavannaElements();
 
-        // Immediately re-render description + visuals for the active theme
         if (lastCode !== null) {
           const descEl = document.getElementById('description');
           if (descEl) {
