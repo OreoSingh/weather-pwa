@@ -371,14 +371,22 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
-      text-align: center;
-      transition: transform 0.2s ease, background 0.2s ease;
+      gap: 6px;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
-    .stat:hover { background: rgba(255,255,255,0.09); }
+    html:not([data-theme]) .stat:hover {
+      background: rgba(255,255,255,0.15);
+      border-color: rgba(255,255,255,0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
     .stat-icon {
       width: 22px; height: 22px;
       opacity: 0.85;
+    }
+    html:not([data-theme]) .stat-icon {
+      color: #90caf9;
+      filter: drop-shadow(0 0 5px rgba(144,202,249,0.5));
     }
     .stat-label {
       font-size: 10px;
@@ -1221,6 +1229,28 @@
     [data-theme="savanna"] body,
     [data-theme="savanna"] .app { font-family: 'Raleway', sans-serif; }
 
+    [data-theme="savanna"] .stat {
+      background: rgba(45, 25, 10, 0.65);
+      border: 1px dotted rgba(255, 165, 0, 0.4);
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    [data-theme="savanna"] .stat:hover {
+      background: rgba(60, 35, 15, 0.75);
+      border: 1px solid rgba(255, 165, 0, 0.6);
+    }
+    [data-theme="savanna"] .stat-icon {
+      color: #ffaa33;
+      filter: drop-shadow(0 0 4px rgba(255, 140, 0, 0.6));
+    }
+    [data-theme="savanna"] .stat-label {
+      color: #e0ac7b;
+      text-transform: uppercase;
+      font-size: 10px;
+      letter-spacing: 1px;
+    }
+    [data-theme="savanna"] .stat-value { color: #ffdeb3; }
+
     /* Default background (sunset) */
     [data-theme="savanna"] .bg {
       background: linear-gradient(180deg, #e8891a 0%, #c45010 40%, #8c2808 100%);
@@ -1399,6 +1429,55 @@
       backdrop-filter: blur(25px) saturate(1.8) contrast(0.9);
       border: 1px solid rgba(255,255,255,0.4);
     }
+    
+    [data-theme="ghibli"] .stat {
+      background: rgba(255, 255, 255, 0.4);
+      border: 2px dashed rgba(255, 255, 255, 0.6);
+      border-radius: 20px 10px 15px 25px / 15px 25px 10px 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    [data-theme="ghibli"] .stat:hover {
+      background: rgba(255, 255, 255, 0.65);
+      border-style: solid;
+    }
+    [data-theme="ghibli"] .stat-icon {
+      color: #3b6b4c;
+      filter: drop-shadow(0 2px 2px rgba(255,255,255,0.8));
+    }
+    [data-theme="ghibli"] .stat-label {
+      color: #3a4f40;
+      font-weight: 700;
+    }
+    [data-theme="ghibli"] .stat-value {
+      color: #2c4233;
+      font-weight: 800;
+    }
+
+    /* Soot Sprites */
+    .ghibli-soot {
+      position: absolute;
+      width: 24px; height: 24px;
+      background: radial-gradient(circle, #222 40%, transparent 70%);
+      border-radius: 50%;
+      animation: soot-jiggle 2s infinite alternate;
+      z-index: 15;
+    }
+    .ghibli-soot::before, .ghibli-soot::after {
+      content: ''; position: absolute; width: 6px; height: 8px; background: white; border-radius: 50%; top: 6px;
+    }
+    .ghibli-soot::before { left: 4px; }
+    .ghibli-soot::after { right: 4px; }
+    .ghibli-soot i {
+      position: absolute; width: 3px; height: 3px; background: black; border-radius: 50%; top: 8px; animation: soot-look 4s infinite;
+    }
+    @keyframes soot-jiggle {
+      0% { transform: scale(1) translateY(0); }
+      100% { transform: scale(1.05) translateY(-2px); }
+    }
+    @keyframes soot-look {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(2px); }
+    }
     .ghibli-clouds {
       position: fixed; inset: 0;
       pointer-events: none; z-index: 1; overflow: hidden;
@@ -1461,6 +1540,43 @@
     @keyframes totoro-blink {
       0%, 90%, 100% { transform: scaleY(1); }
       95%           { transform: scaleY(0.1); }
+    }
+
+    /* ===================== GoT: STONE / IRON CARDS ===================== */
+    [data-theme="got"] .stat {
+      background: linear-gradient(145deg, #1e1915, #14100c);
+      border: 1px solid #4a3f30;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 4px 10px rgba(0,0,0,0.6);
+      border-radius: 12px;
+    }
+    [data-theme="got"] .stat:hover {
+      background: linear-gradient(145deg, #2a221c, #1a1510);
+      border-color: #6a5a40;
+    }
+    [data-theme="got"] .stat-icon {
+      color: #b89f5d;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+    }
+    [data-theme="got"] .stat-label {
+      color: #8c8273;
+      font-family: 'Cinzel', serif;
+      letter-spacing: 1px;
+    }
+    [data-theme="got"] .stat-value {
+      color: #d4cfc5;
+      font-family: 'Cinzel', serif;
+    }
+
+    .got-dragon {
+      position: fixed; top: 10vh; left: -20vw; width: 15vw;
+      opacity: 0.15; pointer-events: none;
+      animation: dragon-fly 45s linear infinite; z-index: 2;
+    }
+    @keyframes dragon-fly {
+      0% { transform: translate(0, 0) scale(0.5); }
+      50% { transform: translate(120vw, 20vh) scale(0.8); }
+      51% { transform: translate(120vw, 20vh) scale(0.8) scaleX(-1); }
+      100% { transform: translate(-20vw, -10vh) scale(0.6) scaleX(-1); }
     }
 
     /* ===================== GoT: WEATHER PARTICLES ===================== */
@@ -2800,6 +2916,25 @@
           bus.innerHTML = CATBUS_SVG;
           document.body.appendChild(bus);
         }
+        if (!document.getElementById('ghibliSoots')) {
+          const wrap = document.createElement('div');
+          wrap.id = 'ghibliSoots';
+          wrap.className = 'ghibli-soots';
+          wrap.setAttribute('aria-hidden', 'true');
+          const positions = [
+            {top: '-12px', left: '20px'}, {top: '-12px', right: '30px'},
+            {bottom: '50px', left: '-12px'}, {bottom: '90px', right: '-12px'}
+          ];
+          positions.forEach(pos => {
+            const soot = document.createElement('div');
+            soot.className = 'ghibli-soot';
+            Object.assign(soot.style, pos);
+            soot.innerHTML = '<i></i>';
+            wrap.appendChild(soot);
+          });
+          const card = document.getElementById('card');
+          if (card) card.appendChild(wrap);
+        }
         if (!_catbusTimer) {
           _catbusTimer = setInterval(function () {
             const cond = document.documentElement.getAttribute('data-ghibli-condition');
@@ -2863,6 +2998,14 @@
           }
           document.body.appendChild(wrap);
         }
+        if (!document.getElementById('gotDragon')) {
+          const wrap = document.createElement('div');
+          wrap.id = 'gotDragon';
+          wrap.className = 'got-dragon';
+          wrap.setAttribute('aria-hidden', 'true');
+          wrap.innerHTML = `<svg viewBox="0 0 100 50"><path d="M10 25 Q30 0 50 15 Q70 0 90 25 Q70 40 50 25 Q30 40 10 25 Z M50 15 Q60 5 70 15 Q60 20 50 25 Q40 20 30 15 Q40 5 50 15" fill="#050505"/></svg>`;
+          document.body.appendChild(wrap);
+        }
       }
 
       function updateSavannaVisuals(condKey) {
@@ -2894,6 +3037,9 @@
               <path d="M0 100 V90 Q200 70 400 90 T700 80 T1000 90 V100 Z" />
             </svg>
             <div id="savannaAntelopes"></div>
+            <div id="savannaElephant" class="savanna-elephant">
+              <svg viewBox="0 0 60 40"><path d="M10 30 Q15 10 25 15 Q30 5 45 15 Q50 35 45 40 Q40 30 35 30 Q30 40 25 40 Q20 30 15 35 Z M45 15 Q55 20 50 40 Q45 35 45 15" fill="#1a0f0a"/><circle cx="40" cy="12" r="1.5" fill="#ffdeb3"/></svg>
+            </div>
             <div class="savanna-shimmer"></div>
           `;
           document.body.appendChild(bg);
@@ -2960,9 +3106,9 @@
       function applyTheme(theme) {
         // Tear down all custom elements regardless of theme to ensure a clean state
         const artifacts = [
-          'gotParticles', 'gotSigil', 'motto',
-          'ghibliClouds', 'ghibliParticles', 'ghibliTotoro', 'ghibliCatbus',
-          'savannaBg', 'savannaBirds', 'savannaAntelopes'
+          'gotParticles', 'gotSigil', 'motto', 'gotDragon',
+          'ghibliClouds', 'ghibliParticles', 'ghibliTotoro', 'ghibliCatbus', 'ghibliSoots',
+          'savannaBg', 'savannaBirds', 'savannaAntelopes', 'savannaElephant'
         ];
         artifacts.forEach(id => {
           const el = document.getElementById(id);
