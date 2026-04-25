@@ -1256,69 +1256,61 @@
     [data-theme="savanna"][data-savanna-time="dusk"]  .stars { opacity: 0.4; }
     [data-theme="savanna"][data-savanna-time="night"] .stars { opacity: 1; }
 
-    /* Savanna horizon silhouette */
-    .savanna-horizon {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      width: 100%;
-      height: 200px;
-      z-index: 0;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.6s ease;
+    /* ===================== Savanna: PARALLAX & ANIMALS ===================== */
+    .savanna-bg {
+      position: fixed; inset: 0;
+      background: linear-gradient(to bottom, #2d1b4d 0%, #ff8c00 45%, #ffd700 75%, #ffcc33 100%);
+      z-index: 1; pointer-events: none; opacity: 0; transition: opacity 1s ease;
     }
-    [data-theme="savanna"] .savanna-horizon { opacity: 1; }
-
-    /* Savanna animated sun */
+    [data-theme="savanna"] .savanna-bg { opacity: 1; }
+    .savanna-layer {
+      position: absolute; bottom: 0; left: -10vw; width: 120vw;
+      pointer-events: none;
+    }
+    .savanna-layer.back { height: 15vh; fill: #4b2c20; opacity: 0.6; z-index: 1; }
+    .savanna-layer.front { height: 10vh; fill: #1a0f0a; z-index: 3; }
+    
     .savanna-sun {
-      position: fixed;
+      position: absolute; bottom: 20vh; left: 50%;
+      width: 150px; height: 150px;
+      background: #fff8e1;
       border-radius: 50%;
-      pointer-events: none;
-      z-index: 1;
-      opacity: 0;
-      transition: opacity 0.6s ease, background 2s ease, bottom 2s ease,
-                  left 2s ease, right 2s ease, width 1.5s ease, height 1.5s ease,
-                  box-shadow 2s ease;
+      transform: translateX(-50%);
+      box-shadow: 0 0 80px #ff6b00, 0 0 150px rgba(255,107,0,0.5);
+      z-index: 0;
+      animation: savanna-sun-pulse 10s ease-in-out infinite;
     }
-    [data-theme="savanna"] .savanna-sun { opacity: 1; }
+    @keyframes savanna-sun-pulse {
+      0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.9; }
+      50%      { transform: translateX(-50%) scale(1.05); opacity: 1; }
+    }
 
-    /* Sun: dawn — low on the left, pink-gold */
-    [data-theme="savanna"][data-savanna-time="dawn"] .savanna-sun {
-      width: 56px; height: 56px;
-      bottom: 18vh; left: 16vw;
-      background: radial-gradient(circle, #ffc080 0%, #ff8040 60%, rgba(255,100,30,0) 100%);
-      box-shadow: 0 0 40px 20px rgba(255,140,60,0.35);
+    .savanna-birds-wrap { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
+    .savanna-bird {
+      position: absolute;
+      width: 20px; height: 10px;
+      animation: savanna-bird-fly var(--dur) var(--delay) linear infinite;
     }
-    /* Sun: morning — climbing left-centre */
-    [data-theme="savanna"][data-savanna-time="morning"] .savanna-sun {
-      width: 64px; height: 64px;
-      bottom: 40vh; left: 26vw;
-      background: radial-gradient(circle, #ffe060 0%, #ffb020 60%, rgba(255,160,0,0) 100%);
-      box-shadow: 0 0 60px 28px rgba(255,180,20,0.4);
+    @keyframes savanna-bird-fly {
+      0%   { transform: translate(-50px, var(--y)) scale(0.5); opacity: 0; }
+      10%  { opacity: 0.8; }
+      90%  { opacity: 0.8; }
+      100% { transform: translate(110vw, var(--y2)) scale(1); opacity: 0; }
     }
-    /* Sun: midday — high centre */
-    [data-theme="savanna"][data-savanna-time="midday"] .savanna-sun {
-      width: 72px; height: 72px;
-      bottom: 62vh; left: calc(50vw - 36px);
-      background: radial-gradient(circle, #fff5a0 0%, #ffd020 60%, rgba(255,200,0,0) 100%);
-      box-shadow: 0 0 80px 36px rgba(255,210,30,0.45);
+
+    /* Heat Shimmer */
+    .savanna-shimmer {
+      position: absolute; bottom: 0; width: 100%; height: 10vh;
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(2px);
+      mask-image: linear-gradient(to top, black, transparent);
+      z-index: 4;
+      animation: savanna-heat 2s ease-in-out infinite;
     }
-    /* Sun: sunset — descending on the right, deep red-orange */
-    [data-theme="savanna"][data-savanna-time="sunset"] .savanna-sun {
-      width: 72px; height: 72px;
-      bottom: 24vh; left: calc(72vw - 36px);
-      background: radial-gradient(circle, #ff8060 0%, #e03010 60%, rgba(200,30,0,0) 100%);
-      box-shadow: 0 0 80px 40px rgba(220,60,20,0.45);
+    @keyframes savanna-heat {
+      0%, 100% { transform: skewX(1deg) scaleY(1); }
+      50%      { transform: skewX(-1deg) scaleY(1.05); }
     }
-    /* Sun: dusk — mostly set, far right */
-    [data-theme="savanna"][data-savanna-time="dusk"] .savanna-sun {
-      width: 60px; height: 60px;
-      bottom: 6vh; left: calc(82vw - 30px);
-      background: radial-gradient(circle, #e06040 0%, #a02010 60%, rgba(140,20,0,0) 100%);
-      box-shadow: 0 0 60px 30px rgba(160,40,10,0.4);
-    }
-    /* Sun: night — hidden */
-    [data-theme="savanna"][data-savanna-time="night"] .savanna-sun { opacity: 0 !important; }
 
     /* Card + text overrides */
     [data-theme="savanna"] .card {
@@ -1373,91 +1365,135 @@
       color: #ffe8b0;
     }
 
-    /* ===================== GoT: SNOW PARTICLES ===================== */
-    .got-snow {
+    /* ===================== Ghibli: WATERCOLOR & CLOUDS ===================== */
+    [data-theme="ghibli"] .card {
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(25px) saturate(1.8) contrast(0.9);
+      border: 1px solid rgba(255,255,255,0.4);
+      filter: url("#watercolorFilter");
+    }
+    .ghibli-clouds {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 1; overflow: hidden;
+      opacity: 0; transition: opacity 1s ease;
+    }
+    [data-theme="ghibli"] .ghibli-clouds { opacity: 0.7; }
+    .ghibli-cloud {
+      position: absolute;
+      background: white;
+      border-radius: 100px;
+      filter: blur(20px);
+      animation: ghibli-cloud-move var(--dur) linear infinite;
+      opacity: 0.4;
+    }
+    .ghibli-cloud::before, .ghibli-cloud::after {
+      content: ''; position: absolute; background: inherit; border-radius: inherit;
+    }
+    @keyframes ghibli-cloud-move {
+      from { transform: translateX(-150%); }
+      to   { transform: translateX(150vw); }
+    }
+
+    /* Sakura / Leaves */
+    .ghibli-particle {
+      position: fixed; top: -20px;
+      pointer-events: none; z-index: 4;
+      animation: ghibli-fall var(--dur) linear infinite;
+    }
+    .sakura { background: #ffc0cb; border-radius: 10px 0 10px 0; }
+    .leaf   { background: #8da94e; border-radius: 20px 0 20px 0; }
+    @keyframes ghibli-fall {
+      0%   { transform: translate(0,0) rotate(0deg); opacity: 0; }
+      10%  { opacity: 0.7; }
+      90%  { opacity: 0.7; }
+      100% { transform: translate(var(--dx), 110vh) rotate(var(--rot)); opacity: 0; }
+    }
+
+    /* Peeking Totoro */
+    .ghibli-totoro {
+      position: fixed; bottom: -20px; right: 20px;
+      width: 120px; z-index: 5;
+      transform: translateY(100%);
+      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    [data-theme="ghibli"] .ghibli-totoro { transform: translateY(0); }
+    .ghibli-totoro svg { width: 100%; filter: drop-shadow(0 -5px 15px rgba(0,0,0,0.1)); }
+    .totoro-eye { animation: totoro-blink 4s infinite; }
+    @keyframes totoro-blink {
+      0%, 90%, 100% { transform: scaleY(1); }
+      95%           { transform: scaleY(0.1); }
+    }
+
+    /* ===================== GoT: WEATHER PARTICLES ===================== */
+    .got-particles {
       position: fixed; inset: 0;
       pointer-events: none; z-index: 3; overflow: hidden;
     }
-    .got-flake {
-      position: absolute; top: -12px;
+    .got-particle {
+      position: absolute;
+      background: #fff;
       border-radius: 50%;
-      background: rgba(215,225,242,0.90);
       opacity: 0;
-      animation: got-snow var(--fd,9s) var(--fd2,0s) linear infinite;
     }
-    [data-theme="got"][data-got-cond="cold"] .got-flake { opacity: 1; }
-    @keyframes got-snow {
-      0%   { transform: translate(0,0) rotate(0deg); opacity: 0; }
-      6%   { opacity: 0.84; }
-      94%  { opacity: 0.52; }
-      100% { transform: translate(var(--dx,20px),110vh) rotate(360deg); opacity: 0; }
+    /* Snow */
+    [data-theme="got"][data-got-cond="snow"] .got-particle.snow {
+      animation: got-fall var(--fd) var(--fd2) linear infinite;
     }
-
-    /* ===================== GoT: TORCH FLICKER ===================== */
-    .got-torches {
-      position: fixed; inset: 0;
-      pointer-events: none; z-index: 2;
-      opacity: 0; transition: opacity 0.8s ease;
+    /* Rain */
+    [data-theme="got"][data-got-cond="rain"] .got-particle.rain {
+      background: rgba(170, 210, 255, 0.4);
+      width: 1px; height: 18px;
+      border-radius: 0;
+      animation: got-fall var(--fd) var(--fd2) linear infinite;
     }
-    [data-theme="got"] .got-torches { opacity: 1; }
-    .got-torch-glow {
-      position: absolute; bottom: 0;
-      width: 70px; height: 60vh;
-      transform-origin: 50% 100%;
-      animation: torch-flicker 2.15s ease-in-out infinite;
-    }
-    .got-torch-glow.left {
-      left: 0;
-      background: linear-gradient(to right, rgba(255,110,16,0.30) 0%, rgba(200,70,8,0.12) 55%, transparent 100%);
-    }
-    .got-torch-glow.right {
-      right: 0;
-      background: linear-gradient(to left, rgba(255,110,16,0.30) 0%, rgba(200,70,8,0.12) 55%, transparent 100%);
-    }
-    .got-torch-glow::after {
-      content: '';
-      position: absolute; inset: 0;
-      animation: torch-flicker 1.6s ease-in-out infinite reverse;
-      opacity: 0.5;
-    }
-    .got-torch-glow.left::after  { background: linear-gradient(to right, rgba(255,195,55,0.40) 0%, rgba(255,130,25,0.14) 45%, transparent 80%); }
-    .got-torch-glow.right::after { background: linear-gradient(to left,  rgba(255,195,55,0.40) 0%, rgba(255,130,25,0.14) 45%, transparent 80%); }
-    @keyframes torch-flicker {
-      0%   { opacity: 0.78; transform: scaleY(1.00); }
-      22%  { opacity: 1.00; transform: scaleY(1.09); }
-      38%  { opacity: 0.62; transform: scaleY(0.92); }
-      55%  { opacity: 0.90; transform: scaleY(1.06); }
-      73%  { opacity: 0.71; transform: scaleY(0.95); }
-      88%  { opacity: 0.93; transform: scaleY(1.07); }
-      100% { opacity: 0.78; transform: scaleY(1.00); }
+    @keyframes got-fall {
+      0%   { transform: translate(0,-20px) rotate(0deg); opacity: 0; }
+      10%  { opacity: 0.8; }
+      90%  { opacity: 0.6; }
+      100% { transform: translate(var(--dx), 110vh) rotate(var(--rot, 0deg)); opacity: 0; }
     }
 
     /* ===================== GoT: STONE / IRON CARDS ===================== */
+    [data-theme="got"] .card {
+      background: radial-gradient(circle at 50% 50%, #2a2620 0%, #1a1612 100%);
+      border: 2px solid #3c352a;
+      border-image: linear-gradient(to bottom, #5a5040, #2a251a) 1;
+      box-shadow:
+        0 30px 60px rgba(0,0,0,0.8),
+        inset 0 0 40px rgba(0,0,0,0.6);
+      position: relative;
+    }
+    /* Stone texture overlay */
     [data-theme="got"] .card::before {
       content: '';
       position: absolute; inset: 0;
-      border-radius: inherit;
+      opacity: 0.08;
       background-image:
-        repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(0,0,0,0.032) 20px, rgba(0,0,0,0.032) 21px),
-        repeating-linear-gradient(90deg, transparent, transparent 28px, rgba(0,0,0,0.022) 28px, rgba(0,0,0,0.022) 29px);
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+        repeating-linear-gradient(45deg, transparent, transparent 10px, #000 10px, #000 11px);
       pointer-events: none; z-index: 0;
     }
-    [data-theme="got"] .card {
-      border-color: rgba(155,125,53,0.38);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.72),
-                  inset 0 1px 0 rgba(155,125,53,0.22),
-                  inset 0 -1px 0 rgba(0,0,0,0.55),
-                  inset 4px 0 10px rgba(0,0,0,0.30),
-                  inset -4px 0 10px rgba(0,0,0,0.30);
-    }
     [data-theme="got"] .forecast-section {
-      box-shadow: 0 12px 32px rgba(0,0,0,0.52),
-                  inset 0 1px 0 rgba(155,125,53,0.14),
-                  inset 4px 0 8px rgba(0,0,0,0.24),
-                  inset -4px 0 8px rgba(0,0,0,0.24);
+      background: rgba(22, 18, 14, 0.92);
+      border: 1px solid #3c352a;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.6);
     }
-    /* Sigil larger behind temperature */
-    [data-theme="got"] .got-sigil svg { width: 76%; max-width: 230px; opacity: 0.095; }
+    [data-theme="got"] .got-sigil svg {
+      width: 85%;
+      max-width: 260px;
+      opacity: 0.06;
+      filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
+    }
+    [data-theme="got"] .motto {
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #a08840;
+      margin-top: 4px;
+      font-weight: 700;
+      opacity: 0.8;
+    }
+
 
     /* ===================== Ghibli: TOTORO BOB ===================== */
     [data-theme="ghibli"] .ghibli-totoro {
@@ -1505,61 +1541,6 @@
     }
     [data-theme="ghibli"] .bg::before { animation: ghibli-blob-a 34s ease-in-out infinite; }
     [data-theme="ghibli"] .bg::after  { animation: ghibli-blob-b 42s ease-in-out infinite; }
-
-    /* ===================== Savanna: SCROLL NATURALLY ===================== */
-    /* Override position:fixed so horizon and sun scroll with the page */
-    .savanna-horizon { position: absolute; }
-    .savanna-sun     { position: absolute; }
-
-    /* ===================== Savanna: BIRDS ===================== */
-    .savanna-birds {
-      position: fixed; inset: 0;
-      pointer-events: none; z-index: 3;
-      overflow: hidden;
-    }
-    .savanna-bird {
-      position: absolute;
-      animation: bird-fly var(--bd,20s) var(--bd2,0s) linear infinite;
-    }
-    @keyframes bird-fly {
-      0%   { transform: translateX(-80px); opacity: 0; }
-      5%   { opacity: 0.68; }
-      92%  { opacity: 0.68; }
-      100% { transform: translateX(calc(100vw + 80px)); opacity: 0; }
-    }
-
-    /* ===================== Savanna: HEAT SHIMMER ===================== */
-    .savanna-shimmer {
-      position: absolute; bottom: 190px;
-      left: 0; right: 0; height: 52px;
-      pointer-events: none; z-index: 2;
-      opacity: 0; transition: opacity 1s ease;
-    }
-    [data-theme="savanna"][data-savanna-condition="clear"] .savanna-shimmer { opacity: 1; }
-    .savanna-shimmer::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(transparent 0%, rgba(255,172,48,0.13) 50%, transparent 100%);
-      animation: heat-shimmer 2.9s ease-in-out infinite;
-    }
-    @keyframes heat-shimmer {
-      0%,100% { transform: scaleY(1.00) translateY(0px);  opacity: 0.50; }
-      50%     { transform: scaleY(1.45) translateY(-5px); opacity: 1.00; }
-    }
-
-    /* ===================== Savanna: TREE SWAY ===================== */
-    @keyframes acacia-sway {
-      0%,100% { transform: rotate(-1.2deg); }
-      50%     { transform: rotate( 1.2deg); }
-    }
-    [data-theme="savanna"] .acacia-left {
-      animation: acacia-sway 5.5s ease-in-out infinite;
-      transform-box: fill-box; transform-origin: center bottom;
-    }
-    [data-theme="savanna"] .acacia-right {
-      animation: acacia-sway 6.8s ease-in-out infinite reverse;
-      transform-box: fill-box; transform-origin: center bottom;
-    }
 
     /* =================== THEME CROSSFADE OVERLAY =================== */
     #themeFade {
@@ -1660,12 +1641,20 @@
       <div class="suggestions" id="suggestions" role="listbox" aria-label="City suggestions"></div>
     </section>
 
+    <svg style="position: absolute; width: 0; height: 0;" aria-hidden="true">
+      <filter id="watercolorFilter">
+        <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" />
+      </filter>
+    </svg>
+
     <article class="card" id="card" aria-live="polite">
       <div class="got-sigil" id="gotSigil" aria-hidden="true"></div>
       <div class="card-top">
         <div class="location">
           <div class="city" id="city">Brisbane</div>
           <div class="region" id="region">Queensland, Australia</div>
+          <div id="motto" class="motto" style="display:none"></div>
         </div>
         <div class="unit-toggle" role="group" aria-label="Temperature unit">
           <button class="unit-btn active" id="unitC" aria-pressed="true">°C</button>
@@ -2502,90 +2491,71 @@
 
       // House sigil SVGs (inline, recognizable heraldic silhouettes)
       const SIGILS = {
-        // Targaryen — three-headed dragon
-        targaryen: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
-          <path d="M100 32C88 32 78 38 72 48C62 42 48 44 42 54C36 64 40 78 50 84
-                   C38 86 28 96 28 108C28 122 38 132 52 132C48 138 46 146 50 154
-                   L30 174H46L40 190L58 180L68 198L80 180L100 190L120 180L132 198
-                   L142 180L160 190L154 174H170L150 154C154 146 152 138 148 132
-                   C162 132 172 122 172 108C172 96 162 86 150 84C160 78 164 64 158 54
-                   C152 44 138 42 128 48C122 38 112 32 100 32Z"/>
-          <path d="M52 132L18 112L36 140Z"/>
-          <path d="M148 132L182 112L164 140Z"/>
-          <ellipse cx="83" cy="102" rx="7" ry="8" fill="white" opacity="0.6"/>
-          <ellipse cx="117" cy="102" rx="7" ry="8" fill="white" opacity="0.6"/>
-          <ellipse cx="85" cy="104" rx="4" ry="5"/>
-          <ellipse cx="119" cy="104" rx="4" ry="5"/>
-        </svg>`,
-
         // Stark — direwolf head
-        stark: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
-          <path d="M100 28C74 28 50 44 44 68C38 84 44 100 42 114
-                   C28 108 14 114 14 130C14 142 24 150 38 144
-                   C32 158 36 172 50 170C60 170 68 162 72 150
-                   C78 164 88 174 100 174C112 174 122 164 128 150
-                   C132 162 140 170 150 170C164 172 168 158 162 144
-                   C176 150 186 142 186 130C186 114 172 108 158 114
-                   C156 100 162 84 156 68C150 44 126 28 100 28Z"/>
-          <path d="M74 54L60 24L80 48Z"/>
-          <path d="M126 54L140 24L120 48Z"/>
-          <ellipse cx="80" cy="98" rx="9" ry="10" fill="white" opacity="0.8"/>
-          <ellipse cx="120" cy="98" rx="9" ry="10" fill="white" opacity="0.8"/>
-          <ellipse cx="82" cy="100" rx="5" ry="6"/>
-          <ellipse cx="122" cy="100" rx="5" ry="6"/>
-          <ellipse cx="100" cy="128" rx="11" ry="8"/>
-          <path d="M84 142Q100 154 116 142" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round"/>
+        stark: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <path d="M100 20 L115 45 L140 40 L130 65 L160 85 L135 100 L145 135 L110 125 L100 160 L90 125 L55 135 L65 100 L40 85 L70 65 L60 40 L85 45 Z" opacity="0.2"/>
+          <path d="M100 30 C120 30 140 45 145 70 C150 95 140 120 120 140 L100 170 L80 140 C60 120 50 95 55 70 C60 45 80 30 100 30" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M70 75 L60 65 M130 75 L140 65 M100 110 L100 130 M85 100 Q100 110 115 100" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M40 80 Q70 50 100 50 Q130 50 160 80 Q130 150 100 180 Q70 150 40 80 Z" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3"/>
+          <path d="M100 50 L110 35 L125 55 L145 50 L135 70 L155 85 L130 95 L135 120 L110 110 L100 130 L90 110 L65 120 L70 95 L45 85 L65 70 L55 50 L75 55 L90 35 Z"/>
         </svg>`,
 
-        // Tully — leaping trout
-        tully: `<svg viewBox="0 0 240 170" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
-          <ellipse cx="105" cy="85" rx="72" ry="50"/>
-          <path d="M177 85L220 58L213 85L220 112Z"/>
-          <path d="M48 85Q26 68 12 85Q26 102 48 85Z"/>
-          <path d="M82 35C90 22 120 22 128 35"/>
-          <path d="M82 135C90 148 120 148 128 135"/>
-          <ellipse cx="52" cy="72" rx="13" ry="13" fill="white" opacity="0.8"/>
-          <ellipse cx="54" cy="74" rx="8" ry="8"/>
-          <path d="M96 54Q108 85 96 116" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.25"/>
-          <path d="M116 48Q130 85 116 122" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.2"/>
-          <path d="M136 54Q148 85 136 116" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.15"/>
+        // Targaryen — three-headed dragon
+        targaryen: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <path d="M100 20 Q120 40 140 20 Q130 50 160 60 Q130 70 140 100 Q110 80 100 110 Q90 80 60 100 Q70 70 40 60 Q70 50 60 20 Q80 40 100 20" opacity="0.3"/>
+          <path d="M100 40 L115 65 L140 60 L130 85 L160 105 L135 120 L145 155 L110 145 L100 180 L90 145 L55 155 L65 120 L40 105 L70 85 L60 60 L85 65 Z" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M100 40 L110 60 L130 55 L120 75 L140 90 L115 100 L120 125 L100 115 L80 125 L85 100 L60 90 L80 75 L70 55 L90 60 Z"/>
+          <circle cx="85" cy="70" r="2"/><circle cx="115" cy="70" r="2"/><circle cx="100" cy="55" r="2"/>
+        </svg>`,
+
+        // Lannister — lion rampant
+        lannister: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <path d="M80 180 L70 150 L60 160 L50 140 L70 120 L60 90 L40 100 L30 80 L50 70 L40 40 L70 50 L80 30 L100 40 L120 30 L130 50 L160 40 L150 70 L170 80 L160 100 L140 90 L130 120 L150 140 L140 160 L130 150 L120 180 Z" opacity="0.2"/>
+          <path d="M100 40 C120 40 140 60 140 90 C140 130 110 160 100 170 C90 160 60 130 60 90 C60 60 80 40 100 40" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M100 50 L115 70 L135 70 L120 90 L130 120 L100 105 L70 120 L80 90 L65 70 L85 70 Z"/>
+          <path d="M100 50 L110 30 L125 45 L145 40 L135 60 L155 75 L130 85 L135 110 L110 100 L100 120 L90 100 L65 110 L70 85 L45 75 L65 60 L55 40 L75 45 L90 30 Z" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5"/>
         </svg>`,
 
         // Baratheon — crowned stag
-        baratheon: `<svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
-          <ellipse cx="100" cy="168" rx="46" ry="38"/>
-          <rect x="77" y="200" width="13" height="32" rx="6.5"/>
-          <rect x="110" y="200" width="13" height="32" rx="6.5"/>
-          <path d="M88 135C88 115 95 100 100 95C105 100 112 115 112 135Z"/>
-          <ellipse cx="100" cy="90" rx="24" ry="22"/>
-          <path d="M88 108Q100 120 112 108Q108 125 100 127Q92 125 88 108Z"/>
-          <ellipse cx="91" cy="86" rx="5" ry="5" fill="white" opacity="0.9"/>
-          <ellipse cx="109" cy="86" rx="5" ry="5" fill="white" opacity="0.9"/>
-          <ellipse cx="92" cy="87" rx="3" ry="3"/>
-          <ellipse cx="110" cy="87" rx="3" ry="3"/>
-          <line x1="83" y1="73" x2="70" y2="50" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>
-          <line x1="70" y1="50" x2="52" y2="28" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
-          <line x1="70" y1="50" x2="58" y2="40" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
-          <line x1="70" y1="50" x2="66" y2="36" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
-          <line x1="52" y1="28" x2="40" y2="12" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-          <line x1="52" y1="28" x2="46" y2="14" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
-          <line x1="117" y1="73" x2="130" y2="50" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>
-          <line x1="130" y1="50" x2="148" y2="28" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
-          <line x1="130" y1="50" x2="142" y2="40" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
-          <line x1="130" y1="50" x2="134" y2="36" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
-          <line x1="148" y1="28" x2="160" y2="12" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-          <line x1="148" y1="28" x2="154" y2="14" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+        baratheon: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <path d="M100 180 L80 160 L60 170 L70 140 L50 120 L80 110 L70 80 L40 90 L30 70 L60 60 L50 30 L80 50 L100 20 L120 50 L150 30 L140 60 L170 70 L160 90 L130 80 L120 110 L150 120 L130 140 L140 170 L120 160 L100 180 Z" opacity="0.2"/>
+          <path d="M100 60 A40 40 0 1 0 100 140 A40 40 0 1 0 100 60" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M100 70 L110 90 L130 95 L115 110 L120 130 L100 120 L80 130 L85 110 L70 95 L90 90 Z"/>
+          <path d="M80 60 L60 30 M120 60 L140 30 M70 45 L50 40 M130 45 L150 40" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          <path d="M100 60 L110 40 L125 55 L145 50 L135 70 L155 85 L130 95 L135 120 L110 110 L100 130 L90 110 L65 120 L70 95 L45 85 L65 70 L55 50 L75 55 L90 40 Z" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5"/>
+        </svg>`,
+
+        // Tully — trout
+        tully: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <ellipse cx="100" cy="100" rx="70" ry="40" opacity="0.2"/>
+          <path d="M30 100 Q100 40 170 100 Q100 160 30 100" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M170 100 L195 80 L190 100 L195 120 Z"/>
+          <path d="M60 85 Q100 60 140 85 M60 115 Q100 140 140 115" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.4"/>
+          <circle cx="55" cy="92" r="4"/>
         </svg>`,
       };
 
-      // Reuse codeToCondition from chunk 2 (exposed as window.__auroraCondition).
-      const codeToCondition = window.__auroraCondition;
+      const MOTTOS = {
+        stark:     "Winter is Coming",
+        targaryen: "Fire and Blood",
+        lannister: "Hear Me Roar",
+        baratheon: "Ours is the Fury",
+        tully:     "Family, Duty, Honor"
+      };
+
+      // Map condition key → GoT condition class
+      function gotConditionClass(condKey) {
+        if (condKey === 'snow') return 'snow';
+        if (condKey === 'rain' || condKey === 'drizzle' || condKey === 'thunder') return 'rain';
+        return 'clear';
+      }
 
       function houseForCondition(condKey) {
-        if (condKey === 'clear-day')                     return 'targaryen'; // dragon — hot/sunny
-        if (condKey === 'thunder')                       return 'baratheon'; // stag   — storms
-        if (condKey === 'rain' || condKey === 'drizzle') return 'tully';     // trout  — rain
-        return 'stark';                                                       // direwolf — cold/cloudy/night
+        if (condKey === 'clear-day') return 'targaryen';
+        if (condKey === 'thunder') return 'baratheon';
+        if (condKey === 'rain' || condKey === 'drizzle') return 'tully';
+        if (condKey === 'snow') return 'stark';
+        return 'lannister';
       }
 
       // ── Ghibli descriptions ───────────────────────────────────
@@ -2680,132 +2650,6 @@
         99: { d: 'The ancestors speak in the thunder',           n: 'The ancestors speak in the thunder' },
       };
 
-      // Savanna horizon SVG — acacia silhouette + rolling hills
-      const SAVANNA_HORIZON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 200" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
-        <defs>
-          <linearGradient id="sg" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stop-color="#1a0a04" stop-opacity="0.85"/>
-            <stop offset="100%" stop-color="#0c0604" stop-opacity="1"/>
-          </linearGradient>
-        </defs>
-        <path d="M0 200 L0 115 C80 108,160 100,240 106 C320 112,400 122,480 115
-                 C560 108,640 94,720 100 C800 106,880 118,960 113
-                 C1040 108,1120 96,1200 103 C1280 110,1360 118,1440 112 L1440 200 Z"
-              fill="url(#sg)"/>
-        <!-- Left acacia trunk + branches -->
-        <rect x="196" y="68" width="8" height="58" rx="3" fill="#0c0604"/>
-        <line x1="200" y1="88" x2="172" y2="76" stroke="#0c0604" stroke-width="5" stroke-linecap="round"/>
-        <line x1="200" y1="84" x2="228" y2="74" stroke="#0c0604" stroke-width="5" stroke-linecap="round"/>
-        <!-- Left acacia canopy (CSS sway target) -->
-        <g class="acacia-left">
-          <ellipse cx="185" cy="66" rx="36" ry="10" fill="#0c0604"/>
-          <ellipse cx="214" cy="70" rx="26" ry="9"  fill="#0c0604"/>
-          <ellipse cx="200" cy="60" rx="20" ry="9"  fill="#0c0604"/>
-        </g>
-        <!-- Right acacia trunk + branches -->
-        <rect x="1236" y="60" width="10" height="65" rx="3" fill="#0c0604"/>
-        <line x1="1241" y1="82" x2="1210" y2="70" stroke="#0c0604" stroke-width="6" stroke-linecap="round"/>
-        <line x1="1241" y1="78" x2="1272" y2="68" stroke="#0c0604" stroke-width="6" stroke-linecap="round"/>
-        <!-- Right acacia canopy (CSS sway target) -->
-        <g class="acacia-right">
-          <ellipse cx="1224" cy="58" rx="40" ry="11" fill="#0c0604"/>
-          <ellipse cx="1256" cy="63" rx="30" ry="10" fill="#0c0604"/>
-          <ellipse cx="1241" cy="52" rx="24" ry="10" fill="#0c0604"/>
-        </g>
-        <!-- Background small tree centre -->
-        <rect x="718" y="88" width="6" height="28" rx="2" fill="#0c0604" opacity="0.7"/>
-        <ellipse cx="721" cy="83" rx="18" ry="7" fill="#0c0604" opacity="0.7"/>
-        <!-- Bushes / rocks -->
-        <ellipse cx="380"  cy="118" rx="22" ry="9"  fill="#0c0604"/>
-        <ellipse cx="560"  cy="110" rx="16" ry="7"  fill="#0c0604"/>
-        <ellipse cx="870"  cy="116" rx="20" ry="8"  fill="#0c0604"/>
-        <ellipse cx="1060" cy="111" rx="14" ry="6"  fill="#0c0604"/>
-      </svg>`;
-
-      // Map condition key → Savanna condition class
-      function savannaConditionClass(condKey) {
-        if (condKey === 'clear-day' || condKey === 'clear-night') return 'clear';
-        if (['partly-day','partly-night','overcast','fog'].indexOf(condKey) >= 0) return 'cloudy';
-        if (condKey === 'rain' || condKey === 'drizzle') return 'rain';
-        if (condKey === 'snow') return 'snow';
-        if (condKey === 'thunder') return 'storm';
-        return 'clear';
-      }
-
-      // Map current hour → dawn/morning/midday/sunset/dusk/night
-      function getTimeOfDay(hour) {
-        if (hour >= 5  && hour < 7)  return 'dawn';
-        if (hour >= 7  && hour < 11) return 'morning';
-        if (hour >= 11 && hour < 15) return 'midday';
-        if (hour >= 15 && hour < 19) return 'sunset';
-        if (hour >= 19 && hour < 21) return 'dusk';
-        return 'night';
-      }
-
-      function initSavannaElements() {
-        if (!document.getElementById('savannaHorizon')) {
-          const el = document.createElement('div');
-          el.id = 'savannaHorizon';
-          el.className = 'savanna-horizon';
-          el.innerHTML = SAVANNA_HORIZON_SVG;
-          document.body.appendChild(el);
-        }
-        if (!document.getElementById('savannaSun')) {
-          const el = document.createElement('div');
-          el.id = 'savannaSun';
-          el.className = 'savanna-sun';
-          document.body.appendChild(el);
-        }
-        if (!document.getElementById('savannaBirds')) {
-          const birds = document.createElement('div');
-          birds.id = 'savannaBirds';
-          birds.className = 'savanna-birds';
-          birds.setAttribute('aria-hidden', 'true');
-          const configs = [
-            { top:'8%',  w:44, sw:'3.0', dur:21, delay:0  },
-            { top:'14%', w:30, sw:'3.5', dur:28, delay:8  },
-            { top:'4%',  w:56, sw:'2.4', dur:18, delay:3  },
-            { top:'19%', w:36, sw:'3.2', dur:25, delay:14 },
-            { top:'11%', w:26, sw:'3.8', dur:33, delay:6  },
-            { top:'17%', w:50, sw:'2.7', dur:20, delay:19 },
-            { top:'6%',  w:40, sw:'3.0', dur:23, delay:11 },
-          ];
-          configs.forEach(function (c) {
-            const b = document.createElement('div');
-            b.className = 'savanna-bird';
-            const h = Math.round(c.w * 0.44);
-            b.innerHTML = '<svg viewBox="0 0 50 22" width="' + c.w + '" height="' + h + '" xmlns="http://www.w3.org/2000/svg"><path d="M1 16 Q13 3 25 13 Q37 3 49 16" stroke="#1a0a04" stroke-width="' + c.sw + '" stroke-linecap="round" fill="none" opacity="0.72"/></svg>';
-            b.style.cssText = 'top:' + c.top + ';--bd:' + c.dur + 's;--bd2:' + c.delay + 's';
-            birds.appendChild(b);
-          });
-          document.body.appendChild(birds);
-        }
-        if (!document.getElementById('savannaShimmer')) {
-          const shimmer = document.createElement('div');
-          shimmer.id = 'savannaShimmer';
-          shimmer.className = 'savanna-shimmer';
-          shimmer.setAttribute('aria-hidden', 'true');
-          document.body.appendChild(shimmer);
-        }
-      }
-
-      function updateSavannaVisuals(condKey) {
-        const sc = savannaConditionClass(condKey);
-        const tod = getTimeOfDay(new Date().getHours());
-        document.documentElement.setAttribute('data-savanna-condition', sc);
-        document.documentElement.setAttribute('data-savanna-time', tod);
-      }
-
-      // Map condition key → Ghibli background category
-      function ghibliConditionClass(condKey) {
-        if (condKey === 'clear-day' || condKey === 'clear-night') return 'clear';
-        if (['partly-day','partly-night','overcast','fog'].indexOf(condKey) >= 0) return 'cloudy';
-        if (condKey === 'rain' || condKey === 'drizzle') return 'rain';
-        if (condKey === 'snow') return 'snow';
-        if (condKey === 'thunder') return 'storm';
-        return 'clear';
-      }
-
       // ── Catbus SVG + timer (declared before initGhibliElements which uses them) ──
       const CATBUS_SVG = `<svg viewBox="0 0 250 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <rect x="14" y="22" width="208" height="64" rx="22" fill="#c4a860"/>
@@ -2828,7 +2672,7 @@
         <line x1="238" y1="53" x2="250" y2="53" stroke="#c4a060" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
         <line x1="238" y1="56" x2="248" y2="60" stroke="#c4a060" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
         <path d="M214 22 L206 8 L222 16Z" fill="#c4a860"/>
-        <path d="M14 54 Q0 44 4 30 Q8 18 17 28" stroke="#c4a860" stroke-width="8" fill="none" stroke-linecap="round"/>
+        <path d="M14 54 Q0 44 4 30 Q8 18 17 28" stroke="#c4a060" stroke-width="8" fill="none" stroke-linecap="round"/>
         <ellipse cx="55"  cy="92" rx="14" ry="10" fill="#a88840" transform="rotate(-12 55 92)"/>
         <ellipse cx="95"  cy="95" rx="14" ry="10" fill="#a88840" transform="rotate( 10 95 95)"/>
         <ellipse cx="132" cy="92" rx="14" ry="10" fill="#a88840" transform="rotate(-10 132 92)"/>
@@ -2848,6 +2692,46 @@
       }
 
       function initGhibliElements() {
+        if (!document.getElementById('ghibliClouds')) {
+          const wrap = document.createElement('div');
+          wrap.id = 'ghibliClouds';
+          wrap.className = 'ghibli-clouds';
+          for (let i = 0; i < 8; i++) {
+            const c = document.createElement('div');
+            c.className = 'ghibli-cloud';
+            const w = 200 + Math.random() * 300;
+            const h = w * 0.6;
+            c.style.cssText = [
+              'width:'  + w + 'px',
+              'height:' + h + 'px',
+              'top:'    + (Math.random() * 60) + 'vh',
+              'left:'   + (Math.random() * 100) + 'vw',
+              '--dur:'  + (30 + Math.random() * 60) + 's',
+            ].join(';');
+            wrap.appendChild(c);
+          }
+          document.body.appendChild(wrap);
+        }
+        if (!document.getElementById('ghibliParticles')) {
+          const wrap = document.createElement('div');
+          wrap.id = 'ghibliParticles';
+          wrap.className = 'ghibli-particles';
+          for (let i = 0; i < 20; i++) {
+            const p = document.createElement('div');
+            p.className = 'ghibli-particle';
+            p.style.cssText = [
+              'left:'   + (Math.random() * 100) + 'vw',
+              '--dx:'   + ((Math.random() - 0.5) * 200) + 'px',
+              '--rot:'  + (Math.random() * 720) + 'deg',
+              '--dur:'  + (10 + Math.random() * 15) + 's',
+              '--delay:'+ (Math.random() * 20) + 's',
+              'width:'  + (10 + Math.random() * 15) + 'px',
+              'height:' + (8 + Math.random() * 12) + 'px',
+            ].join(';');
+            wrap.appendChild(p);
+          }
+          document.body.appendChild(wrap);
+        }
         if (!document.getElementById('ghibliTotoro')) {
           const el = document.createElement('div');
           el.id = 'ghibliTotoro';
@@ -2855,31 +2739,6 @@
           el.setAttribute('aria-hidden', 'true');
           el.innerHTML = TOTORO_SVG;
           document.body.appendChild(el);
-        }
-        if (!document.getElementById('sootContainer')) {
-          const wrap = document.createElement('div');
-          wrap.id = 'sootContainer';
-          wrap.className = 'soot-container';
-          wrap.setAttribute('aria-hidden', 'true');
-          for (let i = 0; i < 14; i++) {
-            const s = document.createElement('div');
-            s.className = 'soot-sprite';
-            const sz  = 11 + Math.random() * 11;
-            const tx  = (Math.random() - 0.5) * 140;
-            const ty  = -(38 + Math.random() * 140);
-            s.style.cssText = [
-              'width:'  + sz + 'px',
-              'height:' + sz + 'px',
-              'left:'   + (Math.random() * 96) + 'vw',
-              'top:'    + (12 + Math.random() * 70) + 'vh',
-              '--tx:'   + tx + 'px',
-              '--ty:'   + ty + 'px',
-              '--dur:'  + (6  + Math.random() * 10) + 's',
-              '--delay:'+ (Math.random() * 14) + 's',
-            ].join(';');
-            wrap.appendChild(s);
-          }
-          document.body.appendChild(wrap);
         }
         if (!document.getElementById('ghibliCatbus')) {
           const bus = document.createElement('div');
@@ -2900,6 +2759,11 @@
       function updateGhibliVisuals(condKey) {
         const gc = ghibliConditionClass(condKey);
         document.documentElement.setAttribute('data-ghibli-condition', gc);
+        const parts = document.querySelectorAll('.ghibli-particle');
+        parts.forEach(p => {
+          p.classList.toggle('sakura', gc === 'clear');
+          p.classList.toggle('leaf', gc !== 'clear');
+        });
       }
 
       // ── GoT condition class ───────────────────────────────────────
@@ -2915,37 +2779,81 @@
       }
 
       function initGotElements() {
-        if (!document.getElementById('gotTorches')) {
+        if (!document.getElementById('gotParticles')) {
           const wrap = document.createElement('div');
-          wrap.id = 'gotTorches';
-          wrap.className = 'got-torches';
+          wrap.id = 'gotParticles';
+          wrap.className = 'got-particles';
           wrap.setAttribute('aria-hidden', 'true');
-          wrap.innerHTML = '<div class="got-torch-glow left"></div><div class="got-torch-glow right"></div>';
-          document.body.appendChild(wrap);
-        }
-        if (!document.getElementById('gotSnow')) {
-          const snow = document.createElement('div');
-          snow.id = 'gotSnow';
-          snow.className = 'got-snow';
-          snow.setAttribute('aria-hidden', 'true');
-          for (let i = 0; i < 40; i++) {
-            const f = document.createElement('div');
-            f.className = 'got-flake';
-            const sz = 2 + Math.random() * 4;
-            const dx = (Math.random() - 0.5) * 130;
-            f.style.cssText = [
-              'width:'  + sz + 'px',
-              'height:' + sz + 'px',
+          // Add snow and rain particles
+          for (let i = 0; i < 50; i++) {
+            const p = document.createElement('div');
+            const isRain = Math.random() > 0.5;
+            p.className = 'got-particle ' + (isRain ? 'rain' : 'snow');
+            const dx = (Math.random() - 0.5) * 150;
+            const rot = (Math.random() - 0.5) * 40;
+            p.style.cssText = [
               'left:'   + (Math.random() * 100) + 'vw',
               '--dx:'   + dx + 'px',
-              '--fd:'   + (6 + Math.random() * 9) + 's',
-              '--fd2:'  + (Math.random() * 9) + 's',
+              '--rot:'  + rot + 'deg',
+              '--fd:'   + (3 + Math.random() * 6) + 's',
+              '--fd2:'  + (Math.random() * 8) + 's',
+              'width:'  + (isRain ? 1 : 2 + Math.random() * 3) + 'px',
+              'height:' + (isRain ? 18 : 2 + Math.random() * 3) + 'px',
             ].join(';');
-            snow.appendChild(f);
+            wrap.appendChild(p);
           }
-          document.body.appendChild(snow);
+          document.body.appendChild(wrap);
         }
       }
+
+      function updateSavannaVisuals(condKey) {
+        // No special condition classes for savanna yet, just basic theme
+      }
+
+      function initSavannaElements() {
+        if (!document.getElementById('savannaBg')) {
+          const bg = document.createElement('div');
+          bg.id = 'savannaBg';
+          bg.className = 'savanna-bg';
+          bg.innerHTML = `
+            <div class="savanna-sun"></div>
+            <div class="savanna-birds-wrap" id="savannaBirds"></div>
+            <svg class="savanna-layer back" viewBox="0 0 1000 100" preserveAspectRatio="none">
+              <path d="M0 100 V80 Q250 60 500 80 T1000 80 V100 Z" />
+            </svg>
+            <svg class="savanna-layer front" viewBox="0 0 1000 100" preserveAspectRatio="none">
+              <path d="M0 100 V90 Q200 70 400 90 T700 80 T1000 90 V100 Z" />
+            </svg>
+            <div class="savanna-shimmer"></div>
+          `;
+          document.body.appendChild(bg);
+
+          const birdWrap = document.getElementById('savannaBirds');
+          for (let i = 0; i < 6; i++) {
+            const b = document.createElement('div');
+            b.className = 'savanna-bird';
+            b.innerHTML = `<svg viewBox="0 0 20 10" fill="#000"><path d="M0 5 Q5 0 10 5 T20 5 L18 6 Q10 2 2 6 Z"/></svg>`;
+            b.style.cssText = [
+              '--y:'     + (10 + Math.random() * 40) + 'vh',
+              '--y2:'    + (10 + Math.random() * 40) + 'vh',
+              '--dur:'   + (15 + Math.random() * 20) + 's',
+              '--delay:' + (Math.random() * 15) + 's',
+            ].join(';');
+            birdWrap.appendChild(b);
+          }
+        }
+        
+        // Add parallax listener
+        window.addEventListener('mousemove', (e) => {
+          if (document.documentElement.getAttribute('data-theme') !== 'savanna') return;
+          const x = (e.clientX / window.innerWidth - 0.5) * 20;
+          const back = document.querySelector('.savanna-layer.back');
+          const front = document.querySelector('.savanna-layer.front');
+          if (back) back.style.transform = `translateX(${x * 0.5}px)`;
+          if (front) front.style.transform = `translateX(${x}px)`;
+        });
+      }
+
 
       let lastCode  = null;
       let lastIsDay = true;
@@ -2971,22 +2879,26 @@
       function applyTheme(theme) {
         // Tear down elements that belong to whichever theme we're leaving
         if (theme !== 'got') {
-          ['gotTorches', 'gotSnow'].forEach(function (id) {
+          ['gotParticles'].forEach(function (id) {
             const el = document.getElementById(id);
             if (el) el.remove();
           });
           document.documentElement.removeAttribute('data-got-cond');
+          const mottoEl = document.getElementById('motto');
+          if (mottoEl) mottoEl.style.display = 'none';
         }
+
         if (theme !== 'ghibli') {
           if (_catbusTimer) { clearInterval(_catbusTimer); _catbusTimer = null; }
-          ['sootContainer', 'ghibliTotoro', 'ghibliCatbus'].forEach(function (id) {
+          ['ghibliClouds', 'ghibliParticles', 'ghibliTotoro', 'ghibliCatbus'].forEach(function (id) {
             const el = document.getElementById(id);
             if (el) el.remove();
           });
           document.documentElement.removeAttribute('data-ghibli-condition');
         }
+
         if (theme !== 'savanna') {
-          ['savannaHorizon', 'savannaSun', 'savannaBirds', 'savannaShimmer'].forEach(function (id) {
+          ['savannaBg'].forEach(function (id) {
             const el = document.getElementById(id);
             if (el) el.remove();
           });
@@ -3032,13 +2944,22 @@
             else if (_origDescribe) descEl.textContent = _origDescribe(lastCode, lastIsDay);
           }
           const condKey = codeToCondition(lastCode, lastIsDay);
-          if (theme === 'got')     updateGotCondition(condKey);
+          if (theme === 'got') {
+            updateGotCondition(condKey);
+            const house = houseForCondition(condKey);
+            const mottoEl = document.getElementById('motto');
+            if (mottoEl) {
+              mottoEl.textContent = MOTTOS[house] || "";
+              mottoEl.style.display = 'block';
+            }
+          }
           if (theme === 'ghibli')  updateGhibliVisuals(condKey);
           if (theme === 'savanna') updateSavannaVisuals(condKey);
         }
 
         updateSigil();
       }
+
 
       // Crossfade overlay — briefly flashes black between theme switches
       const themeFadeEl = document.getElementById('themeFade');
