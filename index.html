@@ -2808,6 +2808,13 @@
         }
       }
 
+      function ghibliConditionClass(condKey) {
+        if (condKey === 'thunder') return 'storm';
+        if (condKey === 'rain' || condKey === 'drizzle') return 'rain';
+        if (condKey.startsWith('clear')) return 'clear';
+        return 'cloudy';
+      }
+
       function updateGhibliVisuals(condKey) {
         const gc = ghibliConditionClass(condKey);
         document.documentElement.setAttribute('data-ghibli-condition', gc);
