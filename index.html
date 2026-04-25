@@ -1326,19 +1326,28 @@
       border-color: rgba(200, 120, 40, 0.22);
       backdrop-filter: blur(18px);
     }
-    [data-theme="savanna"] .temp-value  { color: #ffe8b0; }
+    [data-theme="savanna"] .temp-value  {
+      color: #ffe8b0;
+      -webkit-text-fill-color: #ffe8b0;
+      background: none;
+    }
     [data-theme="savanna"] .description { color: #f0c880; }
     [data-theme="savanna"] .feel,
     [data-theme="savanna"] .wind,
     [data-theme="savanna"] .humidity    { color: rgba(240,200,120,0.7); }
     [data-theme="savanna"] .city        { color: #ffd080; }
     [data-theme="savanna"] .country     { color: rgba(240,200,120,0.6); }
-    [data-theme="savanna"] .search input {
+    [data-theme="savanna"] .search-input-wrap {
       background: rgba(20, 8, 4, 0.4);
       border-color: rgba(200, 120, 40, 0.3);
-      color: #ffe8c0;
     }
+    [data-theme="savanna"] .search-input-wrap:focus-within {
+      border-color: rgba(200, 120, 40, 0.55);
+      background: rgba(20, 8, 4, 0.55);
+    }
+    [data-theme="savanna"] .search input { color: #ffe8c0; }
     [data-theme="savanna"] .search input::placeholder { color: rgba(240,200,120,0.45); }
+    [data-theme="savanna"] .search-clear { background: rgba(200,120,40,0.18); color: rgba(240,200,120,0.8); }
     [data-theme="savanna"] .updated { color: rgba(240,200,120,0.5); }
 
     /* Theme picker overrides */
@@ -2432,6 +2441,9 @@
         return (VISUALS[key] || VISUALS['partly-day']).emoji;
       };
 
+      // Expose codeToCondition for reuse by chunk 3 (theme system).
+      window.__auroraCondition = codeToCondition;
+
       // ----- Service worker -----
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -2566,18 +2578,8 @@
         </svg>`,
       };
 
-      // Mirrors codeToCondition from chunk 2 (display logic, not API)
-      function codeToCondition(code, isDay) {
-        if (code === 0) return isDay ? 'clear-day' : 'clear-night';
-        if (code === 1 || code === 2) return isDay ? 'partly-day' : 'partly-night';
-        if (code === 3) return 'overcast';
-        if (code === 45 || code === 48) return 'fog';
-        if ([51, 53, 55, 56, 57].indexOf(code) >= 0) return 'drizzle';
-        if ([61, 63, 65, 66, 67, 80, 81, 82].indexOf(code) >= 0) return 'rain';
-        if ([71, 73, 75, 77, 85, 86].indexOf(code) >= 0) return 'snow';
-        if ([95, 96, 99].indexOf(code) >= 0) return 'thunder';
-        return isDay ? 'partly-day' : 'partly-night';
-      }
+      // Reuse codeToCondition from chunk 2 (exposed as window.__auroraCondition).
+      const codeToCondition = window.__auroraCondition;
 
       function houseForCondition(condKey) {
         if (condKey === 'clear-day')                     return 'targaryen'; // dragon — hot/sunny
@@ -2804,6 +2806,47 @@
         return 'clear';
       }
 
+      // ── Catbus SVG + timer (declared before initGhibliElements which uses them) ──
+      const CATBUS_SVG = `<svg viewBox="0 0 250 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="14" y="22" width="208" height="64" rx="22" fill="#c4a860"/>
+        <line x1="64"  y1="22" x2="64"  y2="86" stroke="#a88840" stroke-width="1.5" opacity="0.4"/>
+        <line x1="110" y1="22" x2="110" y2="86" stroke="#a88840" stroke-width="1.5" opacity="0.4"/>
+        <line x1="156" y1="22" x2="156" y2="86" stroke="#a88840" stroke-width="1.5" opacity="0.4"/>
+        <rect x="22"  y="33" width="30" height="22" rx="6" fill="rgba(210,240,255,0.50)"/>
+        <rect x="62"  y="33" width="30" height="22" rx="6" fill="rgba(210,240,255,0.50)"/>
+        <rect x="102" y="33" width="30" height="22" rx="6" fill="rgba(210,240,255,0.50)"/>
+        <rect x="142" y="33" width="30" height="22" rx="6" fill="rgba(210,240,255,0.50)"/>
+        <circle cx="217" cy="38" r="12" fill="#1c1508"/>
+        <circle cx="217" cy="68" r="12" fill="#1c1508"/>
+        <ellipse cx="217" cy="38" rx="7" ry="8" fill="#88cc44"/>
+        <ellipse cx="217" cy="68" rx="7" ry="8" fill="#88cc44"/>
+        <ellipse cx="218" cy="36" rx="3" ry="4" fill="#060806"/>
+        <ellipse cx="218" cy="66" rx="3" ry="4" fill="#060806"/>
+        <ellipse cx="232" cy="53" rx="9" ry="6" fill="#c8a060"/>
+        <ellipse cx="235" cy="53" rx="5.5" ry="3.5" fill="#0c0a08" opacity="0.65"/>
+        <line x1="238" y1="50" x2="248" y2="46" stroke="#c4a060" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+        <line x1="238" y1="53" x2="250" y2="53" stroke="#c4a060" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+        <line x1="238" y1="56" x2="248" y2="60" stroke="#c4a060" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+        <path d="M214 22 L206 8 L222 16Z" fill="#c4a860"/>
+        <path d="M14 54 Q0 44 4 30 Q8 18 17 28" stroke="#c4a860" stroke-width="8" fill="none" stroke-linecap="round"/>
+        <ellipse cx="55"  cy="92" rx="14" ry="10" fill="#a88840" transform="rotate(-12 55 92)"/>
+        <ellipse cx="95"  cy="95" rx="14" ry="10" fill="#a88840" transform="rotate( 10 95 95)"/>
+        <ellipse cx="132" cy="92" rx="14" ry="10" fill="#a88840" transform="rotate(-10 132 92)"/>
+        <ellipse cx="168" cy="95" rx="14" ry="10" fill="#a88840" transform="rotate(  8 168 95)"/>
+        <ellipse cx="200" cy="92" rx="14" ry="10" fill="#a88840" transform="rotate(-12 200 92)"/>
+      </svg>`;
+
+      let _catbusTimer = null;
+
+      function launchCatbus() {
+        const bus = document.getElementById('ghibliCatbus');
+        if (!bus || bus.classList.contains('go')) return;
+        bus.classList.add('go');
+        bus.addEventListener('animationend', function () {
+          bus.classList.remove('go');
+        }, { once: true });
+      }
+
       function initGhibliElements() {
         if (!document.getElementById('ghibliTotoro')) {
           const el = document.createElement('div');
@@ -2902,47 +2945,6 @@
           }
           document.body.appendChild(snow);
         }
-      }
-
-      // ── Catbus ──────────────────────────────────────────────────
-      const CATBUS_SVG = `<svg viewBox="0 0 250 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <rect x="14" y="22" width="208" height="64" rx="22" fill="#c4a860"/>
-        <line x1="64"  y1="22" x2="64"  y2="86" stroke="#a88840" stroke-width="1.5" opacity="0.4"/>
-        <line x1="110" y1="22" x2="110" y2="86" stroke="#a88840" stroke-width="1.5" opacity="0.4"/>
-        <line x1="156" y1="22" x2="156" y2="86" stroke="#a88840" stroke-width="1.5" opacity="0.4"/>
-        <rect x="22"  y="33" width="30" height="22" rx="6" fill="rgba(210,240,255,0.50)"/>
-        <rect x="62"  y="33" width="30" height="22" rx="6" fill="rgba(210,240,255,0.50)"/>
-        <rect x="102" y="33" width="30" height="22" rx="6" fill="rgba(210,240,255,0.50)"/>
-        <rect x="142" y="33" width="30" height="22" rx="6" fill="rgba(210,240,255,0.50)"/>
-        <circle cx="217" cy="38" r="12" fill="#1c1508"/>
-        <circle cx="217" cy="68" r="12" fill="#1c1508"/>
-        <ellipse cx="217" cy="38" rx="7" ry="8" fill="#88cc44"/>
-        <ellipse cx="217" cy="68" rx="7" ry="8" fill="#88cc44"/>
-        <ellipse cx="218" cy="36" rx="3" ry="4" fill="#060806"/>
-        <ellipse cx="218" cy="66" rx="3" ry="4" fill="#060806"/>
-        <ellipse cx="232" cy="53" rx="9" ry="6" fill="#c8a060"/>
-        <ellipse cx="235" cy="53" rx="5.5" ry="3.5" fill="#0c0a08" opacity="0.65"/>
-        <line x1="238" y1="50" x2="248" y2="46" stroke="#c4a060" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
-        <line x1="238" y1="53" x2="250" y2="53" stroke="#c4a060" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
-        <line x1="238" y1="56" x2="248" y2="60" stroke="#c4a060" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
-        <path d="M214 22 L206 8 L222 16Z" fill="#c4a860"/>
-        <path d="M14 54 Q0 44 4 30 Q8 18 17 28" stroke="#c4a860" stroke-width="8" fill="none" stroke-linecap="round"/>
-        <ellipse cx="55"  cy="92" rx="14" ry="10" fill="#a88840" transform="rotate(-12 55 92)"/>
-        <ellipse cx="95"  cy="95" rx="14" ry="10" fill="#a88840" transform="rotate( 10 95 95)"/>
-        <ellipse cx="132" cy="92" rx="14" ry="10" fill="#a88840" transform="rotate(-10 132 92)"/>
-        <ellipse cx="168" cy="95" rx="14" ry="10" fill="#a88840" transform="rotate(  8 168 95)"/>
-        <ellipse cx="200" cy="92" rx="14" ry="10" fill="#a88840" transform="rotate(-12 200 92)"/>
-      </svg>`;
-
-      let _catbusTimer = null;
-
-      function launchCatbus() {
-        const bus = document.getElementById('ghibliCatbus');
-        if (!bus || bus.classList.contains('go')) return;
-        bus.classList.add('go');
-        bus.addEventListener('animationend', function () {
-          bus.classList.remove('go');
-        }, { once: true });
       }
 
       let lastCode  = null;
