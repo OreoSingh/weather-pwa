@@ -17,7 +17,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Nunito:wght@300;400;500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@400;600&family=Lato:wght@300;400;700&family=Nunito:wght@400;600;800&family=Playfair+Display:wght@400;700;900&family=Ubuntu:wght@400;500;700&family=Raleway:wght@300;400;600&display=swap" rel="stylesheet" />
 
   <title>Aurora Weather</title>
 
@@ -653,7 +653,7 @@
       backdrop-filter: blur(32px) saturate(160%);
       -webkit-backdrop-filter: blur(32px) saturate(160%);
       box-shadow: 0 20px 56px rgba(0,0,0,0.6), 0 4px 16px rgba(0,0,0,0.3);
-      z-index: 30;
+      z-index: 60;
       /* animate open/close with opacity + transform */
       opacity: 0;
       visibility: hidden;
@@ -777,8 +777,19 @@
     /* ============================================================
        GAME OF THRONES THEME
        ============================================================ */
+    [data-theme="got"] body,
+    [data-theme="got"] .app { font-family: 'Cormorant Garamond', serif; }
+
+    [data-theme="got"] .city,
+    [data-theme="got"] .temp-value,
+    [data-theme="got"] .forecast-title,
+    [data-theme="got"] .stat-value,
+    [data-theme="got"] .daily-day,
+    [data-theme="got"] .hourly-time {
+      font-family: 'Cinzel', serif;
+    }
+
     [data-theme="got"] body {
-      font-family: 'Cinzel', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
       background: #0f0e0c;
       color: #d4c4a0;
     }
@@ -863,18 +874,35 @@
     [data-theme="got"] .feels-like { color: rgba(180,155,100,0.6); }
 
     [data-theme="got"] .stat {
-      background: rgba(22,18,13,0.7);
-      border-color: rgba(155,125,53,0.18);
+      background: linear-gradient(145deg, #1e1915, #14100c);
+      border: 1px solid #4a3f30;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 4px 10px rgba(0,0,0,0.6);
+      border-radius: 4px; /* sharp corners */
     }
-    [data-theme="got"] .stat:hover { background: rgba(32,26,18,0.8); }
-    [data-theme="got"] .stat-label { color: rgba(155,125,53,0.65); }
-    [data-theme="got"] .stat-value { color: #d4c4a0; }
-    [data-theme="got"] .stat-sub { color: rgba(155,125,53,0.55); }
+    [data-theme="got"] .stat:hover {
+      background: linear-gradient(145deg, #2a221c, #1a1510);
+      border-color: #6a5a40;
+    }
+    [data-theme="got"] .stat-icon {
+      color: #d9c478; /* Lannister Gold */
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+    }
+    [data-theme="got"] .stat-label {
+      color: #e8e0d0; /* Ash White */
+      font-family: 'Cinzel', serif;
+      letter-spacing: 1px;
+    }
+    [data-theme="got"] .stat-value {
+      color: #d9c478;
+      font-family: 'Cinzel', serif;
+    }
+    [data-theme="got"] .stat-sub { color: rgba(217, 196, 120, 0.55); }
 
     [data-theme="got"] .forecast-section {
       background: rgba(26,22,17,0.88);
       border-color: rgba(155,125,53,0.22);
       box-shadow: 0 12px 32px rgba(0,0,0,0.45), inset 0 1px 0 rgba(155,125,53,0.12);
+      border-radius: 4px;
     }
     [data-theme="got"] .forecast-title {
       color: rgba(155,125,53,0.65);
@@ -1011,10 +1039,21 @@
     }
 
     /* Base Ghibli UI */
+    [data-theme="ghibli"] body,
+    [data-theme="ghibli"] .app { font-family: 'Lato', sans-serif; }
+
+    [data-theme="ghibli"] .city,
+    [data-theme="ghibli"] .temp-value,
+    [data-theme="ghibli"] .forecast-title,
+    [data-theme="ghibli"] .stat-value,
+    [data-theme="ghibli"] .daily-day,
+    [data-theme="ghibli"] .hourly-time {
+      font-family: 'Nunito', sans-serif;
+    }
+
     [data-theme="ghibli"] body {
-      font-family: 'Nunito', 'Trebuchet MS', Verdana, sans-serif;
-      background: #cce4f4;
-      color: #3a4050;
+      background: #f5f0e8;
+      color: #4a4a5a;
     }
 
     /* Watercolour background — default (clear) */
@@ -1227,7 +1266,16 @@
 
     /* =================== AFRICAN SAVANNA THEME =================== */
     [data-theme="savanna"] body,
-    [data-theme="savanna"] .app { font-family: 'Raleway', sans-serif; }
+    [data-theme="savanna"] .app { font-family: 'Ubuntu', sans-serif; }
+
+    [data-theme="savanna"] .city,
+    [data-theme="savanna"] .temp-value,
+    [data-theme="savanna"] .forecast-title,
+    [data-theme="savanna"] .stat-value,
+    [data-theme="savanna"] .daily-day,
+    [data-theme="savanna"] .hourly-time {
+      font-family: 'Playfair Display', serif;
+    }
 
     [data-theme="savanna"] .stat {
       background: rgba(45, 25, 10, 0.65);
@@ -1389,6 +1437,10 @@
       background: rgba(20, 8, 4, 0.45);
       border-color: rgba(200, 120, 40, 0.22);
       backdrop-filter: blur(18px);
+      border-radius: 12px;
+    }
+    [data-theme="savanna"] .forecast-section {
+      border-radius: 12px;
     }
     [data-theme="savanna"] .temp-value  {
       color: #ffe8b0;
@@ -1442,6 +1494,10 @@
       background: rgba(255, 255, 255, 0.55);
       backdrop-filter: blur(25px) saturate(1.8) contrast(0.9);
       border: 1px solid rgba(255,255,255,0.4);
+      border-radius: 20px;
+    }
+    [data-theme="ghibli"] .forecast-section {
+      border-radius: 20px;
     }
     
     [data-theme="ghibli"] .stat {
@@ -1557,29 +1613,7 @@
     }
 
     /* ===================== GoT: STONE / IRON CARDS ===================== */
-    [data-theme="got"] .stat {
-      background: linear-gradient(145deg, #1e1915, #14100c);
-      border: 1px solid #4a3f30;
-      box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 4px 10px rgba(0,0,0,0.6);
-      border-radius: 12px;
-    }
-    [data-theme="got"] .stat:hover {
-      background: linear-gradient(145deg, #2a221c, #1a1510);
-      border-color: #6a5a40;
-    }
-    [data-theme="got"] .stat-icon {
-      color: #b89f5d;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
-    }
-    [data-theme="got"] .stat-label {
-      color: #8c8273;
-      font-family: 'Cinzel', serif;
-      letter-spacing: 1px;
-    }
-    [data-theme="got"] .stat-value {
-      color: #d4cfc5;
-      font-family: 'Cinzel', serif;
-    }
+
 
     .got-dragon {
       position: fixed; top: 15vh; left: -25vw; width: 25vw;
@@ -1631,6 +1665,7 @@
       box-shadow:
         0 30px 60px rgba(0,0,0,0.8),
         inset 0 0 40px rgba(0,0,0,0.6);
+      border-radius: 4px;
     }
     /* Stone texture overlay */
     [data-theme="got"] .card::before {
