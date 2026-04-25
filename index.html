@@ -2939,7 +2939,7 @@
       function updateSigil() {
         const sigilEl = document.getElementById('gotSigil');
         if (!sigilEl || lastCode === null) return;
-        const house = houseForCondition(codeToCondition(lastCode, lastIsDay));
+        const house = houseForCondition(window.__auroraCondition(lastCode, lastIsDay));
         sigilEl.innerHTML = SIGILS[house] || '';
       }
 
