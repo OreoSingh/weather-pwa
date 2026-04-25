@@ -1278,11 +1278,10 @@
     .savanna-sun {
       position: absolute; bottom: 25vh; left: 50%;
       width: 110px; height: 110px;
-      background: radial-gradient(circle at 40% 40%, #fff8e1 0%, #ffde33 40%, #ff9800 100%);
+      background: radial-gradient(circle at 40% 40%, #fffbf0 0%, #ffe666 30%, #ff9800 80%, rgba(255,152,0,0) 100%);
       border-radius: 50%;
       transform: translateX(-50%);
-      box-shadow: 0 0 40px #ff6b00, 0 0 100px rgba(255,107,0,0.4);
-      filter: blur(1px);
+      box-shadow: 0 0 60px rgba(255,107,0,0.8), 0 0 120px rgba(255,107,0,0.5);
       animation: savanna-sun-pulse 12s ease-in-out infinite;
     }
     @keyframes savanna-sun-pulse {
@@ -1315,10 +1314,11 @@
     /* Antelope silhouettes */
     .savanna-antelope {
       position: absolute;
-      bottom: 8vh;
-      width: 40px; height: 30px;
-      background: url('data:image/svg+xml,%3Csvg viewBox="0 0 40 30" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M10 25 Q15 10 20 20 T30 20 T35 25" fill="%232a1810"/%3E%3Ccircle cx="12" cy="18" r="2" fill="%232a1810"/%3E%3Cpath d="M12 18 L10 10 M12 18 L14 10" stroke="%232a1810" stroke-width="1"/%3E%3C/svg%3E') no-repeat;
-      opacity: 0.4;
+      bottom: 9.5vh;
+      width: 50px; height: 40px;
+      background: url('data:image/svg+xml,%3Csvg viewBox="0 0 50 40" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M15 35 Q18 20 22 25 T35 25 T40 35" fill="%231a0f0a"/%3E%3Ccircle cx="16" cy="18" r="2.5" fill="%231a0f0a"/%3E%3Cpath d="M16 18 L13 8 M16 18 L18 9" stroke="%231a0f0a" stroke-width="1.5" stroke-linecap="round"/%3E%3Cpath d="M16 18 Q20 22 25 25" stroke="%231a0f0a" stroke-width="3" fill="none"/%3E%3C/svg%3E') no-repeat bottom center;
+      background-size: contain;
+      opacity: 0.85;
       animation: antelope-graze 10s ease-in-out infinite alternate;
     }
     @keyframes antelope-graze {
@@ -2880,13 +2880,13 @@
           bg.innerHTML = `
             <div class="savanna-sun"></div>
             <div class="savanna-birds-wrap" id="savannaBirds"></div>
-            <div id="savannaAntelopes"></div>
             <svg class="savanna-layer back" viewBox="0 0 1000 100" preserveAspectRatio="none">
               <path d="M0 100 V80 Q250 60 500 80 T1000 80 V100 Z" />
             </svg>
             <svg class="savanna-layer front" viewBox="0 0 1000 100" preserveAspectRatio="none">
               <path d="M0 100 V90 Q200 70 400 90 T700 80 T1000 90 V100 Z" />
             </svg>
+            <div id="savannaAntelopes"></div>
             <div class="savanna-shimmer"></div>
           `;
           document.body.appendChild(bg);
@@ -3005,7 +3005,7 @@
             if (text) descEl.textContent = text;
             else if (_origDescribe) descEl.textContent = _origDescribe(lastCode, lastIsDay);
           }
-          const condKey = codeToCondition(lastCode, lastIsDay);
+          const condKey = window.__auroraCondition(lastCode, lastIsDay);
           if (theme === 'got') {
             updateGotCondition(condKey);
             const house = houseForCondition(condKey);
@@ -3071,7 +3071,7 @@
         } else {
           if (_bgEl) _bgEl.style.backgroundImage = '';
         }
-        const condKey = codeToCondition(code, isDay);
+        const condKey = window.__auroraCondition(code, isDay);
         updateSigil();
         if (theme === 'got')     updateGotCondition(condKey);
         if (theme === 'ghibli')  updateGhibliVisuals(condKey);
